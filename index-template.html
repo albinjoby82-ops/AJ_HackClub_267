@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Info Hub</title>
+    <link rel="stylesheet" href="design-tokens.css">
+    <style>
+        /* Custom project styles (supplement design-tokens.css) */
+
+        body {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+        }
+
+        header {
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+
+        header h1 {
+            color: var(--color-text-light);
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            color: var(--color-accent);
+            font-size: var(--font-size-body);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .section-header::before {
+            content: '';
+            width: 4px;
+            height: 32px;
+            background: var(--color-accent);
+            border-radius: 2px;
+        }
+
+        .section-header h2 {
+            color: var(--color-text-light);
+            margin: 0;
+        }
+
+        .search-container {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .info-section {
+            background: var(--color-accent-subtle);
+            border-left: var(--info-border-left-width) solid var(--color-accent);
+            padding: var(--info-padding);
+            border-radius: var(--info-border-radius);
+        }
+
+        .info-section h4 {
+            color: var(--color-accent);
+            margin-bottom: 8px;
+        }
+
+        .info-stat {
+            font-size: 32px;
+            font-weight: var(--font-weight-bold);
+            color: var(--color-accent);
+            margin-bottom: 4px;
+        }
+
+        .info-label {
+            font-size: var(--font-size-small);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wide);
+        }
+
+        section {
+            padding: var(--spacing-xl) 0;
+        }
+
+        footer {
+            background: rgba(15, 59, 76, 0.5);
+            border-top: 1px solid var(--color-border-subtle);
+            padding: var(--spacing-lg) 0;
+            text-align: center;
+            color: var(--color-text-tertiary);
+            font-size: var(--font-size-small);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: var(--color-accent);
+            color: var(--color-text-primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: var(--font-weight-semibold);
+            transition: var(--transition-base);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .cta-group {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        @media (max-width: 640px) {
+            .cta-group {
+                flex-direction: column;
+            }
+
+            .cta-group button,
+            .cta-group a {
+                width: 100%;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <h1>Hackathon Info Hub</h1>
+            <p class="header-subtitle">Build. Learn. Innovate. ⚡</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Featured Builds Section -->
+        <section>
+            <div class="container">
+                <div class="section-header">
+                    <h2>Featured Builds</h2>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <input
+                        type="search"
+                        class="search-bar"
+                        id="searchReels"
+                        placeholder="Search YouTube, Instagram, TikTok builds..."
+                    >
+                </div>
+
+                <!-- Reel Grid -->
+                <div class="reel-grid" id="reelGrid">
+                    <!-- Reel cards will be populated here by JavaScript -->
+
+                    <!-- Example Card -->
+                    <div class="reel-card card">
+                        <img class="card-image" src="https://via.placeholder.com/300x350?text=Amazing+Build" alt="Reel">
+                        <div class="card-content">
+                            <h4 class="card-title">Servo-Controlled Robot Arm</h4>
+                            <p class="card-meta">@maker_pro • YouTube • 4.2K views</p>
+                        </div>
+                    </div>
+
+                    <div class="reel-card card">
+                        <img class="card-image" src="https://via.placeholder.com/300x350?text=Cool+Project" alt="Reel">
+                        <div class="card-content">
+                            <h4 class="card-title">LED Matrix Art Display</h4>
+                            <p class="card-meta">@tech_daily • Instagram • 3.8K views</p>
+                        </div>
+                    </div>
+
+                    <div class="reel-card card">
+                        <img class="card-image" src="https://via.placeholder.com/300x350?text=Awesome+Creation" alt="Reel">
+                        <div class="card-content">
+                            <h4 class="card-title">IoT Weather Station</h4>
+                            <p class="card-meta">@electronics_hub • TikTok • 2.1K views</p>
+                        </div>
+                    </div>
+
+                    <div class="reel-card card">
+                        <img class="card-image" src="https://via.placeholder.com/300x350?text=Amazing+Invention" alt="Reel">
+                        <div class="card-content">
+                            <h4 class="card-title">Arduino Synthesizer</h4>
+                            <p class="card-meta">@coding_wizard • YouTube • 5.6K views</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Event Info Section -->
+        <section style="background: rgba(26, 90, 111, 0.3);">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Event Details</h2>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-section">
+                        <div class="info-stat">🗓️</div>
+                        <h4>When</h4>
+                        <p>March 15-17, 2026</p>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="info-stat">📍</div>
+                        <h4>Where</h4>
+                        <p>Electronics Lab, Building A</p>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="info-stat">🏆</div>
+                        <h4>Prize Pool</h4>
+                        <p>€2,500 in prizes & components</p>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="info-stat">👥</div>
+                        <h4>Team Size</h4>
+                        <p>1-4 people per team</p>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="info-stat">🎫</div>
+                        <h4>Registration</h4>
+                        <p>Spots limited to 100 makers</p>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="info-stat">🚀</div>
+                        <h4>Theme</h4>
+                        <p>Smart Home Innovation</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section>
+            <div class="container" style="text-align: center;">
+                <div class="section-header" style="justify-content: center;">
+                    <h2>Ready to Build?</h2>
+                </div>
+
+                <p style="color: var(--color-text-light); margin-bottom: var(--spacing-lg); max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Join hundreds of makers in building something incredible. Whether you're a complete beginner or an experienced engineer, there's a place for you here.
+                </p>
+
+                <div class="cta-group" style="justify-content: center;">
+                    <button class="btn btn-primary">Register Now</button>
+                    <button class="btn btn-secondary">Learn More</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sponsors Section -->
+        <section style="background: rgba(26, 90, 111, 0.3);">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Partners & Sponsors</h2>
+                </div>
+
+                <div class="info-grid">
+                    <div style="padding: var(--spacing-md); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); text-align: center;">
+                        <p style="color: var(--color-text-tertiary); margin: 0;">Sponsor Logo</p>
+                    </div>
+                    <div style="padding: var(--spacing-md); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); text-align: center;">
+                        <p style="color: var(--color-text-tertiary); margin: 0;">Sponsor Logo</p>
+                    </div>
+                    <div style="padding: var(--spacing-md); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); text-align: center;">
+                        <p style="color: var(--color-text-tertiary); margin: 0;">Sponsor Logo</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Your Hackathon. All rights reserved.</p>
+            <p style="margin-top: var(--spacing-sm);">
+                <a href="#" style="color: var(--color-accent); text-decoration: none;">Twitter</a> •
+                <a href="#" style="color: var(--color-accent); text-decoration: none;">Instagram</a> •
+                <a href="#" style="color: var(--color-accent); text-decoration: none;">Discord</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeButton(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton(newTheme);
+        });
+
+        function updateThemeButton(theme) {
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+        }
+
+        // Search Functionality (example)
+        const searchInput = document.getElementById('searchReels');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.reel-card');
+
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const meta = card.querySelector('.card-meta').textContent.toLowerCase();
+
+                if (title.includes(query) || meta.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

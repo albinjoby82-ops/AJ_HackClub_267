@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Info Hub — Mood Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0F3B4C 0%, #1A5A6F 100%);
+            color: #F5F8F7;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            font-family: Georgia, Garamond, serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #F5F8F7;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #9FE5D4;
+            font-weight: 500;
+        }
+
+        .section {
+            margin-bottom: 80px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .section-title {
+            font-family: Georgia, Garamond, serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 32px;
+            background: #5CDBAB;
+            border-radius: 2px;
+        }
+
+        /* Color Palette */
+        .palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .color-swatch {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .color-swatch:hover {
+            transform: translateY(-4px);
+        }
+
+        .color-box {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .color-info {
+            background: #1A5A6F;
+            padding: 16px;
+            font-size: 13px;
+        }
+
+        .color-name {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #5CDBAB;
+        }
+
+        .color-hex {
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #9FE5D4;
+        }
+
+        /* Typography */
+        .typography-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .typography-group {
+            background: rgba(26, 90, 111, 0.5);
+            padding: 32px;
+            border-radius: 12px;
+            border-left: 4px solid #5CDBAB;
+        }
+
+        .typography-group h3 {
+            font-family: Georgia, Garamond, serif;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #5CDBAB;
+        }
+
+        .type-example {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(92, 219, 171, 0.2);
+        }
+
+        .type-example:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .type-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9FE5D4;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .h1-example {
+            font-family: Georgia, Garamond, serif;
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .h2-example {
+            font-family: Georgia, Garamond, serif;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .h3-example {
+            font-family: Georgia, Garamond, serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .body-example {
+            font-size: 16px;
+        }
+
+        .small-example {
+            font-size: 14px;
+        }
+
+        /* Components */
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .component-card {
+            background: rgba(26, 90, 111, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(92, 219, 171, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .component-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(92, 219, 171, 0.15);
+        }
+
+        .component-preview {
+            background: linear-gradient(135deg, rgba(92, 219, 171, 0.1) 0%, rgba(255, 87, 34, 0.05) 100%);
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            border-bottom: 1px solid rgba(92, 219, 171, 0.2);
+        }
+
+        .component-info {
+            padding: 20px;
+        }
+
+        .component-name {
+            font-family: Georgia, Garamond, serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #5CDBAB;
+        }
+
+        .component-desc {
+            font-size: 13px;
+            color: #9FE5D4;
+            line-height: 1.5;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #5CDBAB;
+            color: #0F3B4C;
+        }
+
+        .btn-primary:hover {
+            background: #9FE5D4;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #5CDBAB;
+            color: #5CDBAB;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(92, 219, 171, 0.1);
+        }
+
+        .buttons-preview {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* Cards Example */
+        .card-example {
+            background: #F5F8F7;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 200px;
+            box-shadow: 0 4px 12px rgba(15, 59, 76, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-example:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(15, 59, 76, 0.25);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #5CDBAB 0%, #FF5722 100%);
+        }
+
+        .card-content {
+            padding: 12px;
+            color: #0F3B4C;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .card-meta {
+            font-size: 11px;
+            color: #1A5A6F;
+        }
+
+        /* Search Bar */
+        .search-preview {
+            max-width: 400px;
+        }
+
+        .search-bar {
+            height: 48px;
+            border: 2px solid #5CDBAB;
+            border-radius: 24px;
+            background: #F5F8F7;
+            padding: 12px 24px;
+            font-size: 16px;
+            color: #0F3B4C;
+            width: 100%;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar::placeholder {
+            color: #9FE5D4;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
+            border-color: #FF5722;
+        }
+
+        /* Info Section */
+        .info-section-preview {
+            background: rgba(92, 219, 171, 0.08);
+            border-left: 4px solid #5CDBAB;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 400px;
+        }
+
+        .info-section-preview h4 {
+            font-family: Georgia, Garamond, serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #5CDBAB;
+        }
+
+        .info-section-preview p {
+            font-size: 14px;
+            color: #E8ECEB;
+        }
+
+        /* Geometric Accents */
+        .geometric-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .geometric-demo {
+            height: 120px;
+            background: rgba(26, 90, 111, 0.6);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(92, 219, 171, 0.3);
+        }
+
+        .chevron {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+        }
+
+        .chevron-mint {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            background: #5CDBAB;
+            opacity: 0.3;
+        }
+
+        .chevron-orange {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            background: #FF5722;
+            opacity: 0.2;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding-top: 60px;
+            border-top: 1px solid rgba(92, 219, 171, 0.2);
+            color: #9FE5D4;
+            font-size: 14px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .typography-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .palette {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hackathon Info Hub</h1>
+            <p class="subtitle">Design System & Mood Board</p>
+        </header>
+
+        <!-- Color Palette -->
+        <section class="section">
+            <div class="section-title">Color Palette</div>
+            <div class="palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #0F3B4C; color: #F5F8F7;">Primary</div>
+                    <div class="color-info">
+                        <div class="color-name">Deep Teal</div>
+                        <div class="color-hex">#0F3B4C</div>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #1A5A6F; color: #F5F8F7;">Secondary</div>
+                    <div class="color-info">
+                        <div class="color-name">Dark Teal</div>
+                        <div class="color-hex">#1A5A6F</div>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #5CDBAB; color: #0F3B4C;">Accent</div>
+                    <div class="color-info">
+                        <div class="color-name">Mint Turquoise</div>
+                        <div class="color-hex">#5CDBAB</div>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #9FE5D4; color: #0F3B4C;">Light</div>
+                    <div class="color-info">
+                        <div class="color-name">Soft Mint</div>
+                        <div class="color-hex">#9FE5D4</div>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #FF5722; color: #F5F8F7;">Alert</div>
+                    <div class="color-info">
+                        <div class="color-name">Energy Orange</div>
+                        <div class="color-hex">#FF5722</div>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #F5F8F7; color: #0F3B4C;">Light</div>
+                    <div class="color-info">
+                        <div class="color-name">Soft White</div>
+                        <div class="color-hex">#F5F8F7</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Typography -->
+        <section class="section">
+            <div class="section-title">Typography</div>
+            <div class="typography-grid">
+                <div class="typography-group">
+                    <h3>Headings</h3>
+                    <div class="type-example">
+                        <div class="type-label">H1 — 48px, Bold</div>
+                        <div class="h1-example">Welcome Back</div>
+                    </div>
+                    <div class="type-example">
+                        <div class="type-label">H2 — 36px, Bold</div>
+                        <div class="h2-example">Event Details</div>
+                    </div>
+                    <div class="type-example">
+                        <div class="type-label">H3 — 28px, Bold</div>
+                        <div class="h3-example">Featured Reels</div>
+                    </div>
+                </div>
+                <div class="typography-group">
+                    <h3>Body & UI</h3>
+                    <div class="type-example">
+                        <div class="type-label">Paragraph — 16px</div>
+                        <div class="body-example">Join hundreds of makers and builders at our hackathon. Build something amazing.</div>
+                    </div>
+                    <div class="type-example">
+                        <div class="type-label">Small Text — 14px</div>
+                        <div class="small-example">Event Date: March 15-17 • Location: TBD • Prizes: €2,500</div>
+                    </div>
+                    <div class="type-example">
+                        <div class="type-label">Button Text — 16px, Medium, Uppercase</div>
+                        <div style="margin-top: 12px;">
+                            <button class="btn btn-primary">Register Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Components -->
+        <section class="section">
+            <div class="section-title">Key Components</div>
+            <div class="components-grid">
+                <!-- Search Bar -->
+                <div class="component-card">
+                    <div class="component-preview">
+                        <div class="search-preview">
+                            <input type="text" class="search-bar" placeholder="Search YouTube, Instagram, TikTok...">
+                        </div>
+                    </div>
+                    <div class="component-info">
+                        <div class="component-name">Search Bar</div>
+                        <div class="component-desc">Pill-shaped, 48px height. Mint border on focus, orange accent on active.</div>
+                    </div>
+                </div>
+
+                <!-- Reel Card -->
+                <div class="component-card">
+                    <div class="component-preview">
+                        <div class="card-example">
+                            <div class="card-image"></div>
+                            <div class="card-content">
+                                <div class="card-title">Amazing Build</div>
+                                <div class="card-meta">@username • 2.4K views</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="component-info">
+                        <div class="component-name">Reel Cards</div>
+                        <div class="component-desc">300×400px, 3-4 per row on desktop. Hover for subtle lift effect.</div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="component-card">
+                    <div class="component-preview">
+                        <div class="buttons-preview">
+                            <button class="btn btn-primary">Register</button>
+                            <button class="btn btn-secondary">Learn More</button>
+                        </div>
+                    </div>
+                    <div class="component-info">
+                        <div class="component-name">Buttons</div>
+                        <div class="component-desc">Primary (mint) and secondary (outlined). Scale on hover.</div>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="component-card">
+                    <div class="component-preview">
+                        <div class="info-section-preview">
+                            <h4>⏰ Event Date</h4>
+                            <p>March 15-17, 2026</p>
+                        </div>
+                    </div>
+                    <div class="component-info">
+                        <div class="component-name">Info Sections</div>
+                        <div class="component-desc">Left border accent. Use for dates, registration, scores, sponsors.</div>
+                    </div>
+                </div>
+
+                <!-- Geometric Elements -->
+                <div class="component-card">
+                    <div class="component-preview">
+                        <div class="geometric-examples" style="width: 100%; gap: 12px;">
+                            <div class="geometric-demo">
+                                <div class="chevron chevron-mint" style="top: 20px; left: 35px;"></div>
+                            </div>
+                            <div class="geometric-demo">
+                                <div class="chevron chevron-orange" style="top: 20px; right: 35px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="component-info">
+                        <div class="component-name">Geometric Accents</div>
+                        <div class="component-desc">Diagonal shapes in mint or orange. 8-12% opacity for subtle backgrounds.</div>
+                    </div>
+                </div>
+
+                <!-- Card Grid -->
+                <div class="component-card">
+                    <div class="component-preview">
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                            <div class="card-example"></div>
+                            <div class="card-example"></div>
+                            <div class="card-example"></div>
+                        </div>
+                    </div>
+                    <div class="component-info">
+                        <div class="component-name">Reel Grid Layout</div>
+                        <div class="component-desc">3-4 columns on desktop, 2 on tablet, 1 on mobile. 20px gap between cards.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Design Guidelines -->
+        <section class="section">
+            <div class="section-title">Design Guidelines</div>
+            <div class="typography-group" style="grid-column: 1 / -1;">
+                <h3>Light Mode First, Dark Mode Ready</h3>
+                <p style="margin-bottom: 16px;">Primary design is in light mode with deep teal backgrounds and mint accents. Dark mode uses slightly darker backgrounds (#0D2F39 for background, #1A4A5A for surfaces) with increased contrast for text and subtle borders.</p>
+
+                <h3 style="margin-top: 24px;">Spacing & Grid</h3>
+                <p style="margin-bottom: 16px;">Use the spacing scale (8px, 16px, 24px, 40px, 64px) consistently. Container max-width 1200px. Mobile: full width with 16px padding.</p>
+
+                <h3 style="margin-top: 24px;">Imagery & Overlays</h3>
+                <p style="margin-bottom: 16px;">All images use a dark teal gradient overlay (40-60% opacity). This ensures text legibility and maintains design consistency across photos.</p>
+
+                <h3 style="margin-top: 24px;">Interactivity</h3>
+                <p>Hover states: cards lift slightly (transform: translateY(-4px)), shadows deepen. Buttons scale to 1.02. All transitions: 0.3s ease.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>🎨 Design System v1.0 • Built for Hack Club Hackathon Hub</p>
+        </footer>
+    </div>
+</body>
+</html>
