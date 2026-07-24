@@ -1,48 +1,66 @@
-# Design System — Hackathon Info Hub
+# Design System — Hackathon Info Hub (v2)
+
+Light, calm, EEE-society. Near-white paper, deep teal ink, one mint accent, and
+one signal color used sparingly. Circuit motifs (traces, pin headers,
+silkscreen labels) carry the electronics identity instead of neon/cyberpunk
+cliché.
 
 ## Color Palette
 
-### Primary Colors
-- **Deep Teal** - `#0F3B4C` — Main background, text contrast
-- **Dark Teal** - `#1A5A6F` — Secondary backgrounds, borders
-- **Mint Turquoise** - `#5CDBAB` — Accents, CTAs, highlights
-- **Soft Mint** - `#9FE5D4` — Subtle accents, overlays
+### Ink / Text
+- **Ink Teal** - `#0F3B4C` — Headings, primary text, primary buttons
+- **Ink Soft** - `#3E5C68` — Secondary/body text
+- **Teal** - `#175A70` — Links, secondary emphasis
 
-### Accent Colors
-- **Energy Orange** - `#FF5722` — Important alerts, featured events
-- **Soft White** - `#F5F8F7` — Main text, backgrounds
-- **Light Gray** - `#E8ECEB` — Subtle dividers, borders
+### Brand Accent
+- **Mint** - `#5CDBAB` — Fills, focus rings, stat-tile rail
+- **Deep Mint** - `#1D9E77` — Accent text, eyebrows, "live" badges (readable on white, unlike raw mint)
+
+### Signal (use once per view — never more)
+- **Signal Orange** - `#F4652E` — The single most urgent thing on a page: a deadline, "live now". Two oranges on one view means neither one matters anymore.
+
+### Surfaces
+- **Paper** - `#FAFCFB` — Page background
+- **Card** - `#FFFFFF` — Card/panel background
+- **Line** - `#E3ECE9` — Hairline borders
+- **Line Strong** - `#B9CFC9` — Dashed/wireframe borders
 
 ### Dark Mode (Secondary)
-- **Background** - `#0D2F39`
-- **Surface** - `#1A4A5A`
+- **Paper** - `#0D2432`
+- **Card** - `#123240`
 - **Text** - `#F0F4F3`
+- **Ink Soft (dark)** - `#9FBFC7`
 
 ---
 
 ## Typography
 
 ### Headings
-**Font Family:** Georgia, Garamond, Serif (elegant, educational feel)
-- **H1** - 48px, Bold, Line-height 1.2
-- **H2** - 36px, Bold, Line-height 1.3
-- **H3** - 28px, Bold, Line-height 1.4
-- **H4** - 20px, Bold, Line-height 1.4
+**Font Family:** Fraunces / Georgia (serif) — carries the ElecSoc character
+- **H1 (Display)** - clamp(38–56px), weight 600, line-height 1.15, letter-spacing -0.01em
+- **H2** - 30px, weight 600, line-height 1.2
+- **H3** - 21px, weight 600, line-height 1.3
+- **H4** - 18px, weight 600
 
-### Body Text
-**Font Family:** Inter, -apple-system, sans-serif (clean, modern)
-- **Paragraph** - 16px, Regular, Line-height 1.6
-- **Small** - 14px, Regular, Line-height 1.5
-- **Button** - 16px, Medium, Uppercase
+### Body & UI
+**Font Family:** Inter, -apple-system, sans-serif — neutral, readable
+- **Body** - 16px, regular, line-height 1.6
+- **Small** - 13px, regular
+- **Buttons** - 14px, semibold
+
+### Monospace ("Silkscreen")
+**Font Family:** JetBrains Mono, Cascadia Code, Consolas
+- Reserved strictly for **metadata**: eyebrows, filter chips, timestamps, reel counts, stat labels
+- Eyebrows: 11px, uppercase, letter-spacing 0.12em, color Deep Mint
+- Never used for body copy or headings
 
 ---
 
 ## Layout & Spacing
 
 ### Grid System
-- **Container Width** - 1200px max
-- **Columns** - 12-column grid
-- **Gutter** - 24px
+- **Container Width** - 1060px max
+- **Gutter** - 20px (desktop), 14px (mobile)
 - **Mobile** - Full width with 16px padding
 
 ### Spacing Scale
@@ -52,75 +70,96 @@
 - **lg** - 40px
 - **xl** - 64px
 
+### Section rhythm
+Sections stack with a hairline `border-top` (`--color-line`) and 64–72px of
+padding — no filled background bands. Whitespace *is* the layout; if a
+section feels busy, remove a border before adding a fill.
+
 ---
 
 ## Components
 
-### Cards (Reel Display)
-- **Dimensions** - 300px × 400px (ideal for Instagram/TikTok aspect ratio)
-- **Border Radius** - 12px
-- **Shadow** - `0 4px 12px rgba(15, 59, 76, 0.15)`
-- **Padding** - 16px
-- **Hover** - Slight lift (transform: translateY(-4px)), shadow deepens
-- **Grid** - 3-4 cards per row (responsive)
+### Reel Cards (Live Build Feed)
+- **Aspect ratio** - 4:5 thumbnail (matches Reels/Shorts/TikTok)
+- **Border Radius** - 14px
+- **Shadow** - `0 1px 2px rgba(15,59,76,.05), 0 8px 24px rgba(15,59,76,.06)`
+- **Platform badge** - small mono pill, top-left of thumbnail (`YOUTUBE` / `INSTAGRAM` / `TIKTOK`)
+- **Play icon** - white circle, centered, subtle drop shadow
+- **Hover** - lift (translateY(-3px)), shadow deepens
+- **Grid** - 4 cards/row desktop → 3 tablet → 2 small tablet → 1 mobile
 
 ### Search Bar
-- **Height** - 48px
-- **Border Radius** - 24px (pill shape)
-- **Border** - 2px solid #5CDBAB
-- **Background** - #F5F8F7
-- **Padding** - 12px 24px
-- **Focus State** - Border color → #FF5722, shadow: 0 0 0 3px rgba(255, 87, 34, 0.1)
+- **Shape** - pill (border-radius: 999px), not a plain rectangle
+- **Border** - 1px solid Line, focus → Mint border + soft mint glow (`0 0 0 4px rgba(92,219,171,.18)`)
+- **Icon** - inline search icon, ink-soft stroke
+- **Pairs with** platform filter chips directly beneath it
+
+### Filter Chips ("Silkscreen labels")
+- Mono font, 12px, pill shape
+- Inactive: white background, Line border, ink-soft text
+- Active: solid Ink Teal background, white text
 
 ### Buttons
-- **Primary** - Background: #5CDBAB, Text: #0F3B4C, Border-radius: 8px, Padding: 12px 32px
-- **Secondary** - Background: transparent, Border: 2px solid #5CDBAB, Text: #5CDBAB
-- **Hover** - Background: #9FE5D4 (primary), scale: 1.02
+- **Primary** - Ink Teal fill, white text
+- **Mint** - Mint fill, ink text (secondary CTA, more energetic)
+- **Ghost** - transparent, Line border, ink text
+- **Link** - no fill, Deep Mint text, used inline ("Rules & judging →")
+- **Hover** - translateY(-1px) + background shift, no scale gimmicks
 
-### Event Info Sections
-- **Background** - Light tint: rgba(92, 219, 171, 0.08)
-- **Border-left** - 4px solid #5CDBAB
-- **Padding** - 24px
-- **Border-radius** - 8px
+### Stat Tiles
+- White card, hairline border, 2px accent "rail" across the top (Mint by default, Orange for the one signal stat per view)
+- Serif number (38px, weight 600) + mono uppercase label beneath
+
+### Event Info Tiles
+- White card, icon + serif H4 + small body text
+- One tile may carry the `is-signal` treatment (orange heading, orange-tinted border) for the single most urgent item — e.g. registration deadline
 
 ---
 
-## Design Elements
+## Circuit Motifs (the EEE identity)
 
-### Geometric Accents
-- **Diagonal Chevrons** - 45° angle shapes, Mint or Orange
-- **Placement** - Section dividers, backgrounds, borders
-- **Opacity** - 8-12% for subtle effect
+Keep these subtle — decorative, never competing with content.
 
-### Photography Integration
-- **Overlay** - Dark teal gradient 40-60% opacity over images
-- **Border Treatment** - Angled corners (clip-path) or frame within diagonal shape
-- **Aspect Ratio** - Prefer 16:9 for full-width hero sections
+### Trace Dividers
+- SVG line paths at 10–18% opacity (Ink Teal stroke), right-angle bends like a PCB trace
+- Terminate in a small solid dot (Mint or Orange) marking a "component"
 
-### Icons
-- **Style** - Minimal line-work (stroke: 2px)
-- **Size** - 24px (standard), 32px (large), 16px (small)
-- **Color** - Primary: #5CDBAB, Secondary: #0F3B4C
+### Pin Headers
+- Rows of small dots (7px circles, Ink Teal at 22% opacity)
+- One dot "hot" (solid Deep Mint) marks progress/active state — used for step indicators, timelines
+
+### Silkscreen Labels
+- Mono, uppercase, letter-spacing 0.06–0.12em
+- Used for chips, badges, stat labels, eyebrows — the "printed" details on a circuit board, not the board itself
 
 ---
 
 ## Dark Mode Adjustments
 
-- Text: #F0F4F3 (lighter)
-- Backgrounds: darken by 15-20%
-- Card shadows: rgba(0, 0, 0, 0.4)
-- Borders: slightly more visible (higher contrast)
+- Paper → `#0D2432`, Card → `#123240`
+- Text → `#F0F4F3`, Ink Soft → `#9FBFC7`
+- Deep Mint promoted to primary accent text color (better contrast than teal on dark)
+- Shadows shift from soft/light to `rgba(0,0,0,...)`, slightly stronger
 
 ---
 
 ## Responsive Breakpoints
 
-- **Mobile** - 320px to 768px
-- **Tablet** - 768px to 1024px
+- **Mobile** - up to 480px
+- **Small tablet** - up to 760px
 - **Desktop** - 1024px and above
 
-### Card Grid
+### Reel Grid
 - **Mobile** - 1 column
-- **Tablet** - 2 columns
-- **Desktop** - 3-4 columns
+- **Small tablet** - 2 columns
+- **Tablet/laptop** - 3 columns
+- **Desktop** - 4 columns
 
+---
+
+## Design Rules of Thumb
+
+1. **Whitespace is the layout.** Hairline borders and air, not boxes and fills.
+2. **One orange per view.** It marks the single most urgent thing — a deadline, a live event. More than one and nothing reads as urgent.
+3. **Traces stay quiet.** Circuit motifs at 10–18% opacity, decorative only.
+4. **Mono means metadata.** Never body copy or headings — timestamps, counts, chips only.
