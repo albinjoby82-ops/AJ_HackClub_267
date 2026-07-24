@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MakerLabs — UCD ElecSoc</title>
+<meta name="description" content="Everything you need for UCD ElecSoc MakerLabs — lab guides, the maker wiki, and a live feed of builds.">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="site.css">
+<style>
+    /* homepage-specific */
+
+    .hero {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 88px 24px 56px;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: clamp(34px, 5.5vw, 52px);
+        margin: 14px 0 18px;
+    }
+
+    .hero .lede {
+        color: var(--color-ink-soft);
+        max-width: 540px;
+        margin: 0 auto 32px;
+    }
+
+    .hero .search-bar { max-width: 540px; margin: 0 auto; text-align: left; }
+
+    .hero .chip-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
+
+    .trace-hero { display: block; margin: 40px auto 0; max-width: 620px; width: 100%; }
+
+    section.home { padding: 64px 0; border-top: 1px solid var(--color-line); }
+
+    .section-head { margin-bottom: 36px; }
+    .section-head .eyebrow { display: block; margin-bottom: 10px; }
+    .section-head p { max-width: 560px; }
+
+    /* stats */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 18px;
+    }
+
+    /* about */
+    .about-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .about-grid img {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid var(--color-line);
+        box-shadow: var(--card-shadow);
+    }
+
+    .about-copy blockquote {
+        font-family: var(--font-serif);
+        font-size: 24px;
+        line-height: 1.35;
+        color: var(--color-ink);
+        border-left: 3px solid var(--color-mint);
+        padding-left: 18px;
+        margin: 0 0 20px;
+    }
+
+    .about-copy p { color: var(--color-ink-soft); }
+    .about-copy ul { color: var(--color-ink-soft); padding-left: 22px; margin: 0 0 16px; }
+    .about-copy li { margin-bottom: 4px; }
+
+    /* lab cards */
+    .labs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 22px;
+    }
+
+    .lab-card {
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        position: relative;
+    }
+
+    .lab-poster {
+        aspect-ratio: 4 / 5;
+        overflow: hidden;
+        background: var(--color-accent-subtle);
+    }
+
+    .lab-poster img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .lab-card:hover .lab-poster img { transform: scale(1.02); }
+
+    .lab-num {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--color-ink);
+        padding: 4px 9px;
+        border-radius: 999px;
+    }
+
+    .lab-badge-new {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        background: var(--color-orange);
+        color: #fff;
+        padding: 4px 9px;
+        border-radius: 999px;
+    }
+
+    .lab-body { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+
+    .lab-title {
+        font-family: var(--font-serif);
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--color-ink);
+    }
+
+    .lab-blurb { font-size: 13px; color: var(--color-ink-soft); line-height: 1.55; flex: 1; }
+
+    .lab-open {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-mint-deep);
+    }
+
+    /* wiki tiles */
+    .wiki-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+    }
+
+    .wiki-tile {
+        background: var(--color-card);
+        border: 1px solid var(--color-line);
+        border-radius: var(--radius-lg);
+        padding: 20px 22px;
+        text-decoration: none;
+        box-shadow: var(--shadow-sm);
+        transition: transform var(--transition-base), border-color var(--transition-base);
+    }
+
+    .wiki-tile:hover { transform: translateY(-3px); border-color: var(--color-mint); }
+
+    .wiki-num {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        color: var(--color-mint-deep);
+    }
+
+    .wiki-tile h3 {
+        font-family: var(--font-serif);
+        font-size: 18px;
+        color: var(--color-ink);
+        margin: 6px 0;
+    }
+
+    .wiki-tile p { font-size: 13px; color: var(--color-ink-soft); margin: 0; }
+
+    /* live feed placeholder */
+    .feed-soon {
+        border: 1px dashed var(--color-line-strong);
+        border-radius: var(--radius-lg);
+        padding: 40px 24px;
+        text-align: center;
+        color: var(--color-ink-soft);
+    }
+
+    .feed-soon .pins { justify-content: center; margin-bottom: 16px; }
+
+    .feed-soon .mono-tag {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-mint-deep);
+    }
+
+    footer.site-footer {
+        border-top: 1px solid var(--color-line);
+        padding: 40px 24px 56px;
+        text-align: center;
+        color: var(--color-ink-soft);
+        font-size: 13px;
+    }
+
+    footer.site-footer .mono-line {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        margin-top: 10px;
+        color: var(--color-ink-soft);
+    }
+
+    footer.site-footer a { color: var(--color-mint-deep); text-decoration: none; font-weight: 600; }
+
+    @media (max-width: 760px) {
+        .about-grid { grid-template-columns: 1fr; }
+        .hero { padding: 56px 20px 40px; }
+        section.home { padding: 48px 0; }
+    }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="index.html">MakerLabs <span class="mono-sub">UCD ElecSoc</span></a>
+        <nav class="topbar-nav">
+            <a href="index.html" class="is-active">Home</a>
+            <a href="learn.html">Learn</a>
+            <a href="learn.html#/docs/Wiki/index.md">Wiki</a>
+        </nav>
+    </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+    <span class="eyebrow">UCD ElecSoc · MakerLabs '26</span>
+    <h1>Inspire people to bring crazy ideas to life.</h1>
+    <p class="lede">Twice a month, students from all backgrounds come to learn the hard and soft skills of engineering — microcontrollers to motors, soldering to 3D printing. Space, parts and funding provided. Cert at the end 😁</p>
+
+    <form class="search-bar" id="homeSearch">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3E5C68" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        </svg>
+        <input type="search" id="homeSearchInput" placeholder="Search the labs & wiki — PWM, servo, soldering…">
+    </form>
+
+    <div class="chip-row">
+        <a class="chip" href="learn.html#/docs/Lab1/index.md">LAB GUIDES</a>
+        <a class="chip" href="learn.html#/docs/Wiki/index.md">WIKI</a>
+        <a class="chip" href="learn.html#/docs/Wiki/05_Programming/05_00_CommonCodingErrors.md">FIX MY CODE</a>
+    </div>
+
+    <svg class="trace-hero" viewBox="0 0 640 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 30 H150 L172 14 H296" stroke="#0F3B4C" stroke-opacity=".16" stroke-width="2"/>
+        <circle cx="304" cy="14" r="5" fill="#5CDBAB"/>
+        <path d="M318 14 H420 L442 30 H560" stroke="#0F3B4C" stroke-opacity=".16" stroke-width="2"/>
+        <circle cx="568" cy="30" r="5" fill="#F4652E"/>
+        <path d="M578 30 H640" stroke="#0F3B4C" stroke-opacity=".16" stroke-width="2"/>
+    </svg>
+</header>
+
+<!-- ============ STATS ============ -->
+<section class="home" style="padding-top:0; border-top:none;">
+    <div class="container">
+        <div class="stats-row">
+            <div class="stat"><div class="stat-num">2×</div><div class="stat-label">Labs / month</div></div>
+            <div class="stat"><div class="stat-num">4</div><div class="stat-label">MakerLabs so far</div></div>
+            <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Pages of guides</div></div>
+            <div class="stat"><div class="stat-num">Free</div><div class="stat-label">+ pizza + cert</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="home">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-copy">
+                <span class="eyebrow">About MakerLabs</span>
+                <blockquote>"Inspire people to bring crazy ideas to life."</blockquote>
+                <p>ElecSoc has one mission — so in 2025 we launched <strong>MakerLabs</strong>, led by <a href="https://www.linkedin.com/in/joebiju456/" target="_blank" rel="noopener" style="color: var(--color-mint-deep);">Joe Biju</a>. Twice a month, we invite students from <em>all backgrounds</em> to come learn the hard and soft skills needed in engineering:</p>
+                <ul>
+                    <li>microcontrollers to motors,</li>
+                    <li>soldering to 3D printing,</li>
+                    <li>programming to digital design, and more!</li>
+                </ul>
+                <p>We want to show people what elec engineering is about 🦾 The kicker? We provide all the space and funding needed to make learning accessible to all. And of course, a nice cert at the end 😁</p>
+            </div>
+            <img src="content/docs/assets/images/MakerLab1-Image1.jpeg" alt="MakerLab 1 — RGB Controllers lecture in progress" loading="lazy">
+        </div>
+    </div>
+</section>
+
+<!-- ============ LABS ============ -->
+<section class="home">
+    <div class="container">
+        <div class="section-head">
+            <span class="eyebrow">Lab guides</span>
+            <h2>The MakerLabs</h2>
+            <p>Every lab is a hands-on workshop with full instructions here — tasks, wiring, code and post-lab notes. Beginners welcome at all of them.</p>
+        </div>
+
+        <div class="labs-grid">
+            <a class="lab-card card" href="learn.html#/docs/Lab1/index.md">
+                <div class="lab-poster">
+                    <span class="lab-num">LAB 01</span>
+                    <img src="content/docs/assets/images/MakerLab1-Poster.png" alt="MakerLab 1 poster" loading="lazy">
+                </div>
+                <div class="lab-body">
+                    <span class="lab-title">RGB Controllers</span>
+                    <span class="lab-blurb">Microcontrollers 101 with Arduino — PWM, colour mixing, and building your own pseudo-RGB LED strip.</span>
+                    <span class="lab-open">Open lab →</span>
+                </div>
+            </a>
+
+            <a class="lab-card card" href="learn.html#/docs/Lab2/index.md">
+                <div class="lab-poster">
+                    <span class="lab-num">LAB 02</span>
+                    <img src="content/docs/assets/images/MakerLab2-Poster.png" alt="MakerLab 2 poster" loading="lazy">
+                </div>
+                <div class="lab-body">
+                    <span class="lab-title">Signals to Speed <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-mint-deep);">FT. UCDFS</span></span>
+                    <span class="lab-blurb">Motor controllers and electromechanical motion — PWM speed control, H-bridges, servos, plus a UCD Formula Student guest talk.</span>
+                    <span class="lab-open">Open lab →</span>
+                </div>
+            </a>
+
+            <a class="lab-card card" href="learn.html#/docs/Lab3/index.md">
+                <div class="lab-poster">
+                    <span class="lab-num">LAB 03</span>
+                    <img src="content/docs/assets/images/MakerLab3-Poster.png" alt="MakerLab 3 poster" loading="lazy">
+                </div>
+                <div class="lab-body">
+                    <span class="lab-title">Servos &amp; Linkages</span>
+                    <span class="lab-blurb">RGB LEDs meet servos — angle mapping, mechanical linkages, a 2-DOF robotic arm and LCD menus.</span>
+                    <span class="lab-open">Open lab →</span>
+                </div>
+            </a>
+
+            <a class="lab-card card" href="learn.html#/docs/Lab5/index.md">
+                <div class="lab-poster">
+                    <span class="lab-num">LAB 05</span>
+                    <span class="lab-badge-new">NEWEST</span>
+                    <img src="content/docs/assets/images/MakerLab5-Poster.png" alt="MakerLab 5 poster" loading="lazy">
+                </div>
+                <div class="lab-body">
+                    <span class="lab-title">Good Waves, Bad Vibes</span>
+                    <span class="lab-blurb">Oscilloscopes demystified — generate AC waveforms, decode a secret message, and make oscilloscope music.</span>
+                    <span class="lab-open">Open lab →</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ============ WIKI ============ -->
+<section class="home">
+    <div class="container">
+        <div class="section-head">
+            <span class="eyebrow">The maker wiki</span>
+            <h2>Look it up once, use it forever</h2>
+            <p>The key lessons from every lab, collected in one place — so you never have to remember which lab covered what.</p>
+        </div>
+
+        <div class="wiki-grid">
+            <a class="wiki-tile" href="learn.html#/docs/Wiki/00_MustKnow/index.md">
+                <span class="wiki-num">SEC·00</span>
+                <h3>Must-Know</h3>
+                <p>Start here — the essentials before your first lab.</p>
+            </a>
+            <a class="wiki-tile" href="learn.html#/docs/Wiki/01_MakingAndManufacturing/index.md">
+                <span class="wiki-num">SEC·01</span>
+                <h3>Making &amp; Manufacturing</h3>
+                <p>Soldering and 3D printing, done safely and well.</p>
+            </a>
+            <a class="wiki-tile" href="learn.html#/docs/Wiki/02_Equipment/index.md">
+                <span class="wiki-num">SEC·02</span>
+                <h3>Equipment</h3>
+                <p>Power supplies, signal generators, multimeters, breadboards.</p>
+            </a>
+            <a class="wiki-tile" href="learn.html#/docs/Wiki/03_Components/index.md">
+                <span class="wiki-num">SEC·03</span>
+                <h3>Components</h3>
+                <p>Circuit elements, microcontrollers, resistors, LEDs, wires, motors.</p>
+            </a>
+            <a class="wiki-tile" href="learn.html#/docs/Wiki/04_Software/index.md">
+                <span class="wiki-num">SEC·04</span>
+                <h3>Software</h3>
+                <p>Arduino IDE 2, TinkerCAD and Python setup guides.</p>
+            </a>
+            <a class="wiki-tile" href="learn.html#/docs/Wiki/05_Programming/index.md">
+                <span class="wiki-num">SEC·05</span>
+                <h3>Programming</h3>
+                <p>Arduino program structure, C++ basics, and common coding errors.</p>
+            </a>
+            <a class="wiki-tile" href="learn.html#/docs/Wiki/11_EngineeringConcepts/index.md">
+                <span class="wiki-num">SEC·11</span>
+                <h3>Engineering Concepts</h3>
+                <p>The theory behind the builds — torque and more to come.</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ============ LIVE FEED (coming soon) ============ -->
+<section class="home">
+    <div class="container">
+        <div class="section-head">
+            <span class="eyebrow">Live build feed</span>
+            <h2>Builds from the community</h2>
+        </div>
+        <div class="feed-soon">
+            <div class="pins">
+                <span></span><span></span><span class="is-active" style="background:var(--color-mint-deep);opacity:1;"></span><span></span><span></span><span></span>
+            </div>
+            <p style="margin:0 0 6px; color: var(--color-ink);"><strong>Coming soon</strong> — a live feed of maker builds pulled from YouTube, Instagram and TikTok, searchable right from this page.</p>
+            <span class="mono-tag">STATUS · IN DEVELOPMENT</span>
+        </div>
+    </div>
+</section>
+
+<footer class="site-footer">
+    <p>MakerLabs is run by <a href="https://www.instagram.com/ucdelecsoc/" target="_blank" rel="noopener">UCD ElecSoc</a> — space, parts and funding provided, all backgrounds welcome.</p>
+    <div class="mono-line">UCD ELECSOC × HACK CLUB · <a href="https://github.com/UCDElecSoc/AJ_HackClub_267" target="_blank" rel="noopener">GITHUB</a></div>
+</footer>
+
+<script>
+    document.getElementById('homeSearch').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var q = document.getElementById('homeSearchInput').value.trim();
+        if (q) location.href = 'learn.html#search=' + encodeURIComponent(q);
+    });
+</script>
+</body>
+</html>
