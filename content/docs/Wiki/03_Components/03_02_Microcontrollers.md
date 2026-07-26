@@ -1,33 +1,67 @@
 ---
 title: Microcontrollers
 layout: default
-parent: 3. Components
-nav_order: 2
+parent: 4. Components
+nav_order: 1
 ---
 # Microcontrollers
 
-Small, self-contained computers on a single chip designed to control hardware. They read inputs (sensors, buttons) and control outputs (LEDs, motors) in embedded systems.
+Microcontrollers are small computers designed to control hardware directly. A program is stored in non-volatile memory and normally starts running as soon as the device powers up.
 
-## Arduino Uno
-One of the most popular Arduino boards, and the type we use in the MakerLabs. 
-![Arduino Uno](../assets/images/Wiki10_Microcontrollers-ArduinoUno.svg)
+They are well suited to reading buttons and sensors, producing precisely timed outputs, controlling LEDs, communicating with other chips, and operating embedded devices.
 
-*Website: Arduino UNO*
+## Microcontroller, development board, or SBC?
 
-[https://docs.arduino.cc/hardware/uno-rev3/](https://docs.arduino.cc/hardware/uno-rev3/)
-## ESP32
-A powerful microcontroller with built-in Wi-Fi and Bluetooth.
-![ESP32](../assets/images/Wiki10_Microcontrollers-ESP32.webp)
+| Term | Meaning |
+| --- | --- |
+| Microcontroller | The integrated circuit containing the processor, memory, and peripherals |
+| Development board | A board that makes a microcontroller easier to power, program, and connect |
+| Single-board computer | A complete computer that normally runs an operating system |
 
-*(Image: Mouser Electronics)*
+An ATmega328P is a microcontroller. An Arduino Uno R3 is a development board containing one. An ESP32-C6 is a microcontroller commonly supplied on a development board. A Raspberry Pi 5 is a single-board computer.
 
-*Website: ESP32*
+## Common microcontroller features
 
-[https://www.espressif.com/](https://www.espressif.com/en/products/socs/esp32#:~:text=ESP32%20is%20highly%2Dintegrated%20with,Circuit%20Board%20(PCB)%20requirements.)
-## Raspberry Pi
-A small, low-cost single-board computer (not just a microcontroller). It can run an operating system like Linux and is used for programming, automation, and multimedia projects.
-![Raspberry Pi](../assets/images/Wiki10_Microcontrollers-RaspberryPi.webp)
+- Digital inputs and outputs
+- Analogue-to-digital converters
+- Timers and PWM outputs
+- UART, I²C, and SPI communication
+- Interrupts
+- Flash program memory and RAM
+- Watchdogs and low-power modes
+- Wireless hardware on some devices
 
-*Website: Raspberry Pi*
+## Choosing a board
 
-[https://www.raspberrypi.com/](https://www.raspberrypi.com/)
+Consider:
+
+- Logic voltage: commonly `5 V` or `3.3 V`
+- Number and type of GPIO pins
+- Analogue inputs and true analogue outputs
+- Timers and PWM channels
+- Memory and processing requirements
+- Wi-Fi, Bluetooth, Zigbee, or Thread requirements
+- Available libraries and documentation
+- Debugging and programming interfaces
+- Power consumption
+
+{: .warning}
+> GPIO pins are logic connections, not general-purpose power supplies. Use resistors with LEDs and driver circuits for motors, relays, heaters, and other loads.
+
+## GPIO modes
+
+A GPIO pin may be configured as:
+
+- **Input:** reads an external logic level
+- **Input pull-up/pull-down:** reads a signal while an internal resistor provides a default state
+- **Output:** drives a digital high or low
+- **PWM:** rapidly switches to approximate variable power
+- **Peripheral function:** used by UART, I²C, SPI, or another hardware block
+- **Analogue input:** feeds an ADC where supported
+
+Never assume every pin supports every function. Check the board pinout and chip documentation.
+
+## Recommended guides
+
+- [Arduino Uno R3](03_03_ArduinoUnoR3.md) — beginner-friendly `5 V` development board
+- [ESP32-C6](03_04_ESP32C6.md) — `3.3 V` wireless microcontroller platform

@@ -4,8 +4,16 @@ layout: default
 nav_order: 10
 ---
 
-Many times across the labs you will need to do the same thing again, and it would be a pain to figure out which lab it's from.
+# MakerLabs Wiki
 
-So, a copy of the **key lessons** will be included in this Wiki.
+The MakerLabs Wiki collects the practical knowledge used across our workshops. Use it to prepare for a lab, refresh something you have forgotten, or troubleshoot a project.
 
-Seem the Table of Contents below to jump to them.
+If you are new to electronics, begin with **1. Safety & Fundamentals**. Otherwise, choose a section from the navigation:
+
+- **Safety & Fundamentals** — the essential knowledge needed before building
+- **Fabrication & Assembly** — soldering, 3D printing, and workshop practices
+- **Electronics & Test Equipment** — common test and prototyping equipment
+- **Components** — the parts used to build circuits and mechanisms
+- **Software** — installing and using development tools
+- **Programming** — Arduino and C++ fundamentals
+- **Engineering Concepts** — explanations of useful engineering ideas

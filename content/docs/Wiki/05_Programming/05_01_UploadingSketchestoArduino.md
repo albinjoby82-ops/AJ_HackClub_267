@@ -1,9 +1,11 @@
 ---
 title: Uploading Sketches to Arduino
 layout: default
-parent: 5. Programming
+parent: 6. Programming
 nav_order: 1
 ---
+
+# Uploading Sketches to Arduino
 
 *A full tutorial with walk-through of uploading a sketch, handling errors and best practices for smoother uploads will be released soon. Please refer to [docs.arduino.cc](https://docs.arduino.cc/) for general Arduino help*
 

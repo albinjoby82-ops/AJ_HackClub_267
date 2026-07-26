@@ -1,9 +1,12 @@
 ---
 title: Using Resistors
 layout: default
-parent: 3. Components
+parent: 4. Components
 nav_order: 3
+draft: true
 ---
+
+# Using Resistors
 
 *A full tutorial on using a reading resistor bands, choosing the correct resistor, and how resistors affect circuits will be released soon. The following is a copy of the lab instructions from EEEN20020. All rights reserved.*
 
@@ -12,4 +15,4 @@ nav_order: 3
 *File: EEEN20020 AUT24 - Lab1_rev2*
 ----
 *Module: EEEN20020*
-![ENG329 Power Supply Instructions - EEEN20020](../assets/images/Wiki03_Resistors-EEEN20020.png)
+![ENG329 Power Supply Instructions - EEEN20020](../../assets/images/Wiki03_Resistors-EEEN20020.png)
