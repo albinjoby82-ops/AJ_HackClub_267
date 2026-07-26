@@ -1,8 +1,9 @@
 ---
 title: Motors
 layout: default
-parent: 3. Components
+parent: 4. Components
 nav_order: 6
+draft: true
 ---
 # Motors
 Devices that convert electrical energy into mechanical motion. They are commonly used in robotics and automation.

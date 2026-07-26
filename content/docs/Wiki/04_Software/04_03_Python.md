@@ -1,7 +1,7 @@
 ---
 title: Setting up Python
 layout: default
-parent: 4. Software
+parent: 5. Software
 nav_order: 3
 ---
 
@@ -19,7 +19,7 @@ The bridge simply translates messages between hardware and the web app.
 
 ---
 
-# Setting up Python
+## Setting up Python
 
 This guide is for **Windows users**.
 
@@ -73,4 +73,4 @@ We recommend installing Python using PowerShell so that it is automatically adde
 
 ---
 
-# You're done!
+## You're done!

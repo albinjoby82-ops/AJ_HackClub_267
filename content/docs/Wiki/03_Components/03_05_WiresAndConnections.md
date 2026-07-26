@@ -1,8 +1,9 @@
 ---
 title: Pins (Wires and Connections)
 layout: default
-parent: 3. Components
+parent: 4. Components
 nav_order: 5
+draft: true
 ---
 # Pins
 Connection points on microcontrollers or boards. Pins are used to send or receive signals and can be digital, analog, power (VCC), or ground (GND).

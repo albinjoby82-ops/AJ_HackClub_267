@@ -1,8 +1,9 @@
 ---
 title: Basic Circuit Elements
 layout: default
-parent: 3. Components
+parent: 4. Components
 nav_order: 1
+draft: true
 ---
 
 # Circuit

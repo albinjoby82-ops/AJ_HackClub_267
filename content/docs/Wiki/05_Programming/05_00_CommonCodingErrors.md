@@ -1,7 +1,7 @@
 ---
 title: Common Errors
 layout: default
-parent: 5. Programming
+parent: 6. Programming
 nav_order: 0
 ---
 
@@ -33,7 +33,7 @@ nav_order: 0
 *	In the Arduino IDE:
 *	Tools → Board → Arduino Uno
 
-# Syntax Errors (Code Won’t Compile)
+## Syntax Errors (Code Won’t Compile)
 ## ❌ Missing Semicolon (;)
 ### Symptoms
 *	Red error messages
