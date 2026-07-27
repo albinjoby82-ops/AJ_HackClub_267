@@ -1,53 +1,68 @@
 ---
-title: C++ Libraries
+title: Functions and Libraries
 layout: default
 parent: 6. Programming
-nav_order: 4
+nav_order: 6
 ---
 
-# Libraries
+# Functions and Libraries
 
-Pre-written code collections that add extra features and simplify programming.
+Functions give a useful name to a piece of behaviour and prevent repeated code.
 
-## #include &lt;Servo.h&gt;
-
-Includes the Servo library, which provides built-in functions to control servo motors easily in Arduino programs.
-
-### Servo code
-
-**Setting up a servo**
-```cpp
-Servo myServo1;
-```
-Creates a Servo object named myServo1.
-This object represents one physical servo motor in the code.
-
-**Next we must tell the Arduino where the servo is attached.**
-```cpp
-myServo1.attach(9, 500, 2500);
-```
-
-Connects the servo to pin 9.
-* 500 → minimum pulse width (microseconds)
-* 2500 → maximum pulse width (microseconds)
-
-These values help define the servo’s movement range and improve accuracy.
-
-**Using the servo**
+## A function with no return value
 
 ```cpp
-myServo1.write(0);
+void setLed(bool on) {
+  digitalWrite(9, on ? HIGH : LOW);
+}
 ```
-Moves the servo to 0 degrees.
 
-{: .tip}
-  > The value inside the myServo.write() function does not have to be a fixed number, you could give it a variable.
+Call it with:
 
+```cpp
+setLed(true);
+```
 
-*A full tutorial with all data types, examples, and when to use them will be released soon. Please refer to [docs.arduino.cc](https://docs.arduino.cc/) for general Arduino help*
+## A function that returns a value
 
-*Arduino Language Reference Glossary*
-----
-*Website: docs.arduino.cc*
+```cpp
+int readPercentage(int pin) {
+  int raw = analogRead(pin);
+  return map(raw, 0, 1023, 0, 100);
+}
+```
 
-[https://docs.arduino.cc/language-reference/#variables/](https://docs.arduino.cc/language-reference/#variables))
+## Scope
+
+A variable declared inside a function is normally available only inside that function. A global variable is available throughout the sketch, but excessive global state makes programs harder to understand.
+
+## Libraries
+
+A library contains reusable code for a device or task.
+
+```cpp
+#include <Servo.h>
+
+Servo arm;
+
+void setup() {
+  arm.attach(9);
+  arm.write(90);
+}
+
+void loop() {}
+```
+
+Install third-party libraries through Arduino IDE's Library Manager. Check that:
+
+- The library supports your board
+- Examples match your hardware
+- Pin and voltage assumptions are correct
+- You do not have conflicting libraries with the same header name
+
+{: .warning}
+> Servo pulse limits vary. Do not copy extreme pulse-width values without checking the servo and mechanism.
+
+## Design challenge
+
+Take a long `loop()` and extract functions named after intentions, such as `readControls()`, `updateMotor()` and `showStatus()`.

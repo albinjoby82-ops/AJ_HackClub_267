@@ -7,47 +7,74 @@ nav_order: 17
 
 # Sensors and Modules
 
-Sensors convert a physical property—such as temperature, light, distance, force, motion, or pressure—into an electrical signal or digital reading.
+Sensors convert temperature, light, distance, force, motion or another physical property into an electrical signal or digital reading.
 
-A bare sensor may require biasing, amplification, calibration, and protection. A sensor **module** often adds support components and an easier connector, but its voltage and pinout must still be checked.
+A bare sensor may require extra components and calibration. A module often adds those parts and an easier connector, but its voltage and pinout still need checking.
 
-## Common output types
+## Common sensor types
+
+| Sensor | Typical use | Typical output |
+| --- | --- | --- |
+| Photoresistor | Light level | Variable resistance |
+| Potentiometer | Position or user control | Analogue voltage |
+| Thermistor | Temperature | Variable resistance |
+| Hall sensor | Magnet or current detection | Analogue or digital |
+| Ultrasonic module | Distance | Timed pulse |
+| IMU | Acceleration and rotation | I²C or SPI |
+| Digital temperature sensor | Temperature | One-wire, I²C or SPI |
+
+## Output interfaces
 
 | Output | How it is read |
 | --- | --- |
 | Analogue voltage | ADC input |
-| Variable resistance | Voltage divider or measurement circuit |
-| Digital high/low | GPIO input |
-| Pulse or frequency | Timer, interrupt, or pulse measurement |
-| I²C | Shared two-wire digital bus |
-| SPI | Clocked digital bus with chip select |
-| UART | Serial transmit/receive |
+| Variable resistance | Voltage divider |
+| Digital HIGH/LOW | GPIO input |
+| Pulse or frequency | Timer or pulse measurement |
+| I²C | Shared clock and data bus |
+| SPI | Clocked bus with chip select |
+| UART | Serial transmit and receive |
 
 ## Before connecting
 
-1. Identify the exact part or module.
-2. Check supply and logic voltages.
-3. Confirm pin order; labels such as `VCC`, `GND`, `SDA`, and `SCL` are not always arranged alike.
+1. Identify the exact sensor or module.
+2. Check supply and logic voltage.
+3. Confirm pin order.
 4. Check whether pull-up resistors are already fitted.
 5. Check the expected signal range.
-6. Install the correct library only if it supports the exact device.
+6. Check whether the library supports the exact chip.
 
 {: .warning}
-> Some “5 V compatible” modules have a regulator for power but still expose `3.3 V`-only signal pins. Read the schematic or documentation rather than relying on a shop listing.
+> A module advertised as “5 V compatible” may have a regulator for its supply while still exposing `3.3 V`-only signal pins.
 
-## Calibration and testing
+## Calibration
 
-- Compare against a known reference.
-- Record units and conversion equations.
-- Test minimum and maximum expected conditions.
-- Account for warm-up, drift, noise, and sampling rate.
-- Reject physically impossible readings in software.
+Calibration converts a raw reading into a useful estimate.
+
+1. Compare the sensor against known conditions or a reference instrument.
+2. Record several points across the useful range.
+3. Fit or choose an appropriate conversion.
+4. Test conditions not used to create the conversion.
+5. Record units and expected uncertainty.
+
+## Sampling and filtering
+
+- Sample fast enough to capture meaningful change.
+- Avoid sampling so fast that repeated noise dominates.
+- Average or filter noisy readings when response delay is acceptable.
+- Reject impossible values and report sensor faults.
+- Keep sensor wiring away from motors and other noisy loads.
+
+## Mounting matters
+
+A perfectly coded sensor can still measure the wrong thing. Avoid heat from regulators, shadows from the enclosure, vibration from motors and blocked airflow.
 
 ## Common problems
 
 - Wrong I²C address
 - Missing common ground
-- Bus pull-ups connected to the wrong voltage
-- Analogue signal outside ADC range
-- Sensor mounted where it measures heat, vibration, or light from the project itself
-- Library intended for a similar but different chip
+- Pull-ups connected to the wrong voltage
+- Analogue output outside ADC range
+- Similar-looking but different chip
+- Incorrect units or conversion
+- Self-heating or poor mounting

@@ -1,13 +1,13 @@
 ---
 title: 4. Components
 layout: default
-parent: MakerLabs Wiki
+parent: Wiki
 nav_order: 4
 ---
 
 # Components
 
-Reference guides for the electrical and mechanical parts used throughout MakerLabs, from resistors and LEDs to microcontrollers and motors.
+Reference guides for the electrical and mechanical parts used throughout Build Club, from resistors and LEDs to microcontrollers and motors.
 
 Use these pages to identify a component, understand its purpose, and learn the important rules for connecting it.
 
@@ -41,3 +41,4 @@ Use these pages to identify a component, understand its purpose, and learn the i
 - [Relays and solenoids](03_18_RelaysAndSolenoids.md)
 - [Voltage regulators](03_19_VoltageRegulators.md)
 - [Inductors](03_20_Inductors.md)
+- [Connectors and crimping](03_21_ConnectorsCrimping.md)

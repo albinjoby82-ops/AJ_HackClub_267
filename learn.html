@@ -15,7 +15,8 @@
         <nav class="topbar-nav">
             <button class="menu-toggle" id="menuToggle">☰ MENU</button>
             <a href="index.html">Home</a>
-            <a href="learn.html" class="is-active">Learn</a>
+            <a href="learn.html?scope=workshops" id="workshopsNav">Workshops</a>
+            <a href="learn.html?scope=wiki" id="wikiNav">Wiki</a>
             <a href="videos.html">Videos</a>
             <a href="media.html">Assets</a>
         </nav>
@@ -30,7 +31,8 @@
             </svg>
             <input type="search" id="navSearch" placeholder="Search workshops & guides…">
         </label>
-        <button class="nav-collapse-all" id="collapseNav" type="button">COLLAPSE ALL</button>
+        <a class="sidebar-title" id="sidebarTitle" href="#"></a>
+        <button class="nav-collapse-all" id="toggleNav" type="button">EXPAND ALL</button>
         <nav class="nav-tree" id="navTree"></nav>
     </aside>
 
@@ -47,7 +49,24 @@
 (function () {
     'use strict';
 
-    var pages = (window.SITE_CONTENT && window.SITE_CONTENT.pages) || {};
+    var allPages = (window.SITE_CONTENT && window.SITE_CONTENT.pages) || {};
+    var params = new URLSearchParams(location.search);
+    var scope = params.get('scope') === 'wiki' ? 'wiki' : 'workshops';
+    var scopePrefix = scope === 'wiki' ? 'docs/Wiki/' : 'docs/Workshops/';
+    var pages = {};
+
+    Object.keys(allPages).forEach(function (path) {
+        if (path.indexOf(scopePrefix) === 0) pages[path] = allPages[path];
+    });
+
+    document.title = (scope === 'wiki' ? 'Wiki' : 'Workshops') + ' — Hack Club Build Hub';
+    document.getElementById(scope === 'wiki' ? 'wikiNav' : 'workshopsNav').classList.add('is-active');
+    var scopeRootPath = scope === 'wiki' ? 'docs/Wiki/index.md' : null;
+    var sidebarTitle = document.getElementById('sidebarTitle');
+    sidebarTitle.textContent = scope === 'wiki' ? 'Wiki' : 'Workshops';
+    sidebarTitle.href = scopeRootPath ? '#/' + scopeRootPath : 'learn.html?scope=workshops';
+    document.getElementById('navSearch').placeholder =
+        scope === 'wiki' ? 'Search the wiki…' : 'Search workshops…';
 
     /* ---------- build the tree ---------- */
 
@@ -127,14 +146,34 @@
     function buildNav() {
         navTree.innerHTML = '';
         roots.forEach(function (root) {
-            navTree.appendChild(navBranch(root, 0));
+            if (root === scopeRootPath && children[root]) {
+                children[root].forEach(function (child) {
+                    navTree.appendChild(navBranch(child, 0));
+                });
+            } else {
+                navTree.appendChild(navBranch(root, 0));
+            }
         });
     }
     buildNav();
 
-    document.getElementById('collapseNav').addEventListener('click', function () {
-        navTree.querySelectorAll('details').forEach(function (det) { det.open = false; });
+    var toggleNav = document.getElementById('toggleNav');
+
+    function updateToggleNav() {
+        var branches = Array.from(navTree.querySelectorAll('details'));
+        var allOpen = branches.length > 0 && branches.every(function (det) { return det.open; });
+        toggleNav.textContent = allOpen ? 'COLLAPSE ALL' : 'EXPAND ALL';
+        toggleNav.setAttribute('aria-label', allOpen ? 'Collapse all navigation sections' : 'Expand all navigation sections');
+    }
+
+    toggleNav.addEventListener('click', function () {
+        var branches = Array.from(navTree.querySelectorAll('details'));
+        var allOpen = branches.length > 0 && branches.every(function (det) { return det.open; });
+        branches.forEach(function (det) { det.open = !allOpen; });
+        updateToggleNav();
     });
+    navTree.addEventListener('toggle', updateToggleNav, true);
+    updateToggleNav();
 
     /* ---------- callout transform (Jekyll just-the-docs syntax) ---------- */
 

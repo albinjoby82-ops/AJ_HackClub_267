@@ -1,76 +1,79 @@
 ---
-title: Setting up Python
+title: Python Setup
 layout: default
 parent: 5. Software
 nav_order: 3
 ---
 
-# Python
-*Please note, if you already have Python installed and know how to use it, you do not need to read this. This is a **beginners guide to installing Python only***
+# Python Setup
 
-Python is a high-level programming language used for scripting, automation, and backend tooling.
+Python is useful for automation, data logging and communicating with a microcontroller over USB Serial.
 
-For Makerthon26, Python is used to run a **local WebSocket bridge** that connects:
+## Install Python
 
-- Your Arduino (via USB Serial)
-- Your browser app (Lovable) via WebSocket
+Download a current stable Python 3 release from [python.org](https://www.python.org/downloads/). Follow the installer for your operating system.
 
-The bridge simply translates messages between hardware and the web app.
+On Windows, select the option that makes Python available from the command line if the installer offers it. On a managed university computer, use the installed version or ask before installing software.
 
----
+## Check the installation
 
-## Setting up Python
+Open Terminal, PowerShell or Command Prompt:
 
-This guide is for **Windows users**.
+```text
+python --version
+```
 
-We recommend installing Python using PowerShell so that it is automatically added to your system PATH.
+If that command is not recognised on Windows, try:
 
----
+```text
+py --version
+```
 
-## Step 1 – Open Powershell (PowerShell Method)
-*Note: You must be connected to the internet. If any issues, contact us for help.*
+On some macOS and Linux systems, use:
 
-   - Press `Win + X`
-   - Click **Windows Terminal* / **Terminal** / **PowerShell** 
+```text
+python3 --version
+```
 
-![Press Terminal](../../assets/images/Wiki04_03_py1_pressterminal.png)
+## Create a project environment
 
----
+A virtual environment keeps one project's packages separate:
 
-## Step 2 – Search for Python installs using `winget` command:
-    - Run `winget search Python.Python`
-    - You should see a list of available python versions to download
+```text
+python -m venv .venv
+```
 
-![Search Python Downloads](../../assets/images/Wiki04_03_py2_searchWiki04_03_pythoninstalls.png)
+Activate it:
 
----
+```text
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
 
-## Step 3 - Install a Python version
-   - We're installing **Python v3.12**
-   - Run `winget install --exact --id Python.Python.3.12` (*Note: the `--exact` and `--id` just makes sure there is no name conflicts*)
-   - When prompted, type `Y` to accept conditions
-   - Python will be installed succesfully and PATH variable updated automatically.
+# macOS or Linux
+source .venv/bin/activate
+```
 
-![Python Install Command](../../assets/images/Wiki04_03_py3_installWiki04_03_pySuccess.png)
+Install only the packages the project requires:
 
----
+```text
+python -m pip install pyserial
+```
 
-## Step 4 - Verify installation
-   - **Close** PowerShell first (*we have to relaunch the terminal because it needs to refresh PATH Variables*)
-   - Reopen PowerShell according to step 1
-   - Run the command `python --version`
-   - It should output "3.12.10" or something similar
+## Test Serial communication
 
-![Check python installed](../../assets/images/Wiki04_03_py5_checkpyversion.png)
+```python
+import serial
 
----
+with serial.Serial("COM4", 115200, timeout=1) as board:
+    while True:
+        line = board.readline().decode(errors="replace").strip()
+        if line:
+            print(line)
+```
 
-## Step 5 - Install dependencies for this Makerthon
-   - Run `pip install websockets pyserial`
-   - It should install **websocket** and **pyserial** libraries
+Replace `COM4` with your board's port. On macOS or Linux, ports usually look like `/dev/tty...`.
 
-![Install dependencies for Makerthon](../../assets/images/Wiki04_03_py6_installlibraries.png)
+Close Arduino Serial Monitor before running the script because both programs cannot normally open the same port simultaneously.
 
----
-
-## You're done!
+{: .tip}
+> Save dependencies with `python -m pip freeze > requirements.txt`, but review the file before committing it.

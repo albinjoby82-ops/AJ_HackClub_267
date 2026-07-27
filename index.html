@@ -242,7 +242,8 @@
         <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav">
             <a href="index.html" class="is-active">Home</a>
-            <a href="learn.html">Learn</a>
+            <a href="learn.html?scope=workshops">Workshops</a>
+            <a href="learn.html?scope=wiki">Wiki</a>
             <a href="videos.html">Videos</a>
             <a href="media.html">Assets</a>
         </nav>
@@ -263,9 +264,9 @@
     </form>
 
     <div class="chip-row">
-        <a class="chip" href="learn.html#/docs/Lab1/index.md">WORKSHOPS</a>
-        <a class="chip" href="learn.html#/docs/Wiki/index.md">REFERENCE</a>
-        <a class="chip" href="learn.html#/docs/Wiki/05_Programming/05_00_CommonCodingErrors.md">FIX MY CODE</a>
+        <a class="chip" href="learn.html?scope=workshops#/docs/Workshops/Workshop01/index.md">WORKSHOPS</a>
+        <a class="chip" href="learn.html?scope=wiki#/docs/Wiki/index.md">REFERENCE</a>
+        <a class="chip" href="learn.html?scope=wiki#/docs/Wiki/05_Programming/05_00_CommonCodingErrors.md">FIX MY CODE</a>
     </div>
 
     <svg class="trace-hero" viewBox="0 0 640 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -309,17 +310,17 @@
     </div>
 </section>
 
-<!-- ============ LABS ============ -->
+<!-- ============ WORKSHOPS ============ -->
 <section class="home">
     <div class="container">
         <div class="section-head">
             <span class="eyebrow">Workshop tracks</span>
             <h2>Choose something to build</h2>
-            <p>Every workshop includes the concepts, wiring, code, and challenges needed to teach it at an event. Beginners are welcome in every track.</p>
+            <p>Every workshop includes concepts, wiring, code and challenges you can follow at home with basic equipment or a free simulator.</p>
         </div>
 
         <div class="labs-grid">
-            <a class="lab-card card" href="learn.html#/docs/Lab1/index.md">
+            <a class="lab-card card" href="learn.html?scope=workshops#/docs/Workshops/Workshop01/index.md">
                 <div class="lab-poster">
                     <span class="lab-num">WORKSHOP 01</span>
                     <img src="content/docs/assets/images/Workshop1-Image1.jpeg" alt="Hackers learning Arduino in the RGB Controllers workshop" loading="lazy">
@@ -331,7 +332,7 @@
                 </div>
             </a>
 
-            <a class="lab-card card" href="learn.html#/docs/Lab2/index.md">
+            <a class="lab-card card" href="learn.html?scope=workshops#/docs/Workshops/Workshop02/index.md">
                 <div class="lab-poster">
                     <span class="lab-num">WORKSHOP 02</span>
                     <img src="content/docs/assets/images/Workshop2-Image6.png" alt="Potentiometer and servo circuit for Signals to Speed" loading="lazy">
@@ -343,7 +344,7 @@
                 </div>
             </a>
 
-            <a class="lab-card card" href="learn.html#/docs/Lab3/index.md">
+            <a class="lab-card card" href="learn.html?scope=workshops#/docs/Workshops/Workshop03/index.md">
                 <div class="lab-poster">
                     <span class="lab-num">WORKSHOP 03</span>
                     <img src="content/docs/assets/images/Workshop2-Image3.png" alt="Servo wiring used in the Servos and Linkages workshop" loading="lazy">
@@ -355,15 +356,38 @@
                 </div>
             </a>
 
-            <a class="lab-card card" href="learn.html#/docs/Lab5/index.md">
+            <a class="lab-card card" href="learn.html?scope=workshops#/docs/Workshops/Workshop04/index.md">
                 <div class="lab-poster">
                     <span class="lab-num">WORKSHOP 04</span>
-                    <span class="lab-badge-new">ADVANCED</span>
                     <img src="content/docs/assets/images/Workshop4-Image1.webp" alt="Hack Club logo drawn on an oscilloscope display" loading="lazy">
                 </div>
                 <div class="lab-body">
                     <span class="lab-title">Good Waves, Bad Vibes</span>
                     <span class="lab-blurb">Oscilloscopes demystified — generate AC waveforms, decode a secret message, and make oscilloscope music.</span>
+                    <span class="lab-open">Open workshop →</span>
+                </div>
+            </a>
+
+            <a class="lab-card card" href="learn.html?scope=workshops#/docs/Workshops/Workshop05/index.md">
+                <div class="lab-poster">
+                    <span class="lab-num">WORKSHOP 05</span>
+                    <img src="content/docs/assets/images/Wiki10_Microcontrollers-ArduinoUno.svg" alt="Arduino Uno used for the reaction timer" loading="lazy">
+                </div>
+                <div class="lab-body">
+                    <span class="lab-title">Reaction Timer</span>
+                    <span class="lab-blurb">Build a button-and-LED game while learning digital inputs, timing and program states.</span>
+                    <span class="lab-open">Open workshop →</span>
+                </div>
+            </a>
+
+            <a class="lab-card card" href="learn.html?scope=workshops#/docs/Workshops/Workshop06/index.md">
+                <div class="lab-poster">
+                    <span class="lab-num">WORKSHOP 06</span>
+                    <img src="content/docs/assets/images/Wiki10_Microcontrollers-ESP32.webp" alt="ESP32 board used for the Wi-Fi explorer" loading="lazy">
+                </div>
+                <div class="lab-body">
+                    <span class="lab-title">ESP32-C6 Wi-Fi Explorer</span>
+                    <span class="lab-blurb">Scan nearby networks and investigate wireless signal strength using only an ESP32-C6 and USB cable.</span>
                     <span class="lab-open">Open workshop →</span>
                 </div>
             </a>
@@ -381,40 +405,45 @@
         </div>
 
         <div class="wiki-grid">
-            <a class="wiki-tile" href="learn.html#/docs/Wiki/00_MustKnow/index.md">
+            <a class="wiki-tile" href="learn.html?scope=wiki#/docs/Wiki/00_MustKnow/index.md">
                 <span class="wiki-num">SEC·00</span>
                 <h3>Must-Know</h3>
                 <p>Start here — the essentials before your first workshop.</p>
             </a>
-            <a class="wiki-tile" href="learn.html#/docs/Wiki/01_MakingAndManufacturing/index.md">
+            <a class="wiki-tile" href="learn.html?scope=wiki#/docs/Wiki/01_MakingAndManufacturing/index.md">
                 <span class="wiki-num">SEC·01</span>
                 <h3>Making &amp; Manufacturing</h3>
                 <p>Soldering and 3D printing, done safely and well.</p>
             </a>
-            <a class="wiki-tile" href="learn.html#/docs/Wiki/02_Equipment/index.md">
+            <a class="wiki-tile" href="learn.html?scope=wiki#/docs/Wiki/02_Equipment/index.md">
                 <span class="wiki-num">SEC·02</span>
                 <h3>Equipment</h3>
                 <p>Power supplies, signal generators, multimeters, breadboards.</p>
             </a>
-            <a class="wiki-tile" href="learn.html#/docs/Wiki/03_Components/index.md">
+            <a class="wiki-tile" href="learn.html?scope=wiki#/docs/Wiki/03_Components/index.md">
                 <span class="wiki-num">SEC·03</span>
                 <h3>Components</h3>
                 <p>Circuit elements, microcontrollers, resistors, LEDs, wires, motors.</p>
             </a>
-            <a class="wiki-tile" href="learn.html#/docs/Wiki/04_Software/index.md">
+            <a class="wiki-tile" href="learn.html?scope=wiki#/docs/Wiki/04_Software/index.md">
                 <span class="wiki-num">SEC·04</span>
                 <h3>Software</h3>
                 <p>Arduino IDE 2, TinkerCAD and Python setup guides.</p>
             </a>
-            <a class="wiki-tile" href="learn.html#/docs/Wiki/05_Programming/index.md">
+            <a class="wiki-tile" href="learn.html?scope=wiki#/docs/Wiki/05_Programming/index.md">
                 <span class="wiki-num">SEC·05</span>
                 <h3>Programming</h3>
                 <p>Arduino program structure, C++ basics, and common coding errors.</p>
             </a>
-            <a class="wiki-tile" href="learn.html#/docs/Wiki/11_EngineeringConcepts/index.md">
+            <a class="wiki-tile" href="learn.html?scope=wiki#/docs/Wiki/11_EngineeringConcepts/index.md">
                 <span class="wiki-num">SEC·11</span>
                 <h3>Engineering Concepts</h3>
                 <p>The theory behind the builds — torque and more to come.</p>
+            </a>
+            <a class="wiki-tile" href="learn.html?scope=wiki#/docs/Wiki/12_ProjectPractice/index.md">
+                <span class="wiki-num">SECÂ·08</span>
+                <h3>Project Practice</h3>
+                <p>Plan, document, test and troubleshoot projects that others can reproduce.</p>
             </a>
         </div>
     </div>
@@ -446,7 +475,7 @@
     document.getElementById('homeSearch').addEventListener('submit', function (e) {
         e.preventDefault();
         var q = document.getElementById('homeSearchInput').value.trim();
-        if (q) location.href = 'learn.html#search=' + encodeURIComponent(q);
+        if (q) location.href = 'learn.html?scope=wiki#search=' + encodeURIComponent(q);
     });
 </script>
 </body>

@@ -1,7 +1,7 @@
 ---
 title: 3. Electronics & Test Equipment
 layout: default
-parent: MakerLabs Wiki
+parent: Wiki
 nav_order: 3
 ---
 
