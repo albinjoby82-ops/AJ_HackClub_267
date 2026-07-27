@@ -1,30 +1,69 @@
 ---
-title: C++ Comparisons
+title: Logic and Comparisons
 layout: default
 parent: 6. Programming
-nav_order: 6
+nav_order: 5
 ---
 
-# Comparisons
+# Logic and Comparisons
 
-Used to compare variables (useful for if() statements)
+Comparisons produce `true` or `false`.
 
-| Operator     | Meaning                   |
-|:-------------|:--------------------------|
-| ==           | equal to                  |
-| !=           | not equal to              |
-| <            | less than                 |
-| <=           | less than or equal to     |  
-| >            | greater than              |
-| >=           | greater than or equal to  |
+| Operator | Meaning |
+| --- | --- |
+| `==` | equal |
+| `!=` | not equal |
+| `<` | less than |
+| `<=` | less than or equal |
+| `>` | greater than |
+| `>=` | greater than or equal |
+
+```cpp
+if (temperature >= 30) {
+  fanOn = true;
+}
+```
 
 {: .warning}
-> Do not confuse == (equality) and = (assignment) 
+> `=` assigns a value. `==` compares two values.
 
-*A full tutorial with all data types, examples, and when to use them will be released soon. Please refer to [docs.arduino.cc](https://docs.arduino.cc/) for general Arduino help*
+## Combine conditions
 
-*Arduino Language Reference Glossary*
-----
-*Website: docs.arduino.cc*
+| Operator | Meaning |
+| --- | --- |
+| `&&` | both conditions are true |
+| `||` | either condition is true |
+| `!` | invert true/false |
 
-[https://docs.arduino.cc/language-reference/](https://docs.arduino.cc/language-reference/))
+```cpp
+if (enabled && temperature > 30) {
+  startFan();
+}
+```
+
+## `else if` and `else`
+
+```cpp
+if (reading > 800) {
+  setColour(255, 0, 0);
+} else if (reading > 400) {
+  setColour(0, 255, 0);
+} else {
+  setColour(0, 0, 255);
+}
+```
+
+Only the first matching branch runs.
+
+## State with `enum`
+
+```cpp
+enum Mode { READY, RUNNING, FINISHED };
+Mode mode = READY;
+
+if (mode == READY && buttonPressed) {
+  mode = RUNNING;
+}
+```
+
+Named states are clearer than unexplained numbers such as `mode = 2`.

@@ -5,124 +5,90 @@ parent: 6. Programming
 nav_order: 3
 ---
 
-# Programming
-Writing instructions that tell a computer or microcontroller what to do.
+# Programming Basics
 
-## Serial Monitor
-A tool in the Arduino IDE that displays messages sent from the microcontroller for debugging or data viewing.
- 
-## Conditionals:
-* if: Evaluates a condition. If the condition is true, the code inside the block is executed.
-* else if: Provides additional conditions.
-* else: Executes code if no condition is true.
+## Digital output
 
-## Function
-A block of code that performs a specific task and can be reused.
-
-### pinMode
-An Arduino command that sets a pin as an INPUT, OUTPUT, or INPUT_PULLUP.
-
-Example code:
 ```cpp
-void setup()
-{
-    pinMode(13, OUTPUT);   // Set pin 13 as an output
-}
-```
-### digitalWrite
-An Arduino command that sets a digital pin to HIGH or LOW.
+const int ledPin = 9;
 
-Example code:
-```cpp
-void setup()
-{
-    pinMode(13, OUTPUT);
+void setup() {
+  pinMode(ledPin, OUTPUT);
 }
 
-void loop() 
-{
-    digitalWrite(13, HIGH);  // Turn LED on
-    delay(1000);
-    digitalWrite(13, LOW);   // Turn LED off
-    delay(1000);
-}
-```
-### Serial.println
-Sends data to the Serial Monitor and moves to a new line.
-
-Example code:
-```cpp
-void setup()
-{
-    Serial.begin(9600);
-    Serial.println("Elec Soc is the best!");
-}
-
-void loop()
-{
-    // code
+void loop() {
+  digitalWrite(ledPin, HIGH);
 }
 ```
 
-### delay
-Pauses the program for a specified amount of time (in milliseconds).
+`pinMode()` configures the pin. `digitalWrite()` then sets it HIGH or LOW.
 
-Example code:
+## Digital input
+
 ```cpp
-void setup()
-{
-    pinMode(13, OUTPUT);
+const int buttonPin = 2;
+
+void setup() {
+  pinMode(buttonPin, INPUT_PULLUP);
 }
 
-void loop()
-{
-    digitalWrite(13, HIGH);  // Turn LED on
-    delay(1000); // Wait 1000 milliseconds
-    digitalWrite(13, LOW);   // Turn LED off
-    delay(1000); // Wait 1000 milliseconds
+void loop() {
+  bool pressed = digitalRead(buttonPin) == LOW;
 }
 ```
 
-### DEBUG Serial.print("______")
-A debugging statement that prints text or variable values to help track program behaviour.
+With `INPUT_PULLUP`, connect the button between the pin and ground. The input is LOW when pressed.
 
-Example code:
+## Analogue input
+
 ```cpp
-int sensorValue = 300;
+int reading = analogRead(A0);
+```
 
-void setup()
-{
-    Serial.begin(9600);
-    Serial.print("Sensor value: ");
-    Serial.println(sensorValue);
-}
+On a classic Arduino Uno, the result is normally `0–1023`. Other boards may use different ranges.
 
-void loop()
-{
-    // code
+## PWM output
+
+```cpp
+analogWrite(9, 128);
+```
+
+On supported Uno pins, this produces PWM with roughly 50% duty cycle. It is not a true steady analogue voltage.
+
+## Conditions
+
+```cpp
+if (reading > 700) {
+  digitalWrite(ledPin, HIGH);
+} else {
+  digitalWrite(ledPin, LOW);
 }
 ```
 
-## Custom Function
-A function created by you to reuse the same code again easily.
+## Repetition
 
-Example code:
 ```cpp
-void blinkLED()
-{
-    digitalWrite(13, HIGH);
-    delay(500);
-    digitalWrite(13, LOW);
-    delay(500);
-}
-
-void setup()
-{
-    pinMode(13, OUTPUT);
-}
-
-void loop()
-{
-    blinkLED();  // Calls the custom function
+for (int i = 0; i < 3; i++) {
+  digitalWrite(ledPin, HIGH);
+  delay(100);
+  digitalWrite(ledPin, LOW);
+  delay(100);
 }
 ```
+
+## Serial debugging
+
+```cpp
+void setup() {
+  Serial.begin(115200);
+}
+
+void loop() {
+  int reading = analogRead(A0);
+  Serial.print("sensor=");
+  Serial.println(reading);
+  delay(100);
+}
+```
+
+Use meaningful labels so the output remains understandable.

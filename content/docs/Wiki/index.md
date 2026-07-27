@@ -1,12 +1,12 @@
 ---
-title: MakerLabs Wiki
+title: Wiki
 layout: default
 nav_order: 10
 ---
 
-# MakerLabs Wiki
+# Wiki
 
-The MakerLabs Wiki collects the practical knowledge used across our workshops. Use it to prepare for a lab, refresh something you have forgotten, or troubleshoot a project.
+The Wiki collects the practical knowledge used across our workshops. Use it to prepare for a workshop, refresh something you have forgotten, or troubleshoot a project.
 
 If you are new to electronics, begin with **1. Safety & Fundamentals**. Otherwise, choose a section from the navigation:
 
@@ -17,3 +17,4 @@ If you are new to electronics, begin with **1. Safety & Fundamentals**. Otherwis
 - **Software** — installing and using development tools
 - **Programming** — Arduino and C++ fundamentals
 - **Engineering Concepts** — explanations of useful engineering ideas
+- **Project Practice** — planning, documentation, testing, and troubleshooting

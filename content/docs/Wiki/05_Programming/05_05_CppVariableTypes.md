@@ -1,63 +1,61 @@
 ---
-title: C++ Variable Types
+title: Variables and Data Types
 layout: default
 parent: 6. Programming
-nav_order: 5
+nav_order: 4
 ---
 
-# Variables
+# Variables and Data Types
 
-Named storage locations that hold data values.
+A variable has a type, name and value:
 
-**float**
-
-Stores decimal numbers (e.g., 3.14).
-Example code:
 ```cpp
-float pi = 3.14;
-```
-**boolean**
-Stores true or false values.
-Example code:
-```cpp
-bool isValid = true;
-```
-**int**
-
-Stores whole numbers.
-Example code:
-```cpp
-int age = 21;
+int score = 0;
 ```
 
-**double**
+## Common Arduino types
 
-Stores decimal numbers with higher precision (on many Arduinos, same as float).
-Example code:
+| Type | Example | Use |
+| --- | --- | --- |
+| `bool` | `bool enabled = true;` | true/false state |
+| `char` | `char command = 'R';` | one character |
+| `int` | `int angle = 90;` | ordinary whole numbers |
+| `long` | `long total = 100000;` | larger signed whole numbers |
+| `unsigned long` | `unsigned long started = millis();` | time and non-negative counters |
+| `float` | `float voltage = 3.3;` | decimal calculations |
+| `String` | `String name = "robot";` | convenient text on Arduino |
+
+`String` uses a capital `S`. A lowercase `string` is not the Arduino `String` type.
+
+## Constants
+
+Use `const` for values that should not change:
+
 ```cpp
-double distance = 12.345;
+const int buttonPin = 2;
+const unsigned long sampleInterval = 100;
 ```
-**Character**
 
-Stores a single character.
-Example code:
+## Choosing a type
+
+- Match the possible range of values.
+- Use `unsigned long` for values returned by `millis()`.
+- Remember that type sizes vary between board families.
+- Avoid decimal arithmetic when whole-number maths is sufficient.
+
+## Integer division
+
 ```cpp
-char grade = 'A';
+float resultA = 5 / 2;     // 2.0: division happened as integers
+float resultB = 5.0 / 2.0; // 2.5
 ```
-**String**
-Stores text (characters and words).
-Example code:
+
+## Modulus
+
+`%` gives the remainder after integer division:
+
 ```cpp
-string location = "Moon";
+bool isEven = count % 2 == 0;
 ```
 
-
-
-
-*A full tutorial with all data types, examples, and when to use them will be released soon. Please refer to [docs.arduino.cc](https://docs.arduino.cc/) for general Arduino help*
-
-*Arduino Language Reference Glossary*
-----
-*Website: docs.arduino.cc*
-
-[https://docs.arduino.cc/language-reference/#variables/](https://docs.arduino.cc/language-reference/#variables))
+It is useful for alternating states and wrapping counters.

@@ -555,7 +555,8 @@
         <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav">
             <a href="index.html">Home</a>
-            <a href="learn.html">Learn</a>
+            <a href="learn.html?scope=workshops">Workshops</a>
+            <a href="learn.html?scope=wiki">Wiki</a>
             <a href="videos.html" class="is-active">Search</a>
             <a href="media.html">Assets</a>
         </nav>
@@ -791,7 +792,8 @@
         var page = entry.page;
         var wiki = entry.path.indexOf('/Wiki/') >= 0;
         var type = wiki ? 'Wiki guide' : 'Workshop';
-        var href = 'learn.html#/' + encodeURI(entry.path);
+        var scope = wiki ? 'wiki' : 'workshops';
+        var href = 'learn.html?scope=' + scope + '#/' + encodeURI(entry.path);
         return '<a class="result-card' + (wiki ? ' is-wiki' : '') + '" href="' + escapeHtml(href) + '">' +
             '<div class="result-type"><span class="result-dot"></span>' + type + '</div>' +
             '<h3>' + highlight(page.title, terms) + '</h3>' +

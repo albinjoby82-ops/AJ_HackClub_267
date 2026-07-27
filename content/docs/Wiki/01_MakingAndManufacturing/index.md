@@ -1,27 +1,23 @@
 ---
 title: 2. Fabrication & Assembly
 layout: default
-parent: MakerLabs Wiki
+parent: Wiki
 nav_order: 2
 ---
 
 # Fabrication & Assembly
 
-Practical guides for turning an idea into a physical object, including joining electronic components and producing mechanical parts.
+Practical guides for turning an idea into a physical object.
 
-{: .warning-title }
-> Training and supervision still matter
+{: .warning-title}
+> Training still matters
 >
-> These pages support practical training; they do not replace it. Tools and manufacturing processes can cause burns, cuts, harmful exposure, fire, or equipment damage.
->
-> Follow the MakerLabs workspace procedure and ask a trained supervisor whenever you are unsure.
+> These guides support hands-on instruction; they do not replace it. Follow the room's rules and ask for help when using unfamiliar equipment.
 
 ## In this section
 
-- [Soldering](01_01_Soldering.md) — make and inspect electrical connections safely
-- [3D Printing](01_02_3DPrinting.md) — prepare, print, and assess FDM and resin parts
-
-{: .think-title}
-> A quote from Isaac Asimov:
-> 
-> *"The most exciting phrase to hear in science is not ‘Eureka!’ but ‘That’s funny…'"*
+- [Soldering](01_01_Soldering.md) — make and inspect electrical connections
+- [3D Printing](01_02_3DPrinting.md) — prepare and assess FDM and resin parts
+- [Laser Cutting with xTool](01_03_LaserCutting.md) — prepare files, test materials and run a laser job safely
+- [PCB Design with KiCad](01_04_PCBDesign.md) — turn a circuit into manufacturing files
+- [CAD for Fabrication](01_05_CADForFabrication.md) — design parts that fit and can be made

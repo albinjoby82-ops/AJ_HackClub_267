@@ -128,6 +128,19 @@
 
 .nav-collapse-all:hover { color: var(--color-ink); }
 
+.sidebar-title {
+    display: block;
+    margin: 18px 14px 8px;
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.1;
+    text-decoration: none;
+}
+
+.sidebar-title:hover { color: var(--color-red); }
+
 .nav-tree details { margin-bottom: 2px; }
 
 .nav-tree summary {

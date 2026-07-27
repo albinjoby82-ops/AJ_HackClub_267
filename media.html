@@ -355,7 +355,8 @@
         <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav">
             <a href="index.html">Home</a>
-            <a href="learn.html">Learn</a>
+            <a href="learn.html?scope=workshops">Workshops</a>
+            <a href="learn.html?scope=wiki">Wiki</a>
             <a href="videos.html">Videos</a>
             <a href="media.html" class="is-active">Assets</a>
         </nav>
@@ -631,7 +632,8 @@
         chips.push('<span id="lbDims"></span>');
 
         var uses = item.uses.map(function (u) {
-            return '<a class="lb-use" href="learn.html#/' + encodeURI(u.page) + '">' +
+            var scope = u.page.indexOf('docs/Wiki/') === 0 ? 'wiki' : 'workshops';
+            return '<a class="lb-use" href="learn.html?scope=' + scope + '#/' + encodeURI(u.page) + '">' +
                 '<div class="u-crumb">' + escapeHtml(u.section) + '</div>' +
                 '<div class="u-title">' + escapeHtml(u.title) + '</div>' +
                 (u.alt ? '<div class="u-alt">“' + escapeHtml(u.alt) + '”</div>' : '') + '</a>';
