@@ -1,7 +1,7 @@
 ---
 title: 2. Fabrication & Assembly
 layout: default
-parent: MakerLabs Wiki
+parent: Hack Club Wiki
 nav_order: 2
 ---
 
@@ -14,7 +14,7 @@ Practical guides for turning an idea into a physical object, including joining e
 >
 > These pages support practical training; they do not replace it. Tools and manufacturing processes can cause burns, cuts, harmful exposure, fire, or equipment damage.
 >
-> Follow the MakerLabs workspace procedure and ask a trained supervisor whenever you are unsure.
+> Follow the Hack Club workspace procedure and ask a trained supervisor whenever you are unsure.
 
 ## In this section
 

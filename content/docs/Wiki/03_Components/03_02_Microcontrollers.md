@@ -20,6 +20,18 @@ They are well suited to reading buttons and sensors, producing precisely timed o
 
 An ATmega328P is a microcontroller. An Arduino Uno R3 is a development board containing one. An ESP32-C6 is a microcontroller commonly supplied on a development board. A Raspberry Pi 5 is a single-board computer.
 
+![Arduino Uno development board](../../assets/images/Wiki10_Microcontrollers-ArduinoUno.svg)
+
+*Figure: An Arduino Uno — a beginner-friendly development board.*
+
+![ESP32 development board](../../assets/images/Wiki10_Microcontrollers-ESP32.webp)
+
+*Figure: An ESP32 board, which adds Wi-Fi and Bluetooth.*
+
+![Raspberry Pi single-board computer](../../assets/images/Wiki10_Microcontrollers-RaspberryPi.webp)
+
+*Figure: A Raspberry Pi — a full single-board computer that runs an operating system.*
+
 ## Common microcontroller features
 
 - Digital inputs and outputs

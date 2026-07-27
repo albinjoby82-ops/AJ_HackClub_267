@@ -1,12 +1,12 @@
 ---
-title: MakerLabs Wiki
+title: Hack Club Wiki
 layout: default
 nav_order: 10
 ---
 
-# MakerLabs Wiki
+# Hack Club Wiki
 
-The MakerLabs Wiki collects the practical knowledge used across our workshops. Use it to prepare for a lab, refresh something you have forgotten, or troubleshoot a project.
+The Hack Club Wiki collects the practical knowledge used across our workshops. Use it to prepare for a lab, refresh something you have forgotten, or troubleshoot a project.
 
 If you are new to electronics, begin with **1. Safety & Fundamentals**. Otherwise, choose a section from the navigation:
 

@@ -11,6 +11,10 @@ A diode primarily allows current in one direction. The two terminals are the **a
 
 The cathode is commonly marked with a stripe on the component body. On the schematic symbol, the bar marks the cathode.
 
+[Diodes Explained (The Engineering Mindset)](https://youtu.be/Fwj_d3uO5g8)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Fwj_d3uO5g8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## Common types
 
 | Type | Typical use |

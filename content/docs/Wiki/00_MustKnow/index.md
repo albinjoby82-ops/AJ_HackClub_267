@@ -1,13 +1,13 @@
 ---
 title: 1. Safety & Fundamentals
 layout: default
-parent: MakerLabs Wiki
+parent: Hack Club Wiki
 nav_order: 1
 ---
 
 # Safety & Fundamentals
 
-Start here if you are new to MakerLabs. This section will contain the safety rules and core skills that every later guide assumes.
+Start here if you are new to Hack Club. This section will contain the safety rules and core skills that every later guide assumes.
 
 {: .tip-title }
 > You should start with this section. 

@@ -9,7 +9,7 @@ nav_order: 3
 
 A digital multimeter measures electrical quantities such as voltage, current, resistance, and continuity. It is one of the most useful tools for checking a circuit systematically instead of guessing.
 
-MakerLabs uses the **Rigol DM3058E** bench multimeter. Handheld meters use the same measurement principles, but their controls, sockets, ranges, and safety ratings may differ.
+Hack Club uses the **Rigol DM3058E** bench multimeter. Handheld meters use the same measurement principles, but their controls, sockets, ranges, and safety ratings may differ.
 
 {: .warning-title}
 > Choose the function before connecting
@@ -17,6 +17,14 @@ MakerLabs uses the **Rigol DM3058E** bench multimeter. Handheld meters use the s
 > Voltage is measured **in parallel**. Current is measured **in series**. Resistance and continuity are measured only on a circuit that is switched off and safely discharged.
 >
 > Connecting a meter configured for current directly across a supply can create a short circuit, blow a fuse, damage equipment, or cause injury.
+
+## Watch: measuring with a multimeter
+
+A quick beginner's guide to measuring voltage, resistance, continuity, and current. Watch it once, then use the step-by-step checks below at the bench.
+
+[How to Use a Multimeter — Beginners Guide](https://youtu.be/hgTgx_h5QOk)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/hgTgx_h5QOk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Before every measurement
 
@@ -49,7 +57,7 @@ Typical uses include checking a supply rail, battery, regulator output, or volta
 
 Select AC voltage and connect the probes in parallel. Be clear whether the meter reports RMS voltage and whether the signal's frequency and shape are within the meter's specifications.
 
-This Wiki is intended for low-voltage MakerLabs work. Do not measure mains or high-energy circuits unless you are trained, authorised, and using appropriately rated equipment and procedures.
+This Wiki is intended for low-voltage Hack Club work. Do not measure mains or high-energy circuits unless you are trained, authorised, and using appropriately rated equipment and procedures.
 
 ## Measuring resistance
 

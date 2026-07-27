@@ -9,6 +9,10 @@ nav_order: 6
 
 A resistor limits current, divides voltage, sets bias conditions, and defines logic states. Resistance is measured in ohms (`Ω`).
 
+[How Resistors Work (The Engineering Mindset)](https://youtu.be/DYcLFHgVCn0)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/DYcLFHgVCn0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## Ohm's law
 
 ```text

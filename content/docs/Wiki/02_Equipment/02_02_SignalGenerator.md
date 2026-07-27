@@ -9,7 +9,7 @@ nav_order: 2
 
 A signal generator produces controlled electrical waveforms for testing a circuit. Instead of waiting for a sensor, motor, or communication system to produce a signal, you can generate a repeatable input with a chosen shape, frequency, amplitude, and offset.
 
-MakerLabs uses the **Rigol DG822 Pro**, a two-channel function/arbitrary waveform generator. The exact menus may differ on other models, but the setup principles remain similar.
+Hack Club uses the **Rigol DG822 Pro**, a two-channel function/arbitrary waveform generator. The exact menus may differ on other models, but the setup principles remain similar.
 
 {: .warning-title}
 > Check the electrical limits first
@@ -17,6 +17,14 @@ MakerLabs uses the **Rigol DG822 Pro**, a two-channel function/arbitrary wavefor
 > Keep the channel output **off** while wiring. Confirm the circuit's allowed voltage, polarity, frequency, and input impedance before enabling it.
 >
 > The generator's BNC outer conductor may be connected to protective earth. Never clip it to a point that is not safe to earth, and never use this guide on mains-connected circuits.
+
+## Watch: what a function generator does
+
+If you have not used one before, this Afrotechmods video explains what a signal/function generator is and how the waveform, frequency, and amplitude controls behave.
+
+[Function Generator Tutorial (Afrotechmods)](https://youtu.be/mLKPwWGBtIw)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/mLKPwWGBtIw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Key settings
 

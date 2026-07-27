@@ -16,6 +16,14 @@ The pattern is not identical on every breadboard. Before building, inspect the m
 >
 > Disconnect power before adding, removing, or moving components. Do not use a breadboard for mains voltage, high current, damaged components, or connections that can become dangerously hot.
 
+## Watch: how a breadboard works
+
+Seeing which holes connect makes the diagram below click. This short primer shows the internal rows, columns, and power rails in action.
+
+[Breadboard 101 — Electronics Basics for Beginners](https://youtu.be/a9zXlPMo9Fw)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/a9zXlPMo9Fw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## How the holes are connected
 
 The main terminal area is divided into groups of connected holes. The centre gap separates the groups on its two sides and provides space for dual-inline integrated circuits.

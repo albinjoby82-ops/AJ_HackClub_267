@@ -20,6 +20,17 @@ Solder comes in different alloys. Some solder contains lead, while common lead-f
 >
 > Work under the required local fume extraction, keep the iron in its stand, tie back long hair, wear eye protection, and never solder a powered circuit. Ask a supervisor for help if you have not been trained.
 
+## Watch: soldering demonstrated
+
+If you learn better by watching, this EEVblog walkthrough covers the tools and shows real joints being made. Reading the steps below and watching a demonstration together is the fastest way to build good habits.
+
+[EEVblog #180 — Soldering Tutorial Part 1: Tools](https://youtu.be/J5Sb21qbpEQ)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/J5Sb21qbpEQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+{: .tip}
+> Continue with [Part 2: hand soldering](https://youtu.be/fYz5nIHH0iY) for through-hole technique, and [Part 3: surface mount](https://youtu.be/b9FC9fAlfQE) once you are comfortable with the basics.
+
 ## What you need
 
 - A temperature-controlled soldering iron and stand
