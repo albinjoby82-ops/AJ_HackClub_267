@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Micromouse 2026 — Hack Club Build Hub</title>
+<meta name="description" content="Watch the Micromouse 2026 event reveal from ElecSoc and Hack Club Build Hub.">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="site.css">
+<style>
+    body {
+        min-height: 100vh;
+        background:
+            radial-gradient(circle at 50% 18%, rgba(92, 219, 171, 0.14), transparent 30rem),
+            #071b24;
+    }
+
+    .event-stage {
+        min-height: calc(100vh - 64px);
+        display: grid;
+        place-items: center;
+        padding: clamp(28px, 6vw, 72px) 24px;
+    }
+
+    .event-shell {
+        width: min(1100px, 100%);
+        text-align: center;
+    }
+
+    .event-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+        color: #9fe3cc;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .event-kicker::before,
+    .event-kicker::after {
+        content: "";
+        width: 28px;
+        height: 1px;
+        background: rgba(159, 227, 204, 0.5);
+    }
+
+    .event-shell h1 {
+        color: #f8fcfa;
+        font-size: clamp(34px, 6vw, 64px);
+        margin: 0 0 12px;
+    }
+
+    .event-intro {
+        max-width: 620px;
+        margin: 0 auto 30px;
+        color: rgba(232, 246, 241, 0.7);
+        font-size: 16px;
+    }
+
+    .reveal-frame {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(159, 227, 204, 0.24);
+        border-radius: 18px;
+        background: #061922;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+    }
+
+    .reveal-frame video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: contain;
+        background: #061922;
+    }
+
+    .replay-button {
+        margin-top: 22px;
+        border: 1px solid rgba(159, 227, 204, 0.44);
+        border-radius: var(--radius-full);
+        padding: 10px 18px;
+        color: #dff8ef;
+        background: rgba(159, 227, 204, 0.08);
+        font: 700 11px/1 var(--font-mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .replay-button:hover {
+        background: rgba(159, 227, 204, 0.16);
+        border-color: rgba(159, 227, 204, 0.7);
+    }
+
+    .replay-button:focus-visible {
+        outline: 3px solid rgba(92, 219, 171, 0.35);
+        outline-offset: 3px;
+    }
+
+    @media (max-width: 560px) {
+        .event-stage { padding-inline: 14px; }
+        .event-intro { font-size: 14px; }
+        .reveal-frame { border-radius: 12px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="index.html">Home</a>
+            <a href="micromouse.html" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="learn.html#/docs/Lab1/index.md">Workshops</a>
+            <a href="learn.html#/docs/Wiki/index.md">Wiki</a>
+            <a href="videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main class="event-stage">
+    <section class="event-shell" aria-labelledby="eventTitle">
+        <span class="event-kicker">ElecSoc event reveal</span>
+        <h1 id="eventTitle">Micromouse 2026</h1>
+        <p class="event-intro">Watch the mouse race through the circuit and bring the ElecSoc identity to life.</p>
+
+        <div class="reveal-frame">
+            <video id="micromouseReveal" autoplay muted playsinline controls preload="auto">
+                <source src="assets/micromouse-2026-logo-reveal.mp4" type="video/mp4">
+                Your browser does not support MP4 video playback.
+            </video>
+        </div>
+
+        <button class="replay-button" id="replayReveal" type="button">Replay animation</button>
+    </section>
+</main>
+
+<script>
+    const reveal = document.getElementById('micromouseReveal');
+    const replay = document.getElementById('replayReveal');
+
+    function playFromStart() {
+        reveal.currentTime = 0;
+        reveal.play().catch(() => {
+            // The visible browser controls remain available if autoplay is blocked.
+        });
+    }
+
+    replay.addEventListener('click', playFromStart);
+    window.addEventListener('pageshow', playFromStart);
+</script>
+</body>
+</html>
