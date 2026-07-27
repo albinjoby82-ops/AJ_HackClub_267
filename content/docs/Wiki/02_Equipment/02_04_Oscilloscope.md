@@ -9,14 +9,22 @@ nav_order: 4
 
 An oscilloscope displays voltage changing over time. It lets you see signal shape, amplitude, frequency, timing, noise, glitches, and the relationship between multiple signals.
 
-MakerLabs uses two-channel oscilloscopes from the **Rohde & Schwarz HMO1002 series**. This guide introduces the controls needed for ordinary low-voltage measurements; advanced functions are covered in the manufacturer manual.
+Hack Club uses two-channel oscilloscopes from the **Rohde & Schwarz HMO1002 series**. This guide introduces the controls needed for ordinary low-voltage measurements; advanced functions are covered in the manufacturer manual.
 
 {: .warning-title}
 > The probe ground is not a floating wire
 >
 > On a conventional bench oscilloscope, the probe ground clip is normally connected to protective earth through the instrument. Connecting it to the wrong point can short part of the circuit through earth, damage equipment, or cause injury.
 >
-> For supervised MakerLabs work, connect probe ground only to the circuit's intended ground or reference node. Never use this guide to probe mains or another hazardous circuit.
+> For supervised Hack Club work, connect probe ground only to the circuit's intended ground or reference node. Never use this guide to probe mains or another hazardous circuit.
+
+## Watch: oscilloscope basics
+
+The oscilloscope has the most controls of any bench tool, so seeing them used helps. This beginner overview explains the vertical, horizontal, and trigger controls described below.
+
+[Oscilloscope Basics for Beginners](https://youtu.be/e_K3My0Bh-4)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/e_K3My0Bh-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## What the display represents
 

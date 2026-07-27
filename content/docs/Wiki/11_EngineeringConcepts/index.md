@@ -7,7 +7,7 @@ nav_order: 7
 
 # Engineering Concepts
 
-Practical explanations of the ideas behind Build Club projects. Each page starts with what the concept helps you do, then introduces the useful equations and limitations.
+Short explanations of the engineering principles behind Hack Club projects.
 
 ## Electricity and signals
 

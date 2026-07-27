@@ -7,7 +7,7 @@ nav_order: 5
 
 # Software
 
-These guides cover the tools used to design, program and troubleshoot Build Club projects.
+Setup guides for the programs and online tools used during Hack Club.
 
 ## Which tool should I use?
 

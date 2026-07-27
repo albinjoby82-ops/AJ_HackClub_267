@@ -14,7 +14,7 @@ Always check the relevant safety guidance before switching equipment on.
 {: .warning-title}
 > Start with the circuit unpowered
 >
-> Make connections and select instrument settings before enabling power or outputs. These guides cover supervised, low-voltage MakerLabs work and do not authorise work on mains or other hazardous circuits.
+> Make connections and select instrument settings before enabling power or outputs. These guides cover supervised, low-voltage Hack Club work and do not authorise work on mains or other hazardous circuits.
 
 ## In this section
 

@@ -9,6 +9,10 @@ nav_order: 11
 
 Transistors control current or voltage and are used for switching, amplification, and signal processing.
 
+[BJT vs MOSFET — Transistor Basics Explained for Beginners](https://youtu.be/a0xoqozu29k)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/a0xoqozu29k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## BJTs
 
 A bipolar junction transistor has **base**, **collector**, and **emitter** terminals. A small base current can control a larger collector current.

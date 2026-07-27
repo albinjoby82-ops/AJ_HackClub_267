@@ -7,7 +7,7 @@ nav_order: 4
 
 # Components
 
-Reference guides for the electrical and mechanical parts used throughout Build Club, from resistors and LEDs to microcontrollers and motors.
+Reference guides for the electrical and mechanical parts used throughout Hack Club, from resistors and LEDs to microcontrollers and motors.
 
 Use these pages to identify a component, understand its purpose, and learn the important rules for connecting it.
 

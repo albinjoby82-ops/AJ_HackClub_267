@@ -9,6 +9,12 @@ nav_order: 1
 
 Arduino IDE is used to write, verify and upload programs called **sketches**. It also includes a Serial Monitor, Serial Plotter, board manager and library manager.
 
+Never used Arduino before? This 15-minute video takes you from an empty desk to a blinking LED and a working sketch — a great overview before the steps below.
+
+[You can learn Arduino in 15 minutes (Afrotechmods)](https://youtu.be/nL34zDTPkcs)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/nL34zDTPkcs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## Install it
 
 1. Download the current stable Arduino IDE from the [official Arduino software page](https://www.arduino.cc/en/software).
