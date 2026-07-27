@@ -12,7 +12,9 @@ Practical guides for turning an idea into a physical object.
 {: .warning-title}
 > Training still matters
 >
-> These guides support hands-on instruction; they do not replace it. Follow the room's rules and ask for help when using unfamiliar equipment.
+> These pages support practical training; they do not replace it. Tools and manufacturing processes can cause burns, cuts, harmful exposure, fire, or equipment damage.
+>
+> Follow the Hack Club workspace procedure and ask a trained supervisor whenever you are unsure.
 
 ## In this section
 

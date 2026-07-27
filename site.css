@@ -51,19 +51,45 @@
   display: flex;
   gap: 22px;
   align-items: center;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+
+.topbar-nav::-webkit-scrollbar { display: none; }
 
 .topbar-nav a {
   font-size: 14px;
   font-weight: 500;
   color: var(--color-ink-soft);
   text-decoration: none;
+  white-space: nowrap;
   transition: color var(--transition-fast);
 }
 
 .topbar-nav a:hover,
 .topbar-nav a.is-active {
   color: var(--color-ink);
+}
+
+.topbar-nav a.event-nav {
+  color: #9f2f19;
+  background: rgba(255, 140, 55, 0.12);
+  border: 1px solid rgba(255, 140, 55, 0.32);
+  border-radius: var(--radius-full);
+  padding: 7px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.topbar-nav a.event-nav:hover,
+.topbar-nav a.event-nav.is-active {
+  color: #7f2413;
+  background: rgba(255, 140, 55, 0.2);
+  border-color: rgba(255, 140, 55, 0.55);
 }
 
 /* ============ Learn layout (sidebar + content) ============ */
@@ -518,6 +544,7 @@ a.chip { text-decoration: none; }
   .topbar-inner { padding: 15px 16px; gap: 10px; }
   .wordmark { font-size: 17px; gap: 8px; white-space: nowrap; }
   .wordmark .mono-sub { display: none; }
-  .topbar-nav { gap: 14px; }
+  .topbar-nav { gap: 10px; }
   .topbar-nav a { font-size: 13px; }
+  .topbar-nav a.event-nav { padding: 6px 10px; font-size: 10px; }
 }

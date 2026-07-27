@@ -9,6 +9,12 @@ nav_order: 2
 
 Tinkercad Circuits is a browser-based simulator for breadboards, Arduino boards and common components. It is useful for learning and testing an idea before physical parts are available.
 
+This walkthrough shows how to place an Arduino, wire components, and run a simulation:
+
+[Free Online Arduino Simulator — Tinkercad](https://youtu.be/i27L_wcXcp0)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/i27L_wcXcp0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## Create a circuit
 
 1. Sign in to [Tinkercad](https://www.tinkercad.com/).

@@ -7,7 +7,7 @@ nav_order: 6
 
 # Programming
 
-Learn enough Arduino-flavoured C++ to make hardware respond, then build programs that remain understandable as projects grow.
+Beginner-friendly explanations of the Arduino and C++ concepts used throughout Hack Club.
 
 ## Beginner path
 

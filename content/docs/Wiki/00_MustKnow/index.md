@@ -7,7 +7,7 @@ nav_order: 1
 
 # Safety & Fundamentals
 
-This section contains the minimum safety knowledge for Build Club projects. It is designed for practical, low-voltage electronics and small-scale making—not industrial research.
+Start here if you are new to Hack Club. This section will contain the safety rules and core skills that every later guide assumes.
 
 Safety is not about eliminating every interesting idea. It is about noticing what could hurt someone, choosing sensible controls and stopping when a project moves beyond the club's equipment or competence.
 

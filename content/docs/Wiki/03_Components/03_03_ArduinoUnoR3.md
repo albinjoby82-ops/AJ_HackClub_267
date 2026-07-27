@@ -7,7 +7,7 @@ nav_order: 1
 
 # Arduino Uno R3
 
-The Arduino Uno R3 is a development board based on the **ATmega328P** microcontroller. It is widely used in MakerLabs because it is robust, well documented, and easy to program over USB.
+The Arduino Uno R3 is a development board based on the **ATmega328P** microcontroller. It is widely used in Hack Club because it is robust, well documented, and easy to program over USB.
 
 ![Arduino Uno R3](../../assets/images/Wiki10_Microcontrollers-ArduinoUno.svg)
 
