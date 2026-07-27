@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Search — Hack Club Build Hub</title>
-<meta name="description" content="Search the Hack Club Build Hub and wiki, or take the same query to YouTube.">
+<title>Search â€” Hack Club Build Hub</title>
+<meta name="description" content="Search the Hack Club Build Hub workshops and engineering wiki.">
 <link rel="stylesheet" href="design-tokens.css">
 <link rel="stylesheet" href="site.css">
 <style>
@@ -62,47 +62,6 @@
         max-width: var(--container-max-width);
         margin: 0 auto;
         padding: 10px 24px 84px;
-    }
-
-    .source-tabs {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        max-width: 620px;
-        margin: 0 auto 34px;
-        padding: 5px;
-        border: 1px solid var(--color-line);
-        border-radius: var(--radius-full);
-        background: var(--color-card);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .source-tab {
-        border: 0;
-        border-radius: var(--radius-full);
-        padding: 11px 16px;
-        background: transparent;
-        color: var(--color-ink-soft);
-        cursor: pointer;
-        font-family: var(--font-mono);
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        transition: background var(--transition-fast), color var(--transition-fast);
-    }
-
-    .source-tab[aria-selected="true"] {
-        background: var(--color-ink);
-        color: #fff;
-    }
-
-    .source-tab:focus-visible {
-        outline: 3px solid var(--color-accent-subtle);
-        outline-offset: 2px;
-    }
-
-    .tab-panel[hidden] {
-        display: none;
     }
 
     .result-head {
@@ -229,276 +188,6 @@
         color: var(--color-ink);
     }
 
-    .youtube-panel {
-        max-width: 760px;
-        margin: 0 auto;
-        padding: clamp(30px, 6vw, 64px);
-        border: 1px solid var(--color-line);
-        border-radius: var(--radius-lg);
-        background:
-            radial-gradient(circle at 90% 10%, rgba(236, 55, 80, 0.14), transparent 38%),
-            var(--color-card);
-        box-shadow: var(--shadow-md);
-        text-align: center;
-    }
-
-    .youtube-mark {
-        display: grid;
-        width: 58px;
-        height: 42px;
-        margin: 0 auto 20px;
-        place-items: center;
-        border-radius: 13px;
-        background: #ff0033;
-        color: #fff;
-        font-size: 18px;
-    }
-
-    .youtube-panel h2 {
-        margin: 0 0 10px;
-        font-size: clamp(25px, 4vw, 34px);
-    }
-
-    .youtube-panel p {
-        max-width: 520px;
-        margin: 0 auto 22px;
-        color: var(--color-ink-soft);
-    }
-
-    .youtube-query {
-        display: inline-block;
-        max-width: 100%;
-        margin-bottom: 20px;
-        padding: 7px 12px;
-        overflow: hidden;
-        border: 1px solid var(--color-line);
-        border-radius: var(--radius-full);
-        background: var(--color-paper);
-        color: var(--color-ink);
-        font-family: var(--font-mono);
-        font-size: 11px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .youtube-button[aria-disabled="true"] {
-        pointer-events: none;
-        opacity: 0.45;
-    }
-
-    .youtube-results-wrap {
-        min-height: 320px;
-    }
-
-    .youtube-brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        color: #ff0033;
-        font-family: var(--font-mono);
-        font-size: 10px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .youtube-brand-icon {
-        display: inline-grid;
-        width: 28px;
-        height: 20px;
-        place-items: center;
-        border-radius: 6px;
-        background: #ff0033;
-        color: #fff;
-        font-size: 9px;
-    }
-
-    .youtube-status {
-        margin-bottom: 18px;
-        padding: 15px 18px;
-        border: 1px solid var(--color-line);
-        border-left: 3px solid var(--color-mint);
-        border-radius: 0 var(--radius-md) var(--radius-md) 0;
-        background: var(--color-card);
-        color: var(--color-ink-soft);
-        font-size: 13px;
-    }
-
-    .youtube-status.is-error {
-        border-left-color: var(--color-orange);
-    }
-
-    .youtube-status strong {
-        color: var(--color-ink);
-    }
-
-    .video-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
-        gap: 20px;
-    }
-
-    .video-card {
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        padding: 0;
-        border: 1px solid var(--color-line);
-        border-radius: var(--radius-lg);
-        background: var(--color-card);
-        box-shadow: var(--shadow-sm);
-        color: inherit;
-        cursor: pointer;
-        font: inherit;
-        text-align: left;
-        transition: transform var(--transition-base), border-color var(--transition-base);
-    }
-
-    .video-card:hover,
-    .video-card:focus-visible {
-        transform: translateY(-3px);
-        border-color: #ff0033;
-        outline: none;
-    }
-
-    .video-thumb {
-        position: relative;
-        overflow: hidden;
-        aspect-ratio: 16 / 9;
-        background: var(--color-paper);
-    }
-
-    .video-thumb img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .video-duration {
-        position: absolute;
-        right: 8px;
-        bottom: 8px;
-        padding: 3px 6px;
-        border-radius: 4px;
-        background: rgba(20, 27, 36, 0.88);
-        color: #fff;
-        font-family: var(--font-mono);
-        font-size: 9px;
-    }
-
-    .video-copy {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        gap: 7px;
-        padding: 14px 15px 16px;
-    }
-
-    .video-copy h3 {
-        display: -webkit-box;
-        overflow: hidden;
-        margin: 0;
-        color: var(--color-ink);
-        font-size: 14px;
-        line-height: 1.4;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-    }
-
-    .video-channel {
-        color: var(--color-ink-soft);
-        font-size: 12px;
-    }
-
-    .video-meta {
-        margin-top: auto;
-        color: var(--color-ink-soft);
-        font-family: var(--font-mono);
-        font-size: 9px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-    }
-
-    .youtube-actions {
-        display: flex;
-        justify-content: center;
-        margin-top: 26px;
-    }
-
-    .youtube-actions[hidden] {
-        display: none;
-    }
-
-    .video-modal {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        display: none;
-        overflow-y: auto;
-        padding: 24px;
-        background: rgba(20, 27, 36, 0.72);
-        backdrop-filter: blur(4px);
-    }
-
-    .video-modal.is-open {
-        display: grid;
-        place-items: center;
-    }
-
-    .video-dialog {
-        position: relative;
-        width: min(920px, 100%);
-        overflow: hidden;
-        border-radius: var(--radius-lg);
-        background: var(--color-card);
-        box-shadow: var(--shadow-xl);
-    }
-
-    .video-player {
-        aspect-ratio: 16 / 9;
-        background: #000;
-    }
-
-    .video-player iframe {
-        display: block;
-        width: 100%;
-        height: 100%;
-        border: 0;
-    }
-
-    .video-dialog-copy {
-        padding: 18px 22px 22px;
-    }
-
-    .video-dialog-copy h2 {
-        margin: 0 42px 6px 0;
-        font-family: var(--font-serif);
-        font-size: 21px;
-    }
-
-    .video-dialog-copy p {
-        margin: 0 0 14px;
-        color: var(--color-ink-soft);
-        font-size: 13px;
-    }
-
-    .video-close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        z-index: 2;
-        display: grid;
-        width: 34px;
-        height: 34px;
-        place-items: center;
-        border: 1px solid var(--color-line);
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.94);
-        color: var(--color-ink);
-        cursor: pointer;
-    }
-
     .search-note {
         margin-top: 18px;
         color: var(--color-ink-soft);
@@ -525,25 +214,8 @@
             padding: 8px 20px 64px;
         }
 
-        .source-tabs {
-            margin-bottom: 26px;
-        }
-
-        .source-tab {
-            padding-inline: 9px;
-            font-size: 9px;
-        }
-
         .result-grid {
             grid-template-columns: 1fr;
-        }
-
-        .video-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .video-modal {
-            padding: 12px;
         }
     }
 </style>
@@ -565,7 +237,7 @@
 <header class="finder-head">
     <span class="eyebrow">Build finder</span>
     <h1>What are you trying to build?</h1>
-    <p class="lede">Search the Build Hub workshops and engineering wiki first, or take the exact same query to YouTube.</p>
+    <p class="lede">Search the Build Hub workshops and engineering wiki.</p>
 
     <form class="search-bar" id="searchForm" role="search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3E5C68" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -584,12 +256,7 @@
 </header>
 
 <main class="finder-shell">
-    <div class="source-tabs" role="tablist" aria-label="Search destination">
-        <button class="source-tab" id="siteTab" type="button" role="tab" aria-selected="true" aria-controls="sitePanel">Build Hub &amp; Wiki</button>
-        <button class="source-tab" id="youtubeTab" type="button" role="tab" aria-selected="false" aria-controls="youtubePanel" tabindex="-1">YouTube</button>
-    </div>
-
-    <section class="tab-panel" id="sitePanel" role="tabpanel" aria-labelledby="siteTab">
+    <section id="sitePanel">
         <div class="result-head">
             <h2 id="resultTitle">Build Hub &amp; Wiki</h2>
             <span class="result-count" id="resultCount">Enter a search above</span>
@@ -600,33 +267,7 @@
             Results are ranked by title, section, phrase matches, and useful keyword matches.
         </div>
     </section>
-
-    <section class="tab-panel" id="youtubePanel" role="tabpanel" aria-labelledby="youtubeTab" hidden>
-        <div class="youtube-results-wrap">
-            <div class="result-head">
-                <h2 id="youtubeTitle">YouTube results</h2>
-                <span class="youtube-brand"><span class="youtube-brand-icon">▶</span>YouTube</span>
-                <span class="result-count" id="youtubeCount">Enter a search above</span>
-            </div>
-            <div class="youtube-status" id="youtubeStatus">
-                <strong>Search the Build Hub first or enter a query above.</strong>
-                YouTube results will load here only when this tab is selected.
-            </div>
-            <div class="video-grid" id="youtubeGrid"></div>
-            <div class="youtube-actions" id="youtubeMoreRow" hidden>
-                <button class="btn btn-ghost" id="youtubeMore" type="button">Load more videos</button>
-            </div>
-        </div>
-    </section>
 </main>
-
-<div class="video-modal" id="videoModal" role="dialog" aria-modal="true" aria-label="YouTube video player">
-    <div class="video-dialog">
-        <button class="video-close" id="videoClose" type="button" aria-label="Close">✕</button>
-        <div class="video-player" id="videoPlayer"></div>
-        <div class="video-dialog-copy" id="videoDialogCopy"></div>
-    </div>
-</div>
 
 <script src="content/content.js"></script>
 <script>
@@ -639,27 +280,7 @@
     var resultCount = document.getElementById('resultCount');
     var resultTitle = document.getElementById('resultTitle');
     var siteEmpty = document.getElementById('siteEmpty');
-    var youtubeTitle = document.getElementById('youtubeTitle');
-    var youtubeCount = document.getElementById('youtubeCount');
-    var youtubeStatus = document.getElementById('youtubeStatus');
-    var youtubeGrid = document.getElementById('youtubeGrid');
-    var youtubeMore = document.getElementById('youtubeMore');
-    var youtubeMoreRow = document.getElementById('youtubeMoreRow');
-    var videoModal = document.getElementById('videoModal');
-    var videoPlayer = document.getElementById('videoPlayer');
-    var videoDialogCopy = document.getElementById('videoDialogCopy');
-    var tabs = Array.from(document.querySelectorAll('[role="tab"]'));
-    var panels = {
-        site: document.getElementById('sitePanel'),
-        youtube: document.getElementById('youtubePanel')
-    };
-    var activeTab = 'site';
     var query = '';
-    var youtubeResults = [];
-    var youtubeNextPage = '';
-    var youtubeLoadedQuery = '';
-    var youtubeRequestSerial = 0;
-    var youtubeLoading = false;
 
     var STOPWORDS = [
         'a', 'an', 'and', 'are', 'for', 'from', 'how', 'in', 'is', 'it',
@@ -753,8 +374,8 @@
         var start = Math.max(0, at - 70);
         var end = Math.min(text.length, start + 210);
         var snippet = text.slice(start, end).trim();
-        if (start > 0) snippet = '…' + snippet;
-        if (end < text.length) snippet += '…';
+        if (start > 0) snippet = 'â€¦' + snippet;
+        if (end < text.length) snippet += 'â€¦';
         return snippet;
     }
 
@@ -797,7 +418,7 @@
             '<h3>' + highlight(page.title, terms) + '</h3>' +
             (page.parent ? '<div class="result-parent">' + highlight(page.parent, terms) + '</div>' : '') +
             '<p class="result-snippet">' + highlight(snippetFor(page, terms), terms) + '</p>' +
-            '<span class="result-open">Open in Build Hub →</span>' +
+            '<span class="result-open">Open in Build Hub â†’</span>' +
             '</a>';
     }
 
@@ -812,13 +433,13 @@
 
         var terms = queryTerms(query);
         var results = searchSite(query);
-        resultTitle.textContent = 'Results for “' + query + '”';
+        resultTitle.textContent = 'Results for â€œ' + query + 'â€';
         resultCount.textContent = results.length + ' relevant page' + (results.length === 1 ? '' : 's');
         siteEmpty.hidden = !!results.length;
 
         if (!results.length) {
             resultGrid.innerHTML = '';
-            siteEmpty.innerHTML = '<strong>No Build Hub pages matched that search.</strong>Try fewer words, a component name, or switch to the YouTube tab.';
+            siteEmpty.innerHTML = '<strong>No Build Hub pages matched that search.</strong>Try fewer words or a different search term.';
             return;
         }
 
@@ -827,194 +448,18 @@
         }).join('');
     }
 
-    function compactNumber(value) {
-        var number = Number(value) || 0;
-        if (number >= 1e9) return (number / 1e9).toFixed(1) + 'B';
-        if (number >= 1e6) return (number / 1e6).toFixed(1) + 'M';
-        if (number >= 1e3) return (number / 1e3).toFixed(1) + 'K';
-        return String(number);
-    }
-
-    function publishedLabel(value) {
-        var date = new Date(value);
-        if (!date.getTime()) return '';
-        return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-    }
-
-    function youtubeCard(video, index) {
-        var meta = [];
-        if (video.views) meta.push(compactNumber(video.views) + ' views');
-        if (video.publishedAt) meta.push(publishedLabel(video.publishedAt));
-        return '<button class="video-card" type="button" data-video-index="' + index + '">' +
-            '<div class="video-thumb">' +
-            '<img src="' + escapeHtml(video.thumbnail) + '" alt="" loading="lazy">' +
-            (video.duration ? '<span class="video-duration">' + escapeHtml(video.duration) + '</span>' : '') +
-            '</div>' +
-            '<div class="video-copy">' +
-            '<h3>' + escapeHtml(video.title) + '</h3>' +
-            '<div class="video-channel">' + escapeHtml(video.channel) + '</div>' +
-            (meta.length ? '<div class="video-meta">' + escapeHtml(meta.join(' · ')) + '</div>' : '') +
-            '</div></button>';
-    }
-
-    function renderYouTubeResults() {
-        youtubeGrid.innerHTML = youtubeResults.map(youtubeCard).join('');
-        youtubeCount.textContent = youtubeResults.length + ' video' + (youtubeResults.length === 1 ? '' : 's');
-        youtubeMoreRow.hidden = !youtubeNextPage;
-    }
-
-    function setYouTubeStatus(message, isError) {
-        youtubeStatus.hidden = !message;
-        youtubeStatus.classList.toggle('is-error', !!isError);
-        youtubeStatus.innerHTML = message;
-    }
-
-    function loadYouTube(reset) {
-        if (!query || youtubeLoading) return;
-        var requestedQuery = query;
-        var requestId = ++youtubeRequestSerial;
-        var pageToken = reset ? '' : youtubeNextPage;
-        youtubeLoading = true;
-        youtubeMore.disabled = true;
-        youtubeMore.textContent = 'Loading…';
-        youtubeTitle.textContent = 'YouTube results for “' + requestedQuery + '”';
-        setYouTubeStatus('<strong>Searching YouTube…</strong> Results will appear here.', false);
-        if (reset) {
-            youtubeResults = [];
-            youtubeNextPage = '';
-            youtubeGrid.innerHTML = '';
-            youtubeCount.textContent = 'Searching…';
-            youtubeMoreRow.hidden = true;
-        }
-
-        var url = '/api/youtube-search?q=' + encodeURIComponent(requestedQuery);
-        if (pageToken) url += '&pageToken=' + encodeURIComponent(pageToken);
-
-        fetch(url).then(function (response) {
-            return response.json().catch(function () { return {}; }).then(function (data) {
-                if (!response.ok) throw new Error(data.error || ('Search failed with HTTP ' + response.status));
-                return data;
-            });
-        }).then(function (data) {
-            if (requestId !== youtubeRequestSerial || requestedQuery !== query) return;
-            var incoming = Array.isArray(data.items) ? data.items : [];
-            youtubeResults = reset ? incoming : youtubeResults.concat(incoming);
-            youtubeNextPage = data.nextPageToken || '';
-            youtubeLoadedQuery = requestedQuery;
-            renderYouTubeResults();
-            if (youtubeResults.length) {
-                setYouTubeStatus('', false);
-            } else {
-                setYouTubeStatus('<strong>No embeddable YouTube videos matched.</strong> Try a shorter or broader query.', false);
-            }
-        }).catch(function (error) {
-            if (requestId !== youtubeRequestSerial || requestedQuery !== query) return;
-            youtubeCount.textContent = 'Search unavailable';
-            youtubeMoreRow.hidden = true;
-            setYouTubeStatus('<strong>YouTube results could not load.</strong> ' + escapeHtml(error.message || error), true);
-        }).finally(function () {
-            if (requestId !== youtubeRequestSerial) return;
-            youtubeLoading = false;
-            youtubeMore.disabled = false;
-            youtubeMore.textContent = 'Load more videos';
-        });
-    }
-
-    function updateYouTube() {
-        if (!query) {
-            youtubeTitle.textContent = 'YouTube results';
-            youtubeCount.textContent = 'Enter a search above';
-            youtubeResults = [];
-            youtubeNextPage = '';
-            youtubeLoadedQuery = '';
-            youtubeGrid.innerHTML = '';
-            youtubeMoreRow.hidden = true;
-            setYouTubeStatus('<strong>Search the Build Hub first or enter a query above.</strong> YouTube results will load here only when this tab is selected.', false);
-            return;
-        }
-
-        youtubeTitle.textContent = 'YouTube results for “' + query + '”';
-        if (activeTab === 'youtube' && youtubeLoadedQuery !== query) loadYouTube(true);
-    }
-
     function updateHash() {
         var params = new URLSearchParams();
         if (query) params.set('q', query);
-        params.set('tab', activeTab);
         history.replaceState(null, '', '#' + params.toString());
     }
 
-    function setTab(name, focusTab) {
-        activeTab = name === 'youtube' ? 'youtube' : 'site';
-        tabs.forEach(function (tab) {
-            var selected = tab.id === activeTab + 'Tab';
-            tab.setAttribute('aria-selected', selected ? 'true' : 'false');
-            tab.tabIndex = selected ? 0 : -1;
-            if (selected && focusTab) tab.focus();
-        });
-        panels.site.hidden = activeTab !== 'site';
-        panels.youtube.hidden = activeTab !== 'youtube';
-        updateYouTube();
-        updateHash();
-    }
-
     function runSearch(value) {
-        var nextQuery = String(value || '').trim();
-        if (nextQuery !== query) {
-            youtubeRequestSerial += 1;
-            youtubeLoading = false;
-            youtubeLoadedQuery = '';
-            youtubeResults = [];
-            youtubeNextPage = '';
-        }
-        query = nextQuery;
+        query = String(value || '').trim();
         input.value = query;
         renderSiteResults();
-        updateYouTube();
         updateHash();
     }
-
-    function openVideo(video) {
-        if (!video || !/^[A-Za-z0-9_-]{6,}$/.test(video.id || '')) return;
-        var origin = encodeURIComponent(location.origin);
-        videoPlayer.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' +
-            escapeHtml(video.id) + '?autoplay=1&origin=' + origin +
-            '" title="' + escapeHtml(video.title) +
-            '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>';
-        videoDialogCopy.innerHTML = '<h2>' + escapeHtml(video.title) + '</h2>' +
-            '<p>' + escapeHtml(video.channel) + '</p>' +
-            '<a class="btn btn-ghost btn-sm" href="https://www.youtube.com/watch?v=' +
-            escapeHtml(video.id) + '" target="_blank" rel="noopener">View on YouTube ↗</a>';
-        videoModal.classList.add('is-open');
-        document.body.style.overflow = 'hidden';
-        document.getElementById('videoClose').focus();
-    }
-
-    function closeVideo() {
-        videoModal.classList.remove('is-open');
-        videoPlayer.innerHTML = '';
-        videoDialogCopy.innerHTML = '';
-        document.body.style.overflow = '';
-    }
-
-    youtubeGrid.addEventListener('click', function (event) {
-        var card = event.target.closest('[data-video-index]');
-        if (!card) return;
-        var video = youtubeResults[Number(card.dataset.videoIndex)];
-        if (video) openVideo(video);
-    });
-
-    youtubeMore.addEventListener('click', function () {
-        if (youtubeNextPage) loadYouTube(false);
-    });
-
-    document.getElementById('videoClose').addEventListener('click', closeVideo);
-    videoModal.addEventListener('click', function (event) {
-        if (event.target === videoModal) closeVideo();
-    });
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && videoModal.classList.contains('is-open')) closeVideo();
-    });
 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
@@ -1023,28 +468,13 @@
 
     document.getElementById('exampleRow').addEventListener('click', function (event) {
         var button = event.target.closest('button');
-        if (!button) return;
-        runSearch(button.textContent);
-    });
-
-    tabs.forEach(function (tab) {
-        tab.addEventListener('click', function () {
-            setTab(tab.id === 'youtubeTab' ? 'youtube' : 'site', false);
-        });
-        tab.addEventListener('keydown', function (event) {
-            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-            event.preventDefault();
-            setTab(activeTab === 'site' ? 'youtube' : 'site', true);
-        });
+        if (button) runSearch(button.textContent);
     });
 
     var initial = new URLSearchParams(location.hash.replace(/^#/, ''));
     query = initial.get('q') || '';
-    activeTab = initial.get('tab') === 'youtube' ? 'youtube' : 'site';
     input.value = query;
     renderSiteResults();
-    updateYouTube();
-    setTab(activeTab, false);
 })();
 </script>
 </body>
