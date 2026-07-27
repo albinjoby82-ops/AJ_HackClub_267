@@ -1,34 +1,50 @@
-/* Design Tokens — Hackathon Info Hub (v2: light, EEE-society) */
+/* Design Tokens — Hack Club Build Hub */
+
+@font-face {
+  font-family: 'Phantom Sans';
+  src: url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Phantom Sans';
+  src: url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   /* ============ Colors ============ */
 
-  /* Ink / text */
-  --color-ink: #0F3B4C;
-  --color-ink-soft: #3E5C68;
-  --color-teal: #175A70;
+  /* Hack Club neutrals */
+  --color-ink: #1F2D3D;
+  --color-ink-soft: #3C4858;
+  --color-teal: #338EDA;
 
-  /* Brand accent */
-  --color-mint: #5CDBAB;
-  --color-mint-deep: #1D9E77;
+  /* Hack Club red is the hero; blue supports links and secondary emphasis */
+  --color-mint: #EC3750;
+  --color-mint-deep: #D62442;
 
   /* Signal — use once per view, never more */
-  --color-orange: #F4652E;
+  --color-orange: #FF8C37;
 
   /* Surfaces */
-  --color-paper: #FAFCFB;
+  --color-paper: #F9FAFC;
   --color-card: #FFFFFF;
-  --color-line: #E3ECE9;
-  --color-line-strong: #B9CFC9;
+  --color-line: #E0E6ED;
+  --color-line-strong: #B8C4D2;
 
   /* Semantic aliases (kept for backwards compatibility with earlier drafts) */
   --color-primary-dark: var(--color-ink);
   --color-primary: var(--color-teal);
   --color-accent: var(--color-mint);
-  --color-accent-light: #9FE5D4;
-  --color-accent-subtle: rgba(92, 219, 171, 0.12);
+  --color-accent-light: #FF8FA1;
+  --color-accent-subtle: rgba(236, 55, 80, 0.10);
   --color-alert: var(--color-orange);
-  --color-alert-subtle: rgba(244, 101, 46, 0.1);
+  --color-alert-subtle: rgba(255, 140, 55, 0.1);
   --color-bg-light: var(--color-paper);
   --color-text-light: #FFFFFF;
   --color-border: var(--color-line);
@@ -39,8 +55,8 @@
 
   /* ============ Typography ============ */
 
-  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --font-serif: 'Phantom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Phantom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
 
   /* Heading sizes */
@@ -60,7 +76,7 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --font-weight-bold: 600; /* serif display weight tops out at 600 */
+  --font-weight-bold: 700;
 
   /* Line heights */
   --line-height-tight: 1.15;
@@ -118,7 +134,7 @@
   --search-border-radius: var(--radius-full);
   --search-padding-x: 22px;
   --search-padding-y: 14px;
-  --search-focus-shadow: 0 0 0 4px rgba(92, 219, 171, 0.18);
+  --search-focus-shadow: 0 0 0 4px rgba(236, 55, 80, 0.18);
 
   /* Info sections */
   --info-border-left-width: 3px;
@@ -160,23 +176,23 @@
 
 /* ============ Dark Mode ============ */
 [data-theme="dark"] {
-  --color-paper: #0D2432;
-  --color-card: #123240;
-  --color-line: #1F4756;
-  --color-line-strong: #2C5A6A;
+  --color-paper: #17171D;
+  --color-card: #252429;
+  --color-line: #34333A;
+  --color-line-strong: #4A4952;
 
   --color-bg-primary: var(--color-paper);
   --color-bg-secondary: var(--color-card);
   --color-bg-overlay: rgba(0, 0, 0, 0.4);
 
   --color-text: #F0F4F3;
-  --color-text-muted: #9FE5D4;
-  --color-ink: #F0F4F3;
-  --color-ink-soft: #9FBFC7;
-  --color-mint-deep: #5CDBAB;
+  --color-text-muted: #8492A6;
+  --color-ink: #FFFFFF;
+  --color-ink-soft: #C7CFDA;
+  --color-mint-deep: #FF7185;
 
   --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
-  --card-shadow-hover: 0 8px 24px rgba(92, 219, 171, 0.15);
+  --card-shadow-hover: 0 8px 24px rgba(236, 55, 80, 0.18);
 }
 
 /* ============ Utility Classes ============ */

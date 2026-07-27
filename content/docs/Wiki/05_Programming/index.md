@@ -1,6 +1,6 @@
 ---
 title: 5. Programming
 layout: default
-parent: MakerLabs Wiki
+parent: Hack Club Knowledge Base
 nav_order: 5
 ---

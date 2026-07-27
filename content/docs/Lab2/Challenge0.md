@@ -2,7 +2,7 @@
 title: "Challenge0: Servo IRL"
 layout: default
 nav_order: 12
-parent: Lab2 - Signals to Speed
+parent: Workshop 02 - Signals to Speed
 ---
 
 # Challenge0: Servo IRL
@@ -47,8 +47,7 @@ Don't worry, you're still allowed to use any resource to help you complete it in
 Make sure to try yourself, but of course, **don't spend the whole lab on this!** If you can't get it working in 3-5mins, *please* call a TA to help out. There's so much more fun stuff to do, don't get stuck on this step.
 
 # Media
-![Schematic of TinkerCAD Task1](../assets/images/MakerLab2-Image3.png)
+![Schematic of TinkerCAD Task1](../assets/images/Workshop2-Image3.png)
 
 
 ---
-

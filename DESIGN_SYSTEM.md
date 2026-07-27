@@ -1,20 +1,19 @@
-# Design System — Hackathon Info Hub (v2)
+# Design System — Hack Club Build Hub
 
-Light, calm, EEE-society. Near-white paper, deep teal ink, one mint accent, and
-one signal color used sparingly. Circuit motifs (traces, pin headers,
-silkscreen labels) carry the electronics identity instead of neon/cyberpunk
-cliché.
+Bright, practical, and distinctly Hack Club. Clean white surfaces, dark readable
+text, Hack Club red as the hero color, and supporting colors used with purpose.
+Circuit motifs connect the interface to the hands-on electronics material.
 
 ## Color Palette
 
 ### Ink / Text
-- **Ink Teal** - `#0F3B4C` — Headings, primary text, primary buttons
-- **Ink Soft** - `#3E5C68` — Secondary/body text
-- **Teal** - `#175A70` — Links, secondary emphasis
+- **Dark** - `#1F2D3D` — Headings and primary text
+- **Slate** - `#3C4858` — Secondary/body text
+- **Blue** - `#338EDA` — Links and secondary emphasis
 
 ### Brand Accent
-- **Mint** - `#5CDBAB` — Fills, focus rings, stat-tile rail
-- **Deep Mint** - `#1D9E77` — Accent text, eyebrows, "live" badges (readable on white, unlike raw mint)
+- **Hack Club Red** - `#EC3750` — Hero color, primary actions, focus rings
+- **Deep Red** - `#D62442` — Accent text and labels that need stronger contrast
 
 ### Signal (use once per view — never more)
 - **Signal Orange** - `#F4652E` — The single most urgent thing on a page: a deadline, "live now". Two oranges on one view means neither one matters anymore.
@@ -36,7 +35,7 @@ cliché.
 ## Typography
 
 ### Headings
-**Font Family:** Fraunces / Georgia (serif) — carries the ElecSoc character
+**Font Family:** Phantom Sans / system sans-serif — bold, friendly, and direct
 - **H1 (Display)** - clamp(38–56px), weight 600, line-height 1.15, letter-spacing -0.01em
 - **H2** - 30px, weight 600, line-height 1.2
 - **H3** - 21px, weight 600, line-height 1.3

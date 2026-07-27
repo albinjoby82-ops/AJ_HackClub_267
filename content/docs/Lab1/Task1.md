@@ -1,7 +1,7 @@
 ---
 title: Task1 - Simple Traffic Light
 layout: default
-parent: Lab1 - RGB Controllers
+parent: Workshop 01 - RGB Controllers
 nav_order: 4
 ---
 
@@ -53,9 +53,9 @@ nav_order: 4
 *We make a simple program that cycles between the colours, like a traffic light!*
 ```cpp
 /*
-  Title:              MakerLab1-RGB-Task1
-  Organisation:       UCD ElecSoc - MakerLab
-  Author(s):          Joe Biju
+  Title:              BuildHub-RGB-Task1
+  Organisation:       Hack Club
+  Author(s):          Event workshop team
   Created:            24/09/2025
 
   Description:
@@ -124,9 +124,9 @@ void loop() {
 
 ```cpp
 /*
-  Title:              MakerLab1-RGB-Task1
-  Organisation:       UCD ElecSoc - MakerLab
-  Author(s):          Joe Biju
+  Title:              BuildHub-RGB-Task1
+  Organisation:       Hack Club
+  Author(s):          Event workshop team
   Created:            24/09/2025
 
   Description:
@@ -211,9 +211,9 @@ void loop() {
 *(This will come in handy when making our Arduino's talk to each other!)*
 ```cpp
 /*
-  Title:              MakerLab1-RGB-Task1
-  Organisation:       UCD ElecSoc - MakerLab
-  Author(s):          Joe Biju
+  Title:              BuildHub-RGB-Task1
+  Organisation:       Hack Club
+  Author(s):          Event workshop team
   Created:            24/09/2025
 
   Description:
@@ -303,9 +303,9 @@ void loop() {
 *Welcome to embedded engineering :)*
 ```cpp
 /*
-  Title:              MakerLab1-RGB-Task1
-  Organisation:       UCD ElecSoc - MakerLab
-  Author(s):          Joe Biju
+  Title:              BuildHub-RGB-Task1
+  Organisation:       Hack Club
+  Author(s):          Event workshop team
   Created:            24/09/2025
 
   Description:
@@ -397,9 +397,9 @@ void loop() {
 *through the Serial Monitor*
 ```cpp
 /*
-  Title:              MakerLab1-RGB-Task1
-  Organisation:       UCD ElecSoc - MakerLab
-  Author(s):          Joe Biju
+  Title:              BuildHub-RGB-Task1
+  Organisation:       Hack Club
+  Author(s):          Event workshop team
   Created:            24/09/2025
 
   Description:

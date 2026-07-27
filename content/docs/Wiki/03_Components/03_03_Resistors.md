@@ -12,4 +12,4 @@ nav_order: 3
 *File: EEEN20020 AUT24 - Lab1_rev2*
 ----
 *Module: EEEN20020*
-![ENG329 Power Supply Instructions - EEEN20020](../assets/images/Wiki03_Resistors-EEEN20020.png)
+![Power supply instructions](../../assets/images/Wiki03_Resistors-EEEN20020.png)

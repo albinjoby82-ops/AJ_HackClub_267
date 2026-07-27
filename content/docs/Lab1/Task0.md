@@ -1,7 +1,7 @@
 ---
 title: Task-0
 layout: default
-parent: Lab1 - RGB Controllers
+parent: Workshop 01 - RGB Controllers
 nav_order: 3
 ---
 

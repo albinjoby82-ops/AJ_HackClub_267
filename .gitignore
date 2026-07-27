@@ -1,1 +1,4 @@
 .claude/settings.local.json
+
+# holds an API key — copy config.example.js instead
+config.js

@@ -1,7 +1,7 @@
 ---
 title: 1. Making & Manufacturing
 layout: default
-parent: MakerLabs Wiki
+parent: Hack Club Knowledge Base
 nav_order: 1
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Additional Resources
 layout: default
-parent: Lab2 - Signals to Speed
+parent: Workshop 02 - Signals to Speed
 nav_order: 100
 ---
 

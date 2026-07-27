@@ -38,9 +38,9 @@ A working example page wired up to `design-tokens.css` — search + platform fil
 
 **Visual Identity:**
 - **Colors:** Near-white paper background, deep teal ink, one mint accent, one signal orange (used sparingly)
-- **Typography:** Serif headings (Fraunces/Georgia) for the ElecSoc character, clean sans-serif body (Inter), monospace reserved for metadata/labels
+- **Typography:** Bold Phantom Sans headings and clean body copy, with monospace reserved for metadata and labels
 - **Layout:** Light mode, hairline borders instead of boxes, generous whitespace, card-based reel feed
-- **Feel:** Calm, precise, EEE-society — a spec sheet, not a poster
+- **Feel:** Energetic, practical, and welcoming — a build guide, not corporate documentation
 
 **Design Philosophy:**
 - Clean and modern, not maximalist or neon
@@ -105,7 +105,7 @@ A working example page wired up to `design-tokens.css` — search + platform fil
 **Buttons:**
 ```html
 <button class="btn btn-primary">Register Now</button>
-<button class="btn btn-mint">Join MakerLab</button>
+<button class="btn btn-mint">Open Workshop</button>
 <button class="btn btn-ghost">View Schedule</button>
 <button class="btn btn-link">Rules &amp; judging →</button>
 ```
@@ -142,13 +142,13 @@ A working example page wired up to `design-tokens.css` — search + platform fil
 ## 🎯 Key Design Decisions
 
 ### Why These Colors?
-- **Ink Teal (#0F3B4C)** - Trust, professionalism, tech-forward — the ElecSoc brand color
-- **Mint (#5CDBAB)** - Energy, approachability, fresh — the brand accent
-- **Deep Mint (#1D9E77)** - Same family, but readable as text on a white background
+- **Hack Club Red (#EC3750)** - The primary brand color and strongest visual signal
+- **Blue (#338EDA)** - Links and supporting emphasis
+- **Deep Red (#D62442)** - A readable red for accent text on white
 - **Signal Orange (#F4652E)** - Reserved for the single most urgent thing per view (a deadline, "live now"). Never more than one per page.
 
 ### Why These Typography Choices?
-- **Fraunces/Georgia (serif)** for headings - Elegant, established, echoes the ElecSoc wordmark
+- **Phantom Sans** for headings and UI - Bold, friendly, and consistent with Hack Club
 - **Inter (sans-serif)** for body - Clean, modern, readable
 - **Monospace** for metadata only - timestamps, view counts, filter chips — reads like PCB silkscreen printing
 
@@ -161,7 +161,7 @@ A working example page wired up to `design-tokens.css` — search + platform fil
 ### Why Circuit Motifs Instead of Neon?
 Cyberpunk/neon reads as generic "tech." Trace dividers, pin-header dots, and
 silkscreen-style mono labels are literal EEE drafting conventions — quieter,
-more credible, and tie directly back to the ElecSoc logo's own trace-and-dot
+more credible and connect the interface to the hands-on electronics material
 mark.
 
 ---

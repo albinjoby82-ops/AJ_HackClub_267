@@ -1,5 +1,5 @@
 ---
-title: MakerLabs Wiki
+title: Hack Club Knowledge Base
 layout: default
 nav_order: 10
 ---

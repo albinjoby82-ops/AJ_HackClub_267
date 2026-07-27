@@ -1,13 +1,13 @@
 ---
 title: Intro
 layout: default
-parent: Lab1 - RGB Controllers
+parent: Workshop 01 - RGB Controllers
 nav_order: 1
 ---
 
 # Introduction
 
-Welcome to the first MakerLab! In this lab, we'll be
+Welcome to the RGB Controllers workshop! In this session, we'll be
 - working with **Arduino** microcontrollers
 - wiring simple **circuits**
 - using **PWM** to control colour

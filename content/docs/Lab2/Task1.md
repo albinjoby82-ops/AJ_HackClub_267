@@ -2,7 +2,7 @@
 title: "Task1: Servo Pre-Moves"
 layout: default
 nav_order: 11
-parent: Lab2 - Signals to Speed
+parent: Workshop 02 - Signals to Speed
 ---
 
 # Task1 – Servo Pre-Moves
@@ -46,7 +46,7 @@ This introduces the **Servo library** and how **PWM** signals translate to angle
    - **GND** (black/brown) → GND  
 4. Open *Code → Text* to switch to text mode.  
 
-![Schematic of TinkerCAD Task1](../assets/images/MakerLab2-Image3.png)
+![Schematic of TinkerCAD Task1](../assets/images/Workshop2-Image3.png)
 
 
 ---
@@ -56,9 +56,9 @@ This introduces the **Servo library** and how **PWM** signals translate to angle
 Copy the following code into your TinkerCAD program.
 ```cpp
 /*
-Title:          MakerLab2-Task1-Servo
-Organisation:   UCD ElecSoc – MakerLab
-Author:         Joe Biju
+Title:          BuildHub-Task1-Servo
+Organisation:   Hack Club
+Author:         Event workshop team
 Description:
 Move a servo between 0°, 90°, and 180° using the Servo library.
 */
@@ -131,7 +131,7 @@ By adding delays and setting more angles, we can create a pattern!
 Click **Start Simulation**.  
 The servo horn should sweep to 0°, then 90°, then 180°, and then back to 0° after an extra delay. It then repeats the pattern.  
 
-![TinkerCAD Demo of Servo moving](../assets/gifs/MakerLab2-Image4.gif)
+![TinkerCAD Demo of Servo moving](../assets/gifs/Workshop2-Image4.gif)
 
 {: .troubleshooting }
 > If it doesn’t move:  

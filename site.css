@@ -32,6 +32,13 @@
   gap: 10px;
 }
 
+.brand-flag {
+  width: 34px;
+  height: 26px;
+  object-fit: contain;
+  align-self: center;
+}
+
 .wordmark .mono-sub {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -305,7 +312,7 @@
 
 .md pre {
   position: relative;
-  background: #0F3B4C;
+  background: #1F2D3D;
   border-radius: 10px;
   padding: 18px 20px;
   overflow-x: auto;
@@ -465,4 +472,14 @@ a.chip { text-decoration: none; }
   }
 
   .content-pane { padding: 28px 20px 64px; }
+}
+
+/* keep the top bar one line tall — the sticky sidebar and the media
+   toolbar are both offset by its 57px height */
+@media (max-width: 560px) {
+  .topbar-inner { padding: 15px 16px; gap: 10px; }
+  .wordmark { font-size: 17px; gap: 8px; white-space: nowrap; }
+  .wordmark .mono-sub { display: none; }
+  .topbar-nav { gap: 14px; }
+  .topbar-nav a { font-size: 13px; }
 }

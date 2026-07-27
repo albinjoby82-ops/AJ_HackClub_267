@@ -2,7 +2,7 @@
 title: "Task2: Functions"
 layout: default
 nav_order: 13
-parent: Lab2 - Signals to Speed
+parent: Workshop 02 - Signals to Speed
 ---
 
 # Task2 – Functions
@@ -46,7 +46,7 @@ Not the worst, but with more moves, it gets unwieldy to type that many!
 ## Step 1 – Set Up the Circuit
 Continue from your TinkerCAD design in [Task 1](Task1).
 
-![Schematic of TinkerCAD Task1](../assets/images/MakerLab2-Image3.png)
+![Schematic of TinkerCAD Task1](../assets/images/Workshop2-Image3.png)
 
 
 ---
@@ -96,9 +96,9 @@ Next, look at the function type: `void setServoAngle()`. Notice that this functi
 Copy the following code into your TinkerCAD program.
 ```cpp
 /*
-Title:          MakerLab2-Task2-Functions
-Organisation:   UCD ElecSoc – MakerLab
-Author:         Joe Biju
+Title:          BuildHub-Task2-Functions
+Organisation:   Hack Club
+Author:         Event workshop team
 Description:
 Add functions to simplify program.
 */

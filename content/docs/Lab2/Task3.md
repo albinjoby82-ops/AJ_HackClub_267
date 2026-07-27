@@ -2,7 +2,7 @@
 title: "Task3: Debugging with Serial Monitor"
 layout: default
 nav_order: 14
-parent: Lab2 - Signals to Speed
+parent: Workshop 02 - Signals to Speed
 ---
 
 # Task3 – Debugging with Serial Monitor
@@ -40,7 +40,7 @@ Using the Serial Monitor in Arduino IDE or TinkerCAD, you can **print messages t
 ## Step 1 – Continue from Previous Task
 You can continue using the same TinkerCAD design and code from [Task 2](Task2). 
 
-![Schematic of TinkerCAD Task2](../assets/images/MakerLab2-Image3.png)
+![Schematic of TinkerCAD Task2](../assets/images/Workshop2-Image3.png)
 
 ---
 
@@ -80,12 +80,12 @@ Then, you can use either `Serial.print()` or `Serial.println()`.
 ```cpp
 Serial.print("Hello ");
 Serial.print("World!\n");
-Serial.print("I love MakerLabs :D");
+Serial.print("I love building :D");
 ```
 Which will output the following
 ```
 Hello World!
-I love MakerLabs :D
+I love building :D
 ```
 Notice how `.print()` function prints on the same line as before. So to go to the next line, we add the `\n` character.
 
@@ -93,7 +93,7 @@ This gets tiring though, so we can use the `.println()` function that automatica
 ```cpp
 Serial.print("Hello ");
 Serial.println("World!");
-Serial.print("I love MakerLabs :D");
+Serial.print("I love building :D");
 ```
 
 {: .extra}
@@ -122,9 +122,9 @@ void setServoAngle(int targetAngle, int delayTime = 2000) {
 ### Full Code
 ```cpp
 /*
-Title:          MakerLab2-Task3-Debugging
-Organisation:   UCD ElecSoc – MakerLab
-Author:         Joe Biju
+Title:          BuildHub-Task3-Debugging
+Organisation:   Hack Club
+Author:         Event workshop team
 Description:
 Add Serial Monitor debugging messages to track servo movement.
 */
@@ -166,7 +166,7 @@ In TinkerCAD:
 
 You should have the same physical result as [Task 1](Task1), only now you can open the Serial Monitor to view messages!
 
-![TinkerCAD Demo of Servo moving](../assets/gifs/MakerLab2-Image5.gif)
+![TinkerCAD Demo of Servo moving](../assets/gifs/Workshop2-Image5.gif)
 
 
 {: .troubleshooting }
@@ -222,4 +222,3 @@ If you **don't want** to print a message, simply comment it out by insert `//` a
 > ```
 >
 > It's beyond the scope of the labs to explain how it works, but if you’re curious, ask a TA (Hint: **Pre-processor directives**).
-

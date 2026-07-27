@@ -2,7 +2,7 @@
 title: "Task4: Potentiometer"
 layout: default
 nav_order: 15
-parent: Lab2 - Signals to Speed
+parent: Workshop 02 - Signals to Speed
 ---
 
 # Task4 – Potentiometer
@@ -49,7 +49,7 @@ Add a potentiometer and wire it so:
 - **Middle pin → A0**
 - **Right pin → 5V (VCC)**
 
-![Potentiometer and Servo Circuit](../assets/images/MakerLab2-Image6.png)
+![Potentiometer and Servo Circuit](../assets/images/Workshop2-Image6.png)
 
 {: .tip }
 > Unlike digital I/O pins (D0–D13), analog pins (A0–A5) can only take inputs.  
@@ -134,9 +134,9 @@ Serial.println(servoAngle);
 
 ```cpp
 /*
-Title:          MakerLab2-Task4-Potentiometer
-Organisation:   UCD ElecSoc – MakerLab
-Author:         Joe Biju
+Title:          BuildHub-Task4-Potentiometer
+Organisation:   Hack Club
+Author:         Event workshop team
 Description:
 Read a potentiometer and set servo angle based on the input.
 */
@@ -172,7 +172,7 @@ Copy the code and run it on TinkerCAD.
 
 Open the Serial Monitor to see the debug statements.
 
-![TinkerCAD demo of Pot controlling Servo](../assets/gifs/MakerLab2-Image7.gif)
+![TinkerCAD demo of Pot controlling Servo](../assets/gifs/Workshop2-Image7.gif)
 
 ---
 
@@ -181,5 +181,3 @@ Try changing parameters such as for the `map()` function and see what new behavi
 
 {: .try}
 Set the delay to 10ms. Set it to 100ms. How does the responsiveness of the servo change?
-
-

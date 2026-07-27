@@ -1,6 +1,6 @@
 ---
 title: 4. Software
 layout: default
-parent: MakerLabs Wiki
+parent: Hack Club Knowledge Base
 nav_order: 4
 ---

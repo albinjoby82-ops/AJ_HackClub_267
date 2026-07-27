@@ -1,6 +1,6 @@
 ---
 title: 2. Equipment
 layout: default
-parent: MakerLabs Wiki
+parent: Hack Club Knowledge Base
 nav_order: 2
 ---

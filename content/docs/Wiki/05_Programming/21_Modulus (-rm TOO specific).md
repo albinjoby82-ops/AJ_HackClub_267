@@ -1,7 +1,7 @@
 <!-- ---
 title: Modulus
 layout: default
-parent: MakerLabs Wiki
+parent: Hack Club Knowledge Base
 nav_order: 21
 --- -->
 # % (Modulus)

@@ -1,6 +1,6 @@
 ---
 title: 3. Components
 layout: default
-parent: MakerLabs Wiki
+parent: Hack Club Knowledge Base
 nav_order: 3
 ---

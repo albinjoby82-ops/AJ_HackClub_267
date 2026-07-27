@@ -1,7 +1,7 @@
 ---
 title: 0. Must-Know
 layout: default
-parent: MakerLabs Wiki
+parent: Hack Club Knowledge Base
 nav_order: 0
 ---
 

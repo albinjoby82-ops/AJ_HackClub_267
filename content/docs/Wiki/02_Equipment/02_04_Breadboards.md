@@ -18,7 +18,7 @@ The diagram shows the electrical connections in the breadboard. The small circle
 
 *Figure: Breadboard layout*
 
-![](../assets/images/Wiki02_04_Breadboard-image.png)
+![](../../assets/images/Wiki02_04_Breadboard-image.png)
 
 *Figure: Electrical components layout on breadboard*
 

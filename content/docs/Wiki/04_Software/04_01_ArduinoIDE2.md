@@ -23,7 +23,7 @@ Arduino IDE is the software used to write, compile, and upload code (called sket
 
 ## Uploading a sketch
 Sends your sketch to the Arduino pluged into your computer.
-![Arduino IDE Uploading](../assets/images/Wiki04_SettingupArduinoIDE2-uploading.png)
+![Arduino IDE Uploading](../../assets/images/Wiki04_SettingupArduinoIDE2-uploading.png)
 ## Verifying a sketch
 Checks your sketch for any coding errors.
-![Arduino IDE Verifying](../assets/images/Wiki04_SettingupArduinoIDE2-verifying.png)
+![Arduino IDE Verifying](../../assets/images/Wiki04_SettingupArduinoIDE2-verifying.png)

@@ -2,7 +2,7 @@
 title: "Task0: Blink built-in LED"
 layout: default
 nav_order: 10
-parent: Lab2 - Signals to Speed
+parent: Workshop 02 - Signals to Speed
 ---
 
 # Task0 – Blink the Built-in LED
@@ -15,7 +15,7 @@ parent: Lab2 - Signals to Speed
 ---
 
 ## Brief
-You’ll use Arduino’s built-in LED to verify your board and code setup, practice basic programming, and get comfortable with the upload/simulation process. Completing this ensures you’re ready for more advanced concepts from MakerLabs and Robotics Sessions
+You’ll use Arduino’s built-in LED to verify your board and code setup, practice basic programming, and get comfortable with the upload/simulation process. Completing this ensures you’re ready for the more advanced workshop challenges.
 
 
 ---
@@ -45,13 +45,13 @@ You’ll use Arduino’s built-in LED to verify your board and code setup, pract
 ---
 
 ## Step 1 – Create a New TinkerCAD Circuit
-1. Click this link to join the [TinkerCAD class](https://www.tinkercad.com/joinclass/IEIN5WNGZ) *(if you don't have an account already, create one with your UCD email)*
+1. Open TinkerCAD Circuits and create or sign in to your account.
 2. Go into Task0
 3. Create a "Create new design"
 4. Once your in the editor, drag in an **Arduino Uno R3**.  
 5. Click **Code → Text** to switch to text mode.  
 
-![TinkerCAD setup](../assets/images/MakerLab2-Image1.png)
+![TinkerCAD setup](../assets/images/Workshop2-Image1.png)
 
 ---
 
@@ -70,9 +70,9 @@ Currently, you should have an example sketch. Replace the code with the followin
 
 ```cpp
 /*
-  Title:              MakerLab2-Task0-Blink
-  Organisation:       UCD ElecSoc – MakerLab
-  Author:             Joe Biju
+  Title:              BuildHub-Task0-Blink
+  Organisation:       Hack Club
+  Author:             Event workshop team
   Description:
   Blink the Arduino’s built-in LED to confirm setup.
 */
@@ -120,7 +120,7 @@ The beauty is that `pin 13` is connected to the onboard LED. Hence, this is a gr
 Press **Start Simulation** in TinkerCAD.  
 You should see the small LED on the Arduino board blink on and off twice per second.  
 
-![LED blinking in TinkerCAD](../assets/gifs/MakerLab2-Image2.gif)
+![LED blinking in TinkerCAD](../assets/gifs/Workshop2-Image2.gif)
 
 {: .troubleshooting }
 > If it doesn’t work:
