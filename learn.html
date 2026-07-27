@@ -30,6 +30,7 @@
             </svg>
             <input type="search" id="navSearch" placeholder="Search workshops & guides…">
         </label>
+        <button class="nav-collapse-all" id="collapseNav" type="button">COLLAPSE ALL</button>
         <nav class="nav-tree" id="navTree"></nav>
     </aside>
 
@@ -85,45 +86,55 @@
 
     var navTree = document.getElementById('navTree');
 
-    function navLink(path, lvl) {
+    function navLink(path) {
         var a = document.createElement('a');
         a.href = '#/' + path;
         a.textContent = pages[path].title;
         a.dataset.path = path;
-        if (lvl) a.className = 'lvl-' + lvl;
         return a;
+    }
+
+    function navBranch(path, level) {
+        var branchChildren = children[path] || [];
+        if (!branchChildren.length) {
+            var leaf = navLink(path);
+            leaf.style.setProperty('--nav-depth', level);
+            return leaf;
+        }
+
+        var det = document.createElement('details');
+        det.dataset.root = path;
+        det.style.setProperty('--nav-depth', level);
+
+        var sum = document.createElement('summary');
+        var label = navLink(path);
+        label.addEventListener('click', function (e) {
+            e.stopPropagation();
+            det.open = true;
+        });
+        sum.appendChild(label);
+        det.appendChild(sum);
+
+        var nested = document.createElement('div');
+        nested.className = 'nav-children';
+        branchChildren.forEach(function (child) {
+            nested.appendChild(navBranch(child, level + 1));
+        });
+        det.appendChild(nested);
+        return det;
     }
 
     function buildNav() {
         navTree.innerHTML = '';
         roots.forEach(function (root) {
-            if (children[root]) {
-                var det = document.createElement('details');
-                det.dataset.root = root;
-                var sum = document.createElement('summary');
-                sum.textContent = pages[root].title;
-                sum.addEventListener('click', function (e) {
-                    /* clicking the label navigates; the arrow still toggles */
-                    if (e.offsetX > 18) {
-                        e.preventDefault();
-                        det.open = true;
-                        location.hash = '#/' + root;
-                    }
-                });
-                det.appendChild(sum);
-                children[root].forEach(function (c) {
-                    det.appendChild(navLink(c, 1));
-                    (children[c] || []).forEach(function (gc) {
-                        det.appendChild(navLink(gc, 2));
-                    });
-                });
-                navTree.appendChild(det);
-            } else {
-                navTree.appendChild(navLink(root, 0));
-            }
+            navTree.appendChild(navBranch(root, 0));
         });
     }
     buildNav();
+
+    document.getElementById('collapseNav').addEventListener('click', function () {
+        navTree.querySelectorAll('details').forEach(function (det) { det.open = false; });
+    });
 
     /* ---------- callout transform (Jekyll just-the-docs syntax) ---------- */
 

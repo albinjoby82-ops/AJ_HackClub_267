@@ -1,7 +1,7 @@
 ---
 title: C++ Comparisons
 layout: default
-parent: 5. Programming
+parent: 6. Programming
 nav_order: 6
 ---
 

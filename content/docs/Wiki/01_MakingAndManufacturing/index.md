@@ -1,18 +1,25 @@
 ---
-title: 1. Making & Manufacturing
+title: 2. Fabrication & Assembly
 layout: default
-parent: Hack Club Knowledge Base
-nav_order: 1
+parent: MakerLabs Wiki
+nav_order: 2
 ---
 
+# Fabrication & Assembly
+
+Practical guides for turning an idea into a physical object, including joining electronic components and producing mechanical parts.
+
 {: .warning-title }
-> This wiki is intended to be a guide **ONLY**. 
+> Training and supervision still matter
 >
-> Making & Manufacturing may require the tools which **should only be handled by competent people with training and understanding of the risks**. 
+> These pages support practical training; they do not replace it. Tools and manufacturing processes can cause burns, cuts, harmful exposure, fire, or equipment damage.
 >
-> **DO NOT ATTEMPT** if you are unsure. Reach out to those who do. 
-> 
-> Learn safely.
+> Follow the MakerLabs workspace procedure and ask a trained supervisor whenever you are unsure.
+
+## In this section
+
+- [Soldering](01_01_Soldering.md) — make and inspect electrical connections safely
+- [3D Printing](01_02_3DPrinting.md) — prepare, print, and assess FDM and resin parts
 
 {: .think-title}
 > A quote from Isaac Asimov:

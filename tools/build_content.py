@@ -219,6 +219,9 @@ def main():
         text = path.read_text(encoding="utf-8")
         meta, body = parse_front_matter(text)
 
+        if meta.get("draft", "").lower() in {"true", "yes", "1"}:
+            continue
+
         try:
             order = int(meta.get("nav_order", "999"))
         except ValueError:
