@@ -1,0 +1,26 @@
+{
+  "name": "micromouse-26-teaser",
+  "private": true,
+  "version": "1.0.0",
+  "description": "UCD ElecSoc Micro-Mouse '26 launch teaser trailer",
+  "scripts": {
+    "prepare-media": "node tools/prepare-media.mjs",
+    "audio": "node tools/generate-audio.mjs",
+    "studio": "remotion studio",
+    "render:preview": "remotion render Teaser output/master-preview.mp4 --scale=0.5 --muted && node tools/finalise.mjs output/master-preview.mp4 output/micromouse-teaser-preview.mp4",
+    "render:final": "remotion render Teaser output/master-final.mp4 --muted && node tools/finalise.mjs output/master-final.mp4 output/micromouse-teaser-final.mp4",
+    "validate": "node tools/validate.mjs",
+    "build:all": "npm run prepare-media && npm run audio && npm run render:preview && npm run render:final && npm run validate"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.418",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.418"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "ffmpeg-static": "^5.2.0",
+    "typescript": "5.6.3"
+  }
+}
