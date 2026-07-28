@@ -2,3 +2,8 @@
 
 # holds an API key — copy config.example.js instead
 config.js
+
+# Cloudflare local state and development secrets
+.wrangler*/
+.dev.vars*
+.env*

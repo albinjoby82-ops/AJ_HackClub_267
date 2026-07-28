@@ -49,6 +49,14 @@ Common materials include:
 
 Always use a material approved for the printer and workspace.
 
+### Watch: how FDM printing works
+
+New to FDM? This beginner's guide walks through what the machine is doing as it lays down each layer, which makes the slicer settings below much easier to picture.
+
+[ANYONE Can Use FDM 3D Printers — The Beginner's Guide](https://youtu.be/Pz7GMZCCJLU)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Pz7GMZCCJLU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ### Important slicer settings
 
 | Setting | What it changes |

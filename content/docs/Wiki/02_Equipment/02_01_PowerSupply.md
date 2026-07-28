@@ -18,9 +18,17 @@ Current limiting is one of its most useful features: a sensible limit can reduce
 {: .warning-title}
 > Use low voltage only
 >
-> This guide is for supervised, low-voltage MakerLabs circuits. Do not connect a bench supply to mains wiring, unknown equipment, batteries being charged, or another power source unless the circuit and procedure have been specifically approved.
+> This guide is for supervised, low-voltage Hack Club circuits. Do not connect a bench supply to mains wiring, unknown equipment, batteries being charged, or another power source unless the circuit and procedure have been specifically approved.
 >
 > Switch the output off before changing connections. Stop immediately if anything becomes hot, smells unusual, makes noise, or draws more current than expected.
+
+## Watch: using a bench supply
+
+This short SparkFun introduction shows voltage setting and current limiting on a typical bench supply. The controls look similar across brands, even if the layout on our lab units differs.
+
+[How to Use a Power Supply (SparkFun)](https://youtu.be/uraPWaeAgYA)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/uraPWaeAgYA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Controls and connections
 

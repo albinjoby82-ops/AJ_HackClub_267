@@ -1,0 +1,41 @@
+# Repository metadata is not part of the public website.
+.git
+.git/**
+.github
+.github/**
+
+# Local development and editor state.
+.claude
+.claude/**
+.codex
+.codex/**
+.openai
+.openai/**
+.wrangler*
+.wrangler*/**
+node_modules
+node_modules/**
+
+# Secrets and local configuration.
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+config.js
+config.example.js
+
+# Deployment and repository configuration.
+.assetsignore
+.gitignore
+.gitattributes
+wrangler.jsonc
+
+# Project source and internal documentation that are not web assets.
+tools
+tools/**
+README.md
+AGENTS.md
+DESIGN_GUIDE.md
+DESIGN_SYSTEM.md
+index-template.html
+MOOD_BOARD.html

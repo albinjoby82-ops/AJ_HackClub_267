@@ -1,0 +1,371 @@
+/* ── Palette ────────────────────────────────────────────────────────────── */
+:root {
+  --black: #05090b;
+  --teal-deep: #0a2028;
+  --teal: #0e3138;
+  --mint: #6ff0d2;
+  --mint-dim: #2f8f7c;
+  --white: #f4f8f8;
+  --impact: #ff5b2e;
+
+  /* Matches the logo-reveal video's final white card. */
+  --card-white: #ffffff;
+  --card-ink: #16232b;
+
+  /* Impact type. Bahnschrift ships with Windows; Arial Narrow is the fallback.
+     Swap in a self-hosted condensed face before final delivery. */
+  --font-impact: 'Bahnschrift', 'Oswald', 'Arial Narrow', 'Haettenschweiler', system-ui, sans-serif;
+  --font-support: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+/* ── Stage ──────────────────────────────────────────────────────────────── */
+/* Authoring space is always exactly 1080x1920; preview scales it down. */
+#stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1080px;
+  height: 1920px;
+  transform: translate(-50%, -50%) scale(var(--fit, 1));
+  transform-origin: center center;
+  background: var(--black);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+#maze-canvas,
+#video-backdrop,
+#logo-video,
+#overlay,
+#grain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#maze-canvas {
+  display: block;
+  opacity: 0;
+}
+
+#video-backdrop {
+  opacity: 0;
+  background: #05090b;
+}
+
+#logo-video {
+  opacity: 0;
+  object-fit: contain;
+  background: transparent;
+}
+
+#overlay {
+  pointer-events: none;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+/* Light film grain, kept subtle so it survives H.264 compression. */
+#grain {
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: var(--grain-src);
+  background-size: 256px 256px;
+}
+
+/* ── Photo layers ───────────────────────────────────────────────────────── */
+/* Everything the timeline animates starts hidden. GSAP only applies a tween
+   once the playhead reaches it, so anything defaulting to opacity 1 would be
+   on screen from the moment its scene appears — every shot in a scene stacked
+   on top of every other. */
+.photo,
+.object-shot,
+.stat,
+.impact,
+.project-label,
+.env-type,
+.title-card > * {
+  opacity: 0;
+}
+
+.photo {
+  position: absolute;
+  overflow: hidden;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Cool teal unification; skin tones stay readable at this strength. */
+  filter: saturate(0.85) contrast(1.06) brightness(0.95);
+}
+
+/* Grade + darkening. Carries the teal unification and buys enough contrast
+   for white type over bright lecture-hall photography. */
+.photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 32, 40, 0.55) 0%, rgba(5, 9, 11, 0.62) 55%, rgba(5, 9, 11, 0.82) 100%);
+  mix-blend-mode: multiply;
+}
+
+.photo.-plain::after {
+  display: none;
+}
+
+/* Featured project objects sit on the dark field with no grade. */
+.object-shot {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  will-change: transform, opacity;
+}
+
+/* Explicit width/height, not max-*: the supplied cut-outs are smaller than the
+   1080x1920 frame, and max-* only ever shrinks — it will not scale them up,
+   which left each hero object at about a quarter of its intended size. */
+.object-shot img {
+  width: 88%;
+  height: 56%;
+  object-fit: contain;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.6));
+}
+
+/* ── Typography ─────────────────────────────────────────────────────────── */
+.impact {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-impact);
+  font-weight: 700;
+  font-stretch: 75%;
+  color: var(--white);
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-transform: uppercase;
+  will-change: transform, opacity, clip-path;
+  text-shadow: 0 6px 40px rgba(0, 0, 0, 0.55);
+}
+
+.impact.-xl {
+  font-size: 168px;
+}
+.impact.-lg {
+  font-size: 132px;
+}
+.impact.-md {
+  font-size: 96px;
+}
+
+/* The mask must be taller than the cap height or the reveal clips the bottom
+   of the glyphs; the negative margin keeps the block on its layout position. */
+.impact .mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+
+.impact .mask > span {
+  display: block;
+  will-change: transform;
+}
+
+.stat {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-impact);
+  font-stretch: 75%;
+  text-transform: uppercase;
+}
+
+.stat .num {
+  display: block;
+  font-size: 250px;
+  font-weight: 700;
+  line-height: 0.86;
+  color: var(--white);
+}
+
+.stat .num em {
+  font-style: normal;
+  color: var(--impact);
+}
+
+.stat .label {
+  display: block;
+  margin-top: 18px;
+  font-family: var(--font-support);
+  font-size: 46px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  color: var(--mint);
+}
+
+.project-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-support);
+  font-size: 42px;
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--mint);
+}
+
+/* Environmental type inside the maze run. */
+.env-type {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-impact);
+  font-stretch: 75%;
+  font-weight: 700;
+  font-size: 148px;
+  text-transform: uppercase;
+  color: var(--white);
+  mix-blend-mode: screen;
+  text-shadow: 0 0 60px rgba(111, 240, 210, 0.45);
+}
+
+/* ── Final title card (matches the video's white end frame) ─────────────── */
+.title-card {
+  position: absolute;
+  inset: 0;
+  background: var(--card-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.title-card .tagline {
+  font-family: var(--font-support);
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--card-ink);
+}
+
+.title-card .event-block {
+  font-family: var(--font-support);
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  line-height: 1.7;
+  text-align: center;
+  color: rgba(22, 35, 43, 0.62);
+  text-transform: uppercase;
+}
+
+.title-card .coming-soon {
+  font-family: var(--font-impact);
+  font-stretch: 75%;
+  font-weight: 700;
+  font-size: 64px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--impact);
+}
+
+/* ── Loader + scrubber (excluded from render mode) ──────────────────────── */
+#loader {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #000;
+  color: var(--mint);
+  font-family: var(--font-support);
+  font-size: 18px;
+  letter-spacing: 0.4em;
+  z-index: 10;
+}
+
+#loader.-done {
+  display: none;
+}
+
+#scrubber {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(760px, 92vw);
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(111, 240, 210, 0.25);
+  border-radius: 10px;
+  z-index: 11;
+  font-family: var(--font-support);
+  color: var(--mint);
+}
+
+#scrubber button {
+  background: none;
+  border: 1px solid rgba(111, 240, 210, 0.4);
+  color: var(--mint);
+  border-radius: 5px;
+  width: 34px;
+  height: 30px;
+  cursor: pointer;
+}
+
+#scrubber input {
+  flex: 1;
+}
+
+#scrubber output {
+  min-width: 74px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+/* Render mode: exact pixels, no chrome, no scaling. */
+body.-render #scrubber,
+body.-render #loader {
+  display: none !important;
+}
+
+body.-render #stage {
+  top: 0;
+  left: 0;
+  transform: none;
+}

@@ -9,6 +9,10 @@ nav_order: 8
 
 A capacitor stores energy in an electric field. Capacitance is measured in farads (`F`), with common values expressed in microfarads (`µF`), nanofarads (`nF`), or picofarads (`pF`).
 
+[Capacitors Explained (The Engineering Mindset)](https://youtu.be/X4EUwTwZ110)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/X4EUwTwZ110" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## Common uses
 
 - Decoupling power close to an IC
