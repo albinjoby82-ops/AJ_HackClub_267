@@ -22,7 +22,7 @@ export function build({ root, tl, t0, dur }) {
   const eventBlock = el(
     'div',
     'event-block',
-    '[DATE] · [TIME]<br />[VENUE]',
+    '[DATE] · [TIME]<br />[VENUE]<br />[SIGN-UP URL]',
   );
   const comingSoon = el('div', 'coming-soon', 'Coming soon');
 

@@ -15,6 +15,12 @@ import { LOGO_VIDEO, frames } from '../timing.js';
  * the surround is skipped entirely.
  */
 export function build({ root, tl, t0, dur, video, backdrop }) {
+  // The replacement asset is expected to be portrait. Infer that from the
+  // decoded dimensions so dropping it at the documented path is enough; the
+  // explicit timing flag remains available for an asset whose framing needs
+  // to override the aspect-ratio heuristic.
+  const native = LOGO_VIDEO.native || (video.videoWidth > 0 && video.videoHeight > video.videoWidth);
+
   // The surround lives in #video-backdrop, which is a sibling *before* the
   // video element. Putting it in the overlay would draw it on top and hide
   // the reveal entirely.
@@ -30,17 +36,19 @@ export function build({ root, tl, t0, dur, video, backdrop }) {
     opacity: '0.85',
     pointerEvents: 'none',
   });
-  if (!LOGO_VIDEO.native) root.append(seam);
+  if (!native) root.append(seam);
 
   tl.set(root, { opacity: 1 }, t0);
   tl.set(video, { opacity: 1 }, t0);
-  if (!LOGO_VIDEO.native) tl.set(surround, { opacity: 1 }, t0);
+  if (!native) tl.set(surround, { opacity: 1 }, t0);
 
   // The video's own white wipe lands ~0.4s into the trimmed clip; the surround
   // and the seam follow it so the frame turns white as one piece.
   const wipeAt = t0 + 0.4;
-  tl.to(surround, { background: '#ffffff', duration: frames(3), ease: 'power2.in' }, wipeAt);
-  tl.to(seam, { opacity: 0, duration: frames(3) }, wipeAt);
+  if (!native) {
+    tl.to(surround, { background: '#ffffff', duration: frames(3), ease: 'power2.in' }, wipeAt);
+    tl.to(seam, { opacity: 0, duration: frames(3) }, wipeAt);
+  }
 
   // Video stays on screen through the title hold — scene 8 draws on top of
   // its final frame rather than recreating the logo lockup.

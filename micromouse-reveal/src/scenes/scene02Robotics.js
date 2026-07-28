@@ -16,7 +16,9 @@ const SHOTS = [
   { src: ASSETS.makerlabs.printFarm, at: 2.16, hold: 0.8, rect: { x: 0, y: 400, w: 1080, h: 1180 }, from: { scale: 1.3, rotate: -1.5 }, to: { scale: 1.04, rotate: 0.4 } },
   { src: ASSETS.robotics.buildCloseup, at: 2.96, hold: 0.66, rect: { x: 0, y: 220, w: 1080, h: 1420 }, from: { scale: 1.22, x: 40 }, to: { scale: 1.04, x: -30 } },
   { src: ASSETS.makerlabs.soldering01, at: 3.62, hold: 0.6, rect: { x: 0, y: 380, w: 1080, h: 1240 }, from: { scale: 1.26, y: -24 }, to: { scale: 1.06, y: 14 } },
-  { src: ASSETS.makerlabs.audience, at: 4.22, hold: 0.72, rect: { x: 0, y: 0, w: 1080, h: 1920 }, from: { scale: 1.2 }, to: { scale: 1.03 }, focal: '50% 38%' },
+  // The supplied audience file is a generic hills-and-clouds placeholder, not
+  // event photography. Revisit the real hands-on shot with a tighter crop.
+  { src: ASSETS.robotics.handsOn, at: 4.22, hold: 0.72, rect: { x: 0, y: 180, w: 1080, h: 1540 }, from: { scale: 1.32, x: 70, y: 18 }, to: { scale: 1.1, x: -26, y: -12 }, focal: '62% 48%' },
   { src: ASSETS.makerlabs.group, at: 4.94, hold: 1.06, rect: { x: 0, y: 0, w: 1080, h: 1920 }, from: { scale: 1.16, y: 24 }, to: { scale: 1.0, y: -10 }, focal: '50% 45%' },
 ];
 

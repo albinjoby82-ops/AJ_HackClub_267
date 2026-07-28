@@ -24,6 +24,8 @@ const SHOTS = [
 const CARD_FLASHES = [
   { src: ASSETS.cards.roboexpoHero, at: 0.0, hold: 0.34 },
   { src: ASSETS.cards.roboexpoStats, at: 3.5, hold: 0.32 },
+  { src: ASSETS.cards.roboexpoDemoers, at: 4.72, hold: 0.22 },
+  { src: ASSETS.cards.roboexpoTeams, at: 4.96, hold: 0.24 },
 ];
 
 const STATS = [
@@ -35,7 +37,7 @@ const STATS = [
 const PROJECTS = [
   { src: ASSETS.projects.spider, label: 'Robot spider', at: 5.3 },
   { src: ASSETS.projects.drum, label: 'Analogue drum', at: 5.95 },
-  { src: ASSETS.projects.sand, label: 'Sand machine', at: 6.6 },
+  { src: ASSETS.projects.sand, altSrc: ASSETS.projects.sandAlt, label: 'Sand machine', at: 6.6 },
   { src: ASSETS.projects.jarvis, label: 'Desktop Jarvis', at: 7.25 },
 ];
 
@@ -55,8 +57,9 @@ export function build({ root, tl, t0 }) {
   }
 
   for (const card of CARD_FLASHES) {
-    const node = photo(card.src, { x: 60, y: 430, w: 960, h: 1060 }, { plain: true });
+    const node = photo(card.src, { x: 70, y: 260, w: 940, h: 1400 }, { plain: true });
     node.querySelector('img').style.objectFit = 'contain';
+    node.style.zIndex = '4';
     root.append(node);
     const start = t0 + card.at;
     tl.set(node, { opacity: 0, scale: 1.08 }, start - 0.01);
@@ -83,7 +86,7 @@ export function build({ root, tl, t0 }) {
   tl.set(line, { opacity: 1 }, t0 + 3.9);
   tl.fromTo(lineInner, { yPercent: 112 }, { yPercent: 0, duration: frames(6), ease: 'power3.out' }, t0 + 3.9);
   tl.fromTo(line, { scale: 1.05 }, { scale: 1, duration: frames(6), ease: 'power2.out' }, t0 + 3.9);
-  tl.set(line, { opacity: 0 }, t0 + 5.2);
+  tl.set(line, { opacity: 0 }, t0 + 4.68);
 
   buildProjectSequence(root, tl, t0);
 
@@ -100,8 +103,11 @@ function buildProjectSequence(root, tl, t0) {
 
   PROJECTS.forEach((p, i) => {
     const shot = objectShot(p.src);
+    const altShot = p.altSrc ? objectShot(p.altSrc) : null;
     const label = projectLabel(p.label, { top: 1420 });
-    root.append(shot, label);
+    root.append(shot);
+    if (altShot) root.append(altShot);
+    root.append(label);
 
     const start = t0 + p.at;
     const dir = i % 2 === 0 ? 1 : -1;
@@ -111,6 +117,16 @@ function buildProjectSequence(root, tl, t0) {
     tl.set(shot, { opacity: 1 }, start);
     tl.to(shot, { x: 0, scale: 1, duration: frames(5), ease: 'power4.out' }, start);
     tl.to(shot, { scale: 1.04, duration: frames(13), ease: 'none' }, start + frames(5));
+
+    // Match-cut between the two supplied CAD views so both read as one
+    // engineered object without taking time from another project.
+    if (altShot) {
+      tl.set(altShot, { opacity: 0, x: 24 * dir, scale: 0.98 }, start - 0.01);
+      tl.set(shot, { opacity: 0 }, start + 0.31);
+      tl.set(altShot, { opacity: 1 }, start + 0.31);
+      tl.to(altShot, { x: 0, scale: 1.03, duration: frames(4), ease: 'power3.out' }, start + 0.31);
+      tl.to(altShot, { x: -160 * dir, opacity: 0, duration: frames(3), ease: 'power2.in' }, start + 0.56);
+    }
 
     // 2. label flashes in just behind the object
     tl.set(label, { opacity: 1 }, start + frames(2));

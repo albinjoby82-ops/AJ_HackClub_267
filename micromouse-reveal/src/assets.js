@@ -16,7 +16,6 @@ export const ASSETS = {
 
   makerlabs: {
     group: `${A}/makerlabs/makerlabs_group.jpeg`,
-    audience: `${A}/makerlabs/makerlabs_audience.jpeg`,
     soldering01: `${A}/makerlabs/soldering_workshop_01.png`,
     soldering02: `${A}/makerlabs/soldering_workshop_02.png`,
     printFarm: `${A}/makerlabs/print_farm.png`,
@@ -49,6 +48,8 @@ export const ASSETS = {
     roboexpoHero: `${A}/designed_cards/roboexpo_hero.png`,
     roboexpoStats: `${A}/designed_cards/roboexpo_stats.png`,
     roboexpoYearOfWork: `${A}/designed_cards/roboexpo_year_of_work.png`,
+    roboexpoDemoers: `${A}/designed_cards/roboexpo_demoers.png`,
+    roboexpoTeams: `${A}/designed_cards/roboexpo_teams.png`,
   },
 
   /** Clean cut-out project shots for the four-object hero sequence. */
@@ -56,6 +57,7 @@ export const ASSETS = {
     spider: `${A}/robotics/robot_spider.png`,
     drum: `${A}/robotics/analogue_drum_machine.png`,
     sand: `${A}/robotics/sand_machine_cad_01.png`,
+    sandAlt: `${A}/robotics/sand_machine_cad_02.png`,
     jarvis: `${A}/robotics/desktop_jarvis.png`,
   },
 };

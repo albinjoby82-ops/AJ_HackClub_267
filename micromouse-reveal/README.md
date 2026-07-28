@@ -22,10 +22,10 @@ film; `?render=1` hides the UI and pins the stage at exact pixel size.
 npm run render
 ```
 
-That runs `capture` (Playwright walks the timeline one frame at a time into
-`out/frames/`) then `export` (ffmpeg encodes `out/micromouse-26-reveal.mp4`).
-The dev server must already be running. ffmpeg comes from `ffmpeg-static`, so
-no system install is needed.
+The render command first regenerates the deterministic original soundtrack,
+builds the app, captures frames straight into ffmpeg without writing PNGs, and
+muxes AAC audio into `out/micromouse-26-reveal.mp4`. No dev server or system
+ffmpeg install is needed.
 
 ## Reviewing
 
@@ -68,8 +68,9 @@ rebuilt. Two things about the delivered file shape the edit:
 
 - **It is 1280×720 landscape**, so it occupies a centre band of the 9:16 frame.
   `#video-backdrop` fills the surround and turns white in step with the video's
-  own white wipe. When a 1080×1920 re-render is dropped in at the same path,
-  set `LOGO_VIDEO.native = true` in `src/timing.js` and the surround is skipped.
+  own white wipe. A portrait re-render dropped at the same path is detected
+  automatically and skips the surround; `LOGO_VIDEO.native` remains available
+  as an explicit override.
 - **Its first ~4.6s is its own maze sequence**, which would duplicate scene 6.
   Only the payoff is used — see `LOGO_VIDEO.in` / `.out` in `src/timing.js`.
 
@@ -77,12 +78,17 @@ The video already carries the ElecSoc logo lockup and `MICROMOUSE '26`, so
 scene 8 holds that final frame and adds only the tagline, the event block and
 COMING SOON on top of it.
 
+## Soundtrack
+
+`npm run audio` creates `public/audio/score.wav` from fixed synthesis and
+seeded noise. It is an original 130 BPM score with relay/circuit details,
+recap impacts, a near-silent 0:24 pivot, motor spool, maze drive and logo
+stinger. Repeated generation is byte-identical.
+
 ## Outstanding
 
-- **No audio.** The brief specifies a layered score with a tension break at
-  0:24 and a motor spool after 0:27; no audio asset was supplied and none is
-  generated. The cut is built to work muted.
-- **Event details are placeholders.** `[DATE]`, `[TIME]`, `[VENUE]` in
+- **Event details are placeholders.** `[DATE]`, `[TIME]`, `[VENUE]` and
+  `[SIGN-UP URL]` in
   `src/scenes/scene08Title.js`. Nothing is invented.
 - **Fonts are system fallbacks** (Bahnschrift → Arial Narrow). Self-host a
   condensed face before final delivery or the render will differ off this

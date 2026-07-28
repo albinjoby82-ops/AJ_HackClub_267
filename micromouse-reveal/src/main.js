@@ -18,6 +18,7 @@ const RENDER_MODE = params.get('render') === '1';
 const stage = document.getElementById('stage');
 const canvas = document.getElementById('maze-canvas');
 const video = document.getElementById('logo-video');
+const score = document.getElementById('score-audio');
 const loader = document.getElementById('loader');
 
 canvas.width = WIDTH;
@@ -41,34 +42,52 @@ async function preload() {
   const urls = allImageUrls();
   let done = 0;
   const label = loader.querySelector('b');
+  const total = urls.length + 2;
+  const tick = () => {
+    done++;
+    label.textContent = `${Math.round((done / total) * 100)}%`;
+  };
+  const mediaReady = (media, name) =>
+    new Promise((resolve) => {
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        tick();
+        resolve();
+      };
+      if (media.readyState >= 3) return finish();
+      media.addEventListener('canplaythrough', finish, { once: true });
+      media.addEventListener(
+        'error',
+        () => {
+          console.warn(`[preload] ${name} failed to load`);
+          finish();
+        },
+        { once: true },
+      );
+      media.load();
+    });
 
   await Promise.all([
     ...urls.map(
       (url) =>
         new Promise((resolve) => {
           const img = new Image();
-          const tick = () => {
-            done++;
-            label.textContent = `${Math.round((done / (urls.length + 1)) * 100)}%`;
+          const finish = () => {
+            tick();
             resolve();
           };
-          img.onload = tick;
+          img.onload = finish;
           img.onerror = () => {
             console.warn('[preload] missing asset', url);
-            tick();
+            finish();
           };
           img.src = url;
         }),
     ),
-    new Promise((resolve) => {
-      if (video.readyState >= 3) return resolve();
-      video.addEventListener('canplaythrough', resolve, { once: true });
-      video.addEventListener('error', () => {
-        console.warn('[preload] logo reveal video failed to load');
-        resolve();
-      });
-      video.load();
-    }),
+    mediaReady(video, 'logo reveal video'),
+    mediaReady(score, 'soundtrack'),
   ]);
 }
 
@@ -117,6 +136,7 @@ async function seek(time) {
   const t = Math.max(0, Math.min(TOTAL_DURATION, time));
   tl.time(t, false);
 
+  if (!RENDER_MODE && Math.abs(score.currentTime - t) > 0.12) score.currentTime = t;
   if (mazeScene?.isActive(t)) mazeScene.update(t);
   if (logoScene?.isActive(t)) await logoScene.syncVideo(t);
 }
@@ -153,6 +173,7 @@ function setupScrubber() {
   const stop = () => {
     playing = false;
     playBtn.textContent = '▶';
+    score.pause();
     if (rafId) cancelAnimationFrame(rafId);
   };
 
@@ -162,6 +183,8 @@ function setupScrubber() {
     playBtn.textContent = '❚❚';
     startTime = (Number(seekBar.value) / 1000) * TOTAL_DURATION;
     if (startTime >= TOTAL_DURATION - 0.01) startTime = 0;
+    score.currentTime = startTime;
+    score.play().catch(() => {});
     startWall = performance.now();
     rafId = requestAnimationFrame(loop);
   });

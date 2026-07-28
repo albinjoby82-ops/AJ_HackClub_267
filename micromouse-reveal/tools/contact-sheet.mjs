@@ -5,7 +5,10 @@
  *
  *   node tools/contact-sheet.mjs [count] [from] [to] [cols] [thumbWidth]
  */
-import { chromium } from 'playwright';
+// paths.mjs must run before Playwright so the browser cache stays on the
+// configured work drive rather than the near-full system drive.
+import { OUT_DIR } from './paths.mjs';
+const { chromium } = await import('playwright');
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -15,7 +18,7 @@ const FROM = process.argv[3] != null ? Number(process.argv[3]) : null;
 const TO = process.argv[4] != null ? Number(process.argv[4]) : null;
 const COLS = Number(process.argv[5] ?? 6);
 const THUMB_W = Number(process.argv[6] ?? 240);
-const OUT = path.resolve('out/contact');
+const OUT = path.join(OUT_DIR, 'contact');
 
 const browser = await chromium.launch();
 const page = await browser.newPage({

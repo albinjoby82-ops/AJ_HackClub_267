@@ -158,7 +158,7 @@ export function build({ root, tl, t0, dur, canvas }) {
     const nx = -tan.z;
     const nz = tan.x;
     const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.8, 0.36),
+      new THREE.PlaneGeometry(0.9, 0.4),
       new THREE.MeshBasicMaterial({
         map: monoTexture(spec.url),
         transparent: true,
@@ -391,7 +391,7 @@ export function build({ root, tl, t0, dur, canvas }) {
     // Memories glow only as the mouse passes them.
     for (const m of memories) {
       const d = Math.abs(s - m.s);
-      m.mesh.material.opacity = Math.max(0, 0.34 * (1 - d / 1.6));
+      m.mesh.material.opacity = Math.max(0, 0.48 * (1 - d / 1.45));
     }
 
     // Sensor emitters pulse faster as the run speeds up.

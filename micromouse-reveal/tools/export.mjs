@@ -9,10 +9,11 @@
 import { spawn } from 'node:child_process';
 import { mkdir, access } from 'node:fs/promises';
 import path from 'node:path';
+import { OUT_DIR } from './paths.mjs';
 
-const FRAMES = path.resolve('out/frames');
-const OUT_DIR = path.resolve('out');
+const FRAMES = path.join(OUT_DIR, 'frames');
 const OUT_FILE = path.join(OUT_DIR, 'micromouse-26-reveal.mp4');
+const AUDIO_FILE = path.resolve('public/audio/score.wav');
 const FPS = 30;
 
 async function resolveFfmpeg() {
@@ -30,6 +31,10 @@ await access(path.join(FRAMES, '00000.png')).catch(() => {
   console.error('No frames found. Run `npm run capture` first.');
   process.exit(1);
 });
+await access(AUDIO_FILE).catch(() => {
+  console.error('No soundtrack found. Run `npm run audio` first.');
+  process.exit(1);
+});
 
 await mkdir(OUT_DIR, { recursive: true });
 const ffmpeg = await resolveFfmpeg();
@@ -38,6 +43,7 @@ const args = [
   '-y',
   '-framerate', String(FPS),
   '-i', path.join(FRAMES, '%05d.png'),
+  '-i', AUDIO_FILE,
   '-c:v', 'libx264',
   '-preset', 'slow',
   '-crf', '17',
@@ -48,6 +54,9 @@ const args = [
   '-colorspace', 'bt709',
   '-color_primaries', 'bt709',
   '-color_trc', 'bt709',
+  '-c:a', 'aac',
+  '-b:a', '192k',
+  '-shortest',
   OUT_FILE,
 ];
 

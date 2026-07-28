@@ -24,6 +24,7 @@ import path from 'node:path';
 const OUT_FILE = path.join(OUT_DIR, 'micromouse-26-reveal.mp4');
 const BATCH = Number(process.env.CAPTURE_BATCH ?? 250);
 const DIST = path.resolve('dist');
+const AUDIO_FILE = path.join(DIST, 'audio', 'score.wav');
 
 // Serve the built bundle from an in-process static server rather than the Vite
 // dev server, which died mid-render more than once and took the run with it.
@@ -71,11 +72,23 @@ async function openPage() {
 const write = (stream, buf) =>
   new Promise((resolve, reject) => {
     if (stream.write(buf)) return resolve();
-    stream.once('drain', resolve);
-    stream.once('error', reject);
+    const onDrain = () => {
+      stream.off('error', onError);
+      resolve();
+    };
+    const onError = (error) => {
+      stream.off('drain', onDrain);
+      reject(error);
+    };
+    stream.once('drain', onDrain);
+    stream.once('error', onError);
   });
 
 await mkdir(OUT_DIR, { recursive: true });
+await access(AUDIO_FILE).catch(() => {
+  console.error('No soundtrack found. Run `npm run audio` and `npm run build` first.');
+  process.exit(1);
+});
 
 let { browser, page } = await openPage();
 const { fps, totalFrames } = await page.evaluate(() => ({
@@ -91,6 +104,7 @@ const proc = spawn(
     '-f', 'image2pipe',
     '-framerate', String(fps),
     '-i', '-',
+    '-i', AUDIO_FILE,
     '-c:v', 'libx264',
     '-preset', 'slow',
     '-crf', '17',
@@ -100,6 +114,9 @@ const proc = spawn(
     '-colorspace', 'bt709',
     '-color_primaries', 'bt709',
     '-color_trc', 'bt709',
+    '-c:a', 'aac',
+    '-b:a', '192k',
+    '-shortest',
     OUT_FILE,
   ],
   { stdio: ['pipe', 'ignore', 'pipe'] },

@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "render": "vite build && node tools/render.mjs",
+    "audio": "node tools/generate-audio.mjs",
+    "render": "npm run audio && vite build && node tools/render.mjs",
     "capture": "node tools/capture.mjs",
     "export": "node tools/export.mjs"
   },

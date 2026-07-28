@@ -14,12 +14,15 @@
  * addressed by absolute time rather than by playback state, restarting costs
  * nothing and the output is identical.
  */
-import { chromium } from 'playwright';
+// paths.mjs must run before Playwright so the browser cache stays on the
+// configured work drive rather than the near-full system drive.
+import { OUT_DIR } from './paths.mjs';
+const { chromium } = await import('playwright');
 import { mkdir, rm, access } from 'node:fs/promises';
 import path from 'node:path';
 
 const URL = process.env.REVEAL_URL ?? 'http://localhost:5183/?render=1';
-const OUT = path.resolve('out/frames');
+const OUT = path.join(OUT_DIR, 'frames');
 const BATCH = Number(process.env.CAPTURE_BATCH ?? 250);
 const FRESH = process.argv.includes('--fresh');
 
