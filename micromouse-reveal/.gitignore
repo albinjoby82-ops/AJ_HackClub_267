@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.vite/
+
+# Render artefacts: frames, encoded video, and contact sheets (which embed
+# every thumbnail as base64 and are large).
+out/

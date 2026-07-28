@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8000", "--bind", "127.0.0.1"],
       "port": 8000
+    },
+    {
+      "name": "reveal",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "micromouse-reveal"],
+      "port": 5183
     }
   ]
 }

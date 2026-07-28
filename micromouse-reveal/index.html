@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Micro-Mouse '26 — Reveal</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Fixed 1080x1920 stage. CSS scales it to fit the window in preview;
+         in ?render=1 it sits at exact pixel size for frame capture. -->
+    <div id="stage">
+      <canvas id="maze-canvas"></canvas>
+
+      <!-- Backdrop must sit behind the video: the reveal is letterboxed into
+           the 9:16 frame and this fills the surround. -->
+      <div id="video-backdrop"></div>
+      <video id="logo-video" src="/video/logo-reveal.mp4" muted playsinline preload="auto"></video>
+
+      <div id="overlay">
+        <div class="scene" data-scene="powerOn"></div>
+        <div class="scene" data-scene="robotics"></div>
+        <div class="scene" data-scene="makerthon"></div>
+        <div class="scene" data-scene="roboExpo"></div>
+        <div class="scene" data-scene="pivot"></div>
+        <div class="scene" data-scene="mazeRun"></div>
+        <div class="scene" data-scene="title"></div>
+      </div>
+
+      <div id="grain"></div>
+    </div>
+
+    <div id="loader"><span>LOADING <b>0%</b></span></div>
+
+    <div id="scrubber">
+      <button id="play">▶</button>
+      <input id="seek" type="range" min="0" max="1000" value="0" step="1" />
+      <output id="readout">0.00s</output>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
