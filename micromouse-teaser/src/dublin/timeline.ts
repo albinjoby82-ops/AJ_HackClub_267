@@ -83,30 +83,40 @@ export const POSTER1_TRACK: SpotKey[] = [
 
 /**
  * Poster 2 track — near-total darkness, then four beat-synchronised jumps:
- * ElecSoc logo + DUBLIN, MICROMOUSE OPEN, the outlined 2026, then
- * BUILD IT. CODE IT. RACE IT. / COMING SOON — settling into a tall soft
- * ellipse that keeps ≥30% of the poster in deep shadow.
- * Poster geometry: logo (540, 320), DUBLIN y≈580, MICROMOUSE OPEN y≈700–930,
- * 2026 y≈1000–1290, tagline block y≈1400–1640, checkerboards y<170 / y>1720.
+ * the ElecSoc logo, the "ONE CONTACT DETECTED" kicker with IT KNOWS THE WAY
+ * OUT under it, the radar crosshair and its orange contact, then DUBLIN
+ * MICROMOUSE OPEN / 2026 · COMING SOON — settling into a tall soft ellipse
+ * that keeps the poster's edges in deep shadow.
+ *
+ * Poster geometry (1080×1920): ElecSoc logo (540, 168) spanning x 410–655;
+ * "ONE CONTACT DETECTED" (540, 418); headline lines y≈545 / 672 / 805, block
+ * x 250–840; radar rings centred (540, 1140) with the orange contact dot on
+ * the crosshair; "DUBLIN MICROMOUSE OPEN" y≈1655 spanning x 100–985;
+ * "2026 · COMING SOON" y≈1745.
  */
 export const POSTER2_TRACK: SpotKey[] = [
-  {f: 324, x: 540, y: 430, rx: 130, ry: 95, it: 0.1},
-  // beat 1 — logo / DUBLIN
-  {f: 325, x: 540, y: 430, rx: 140, ry: 100, it: 0.16},
-  {f: 330, x: 540, y: 430, rx: 300, ry: 245, it: 0.7},
-  {f: 349, x: 549, y: 442, rx: 306, ry: 250, it: 0.68},
-  // beat 2 — MICROMOUSE OPEN (wide enough that the whole wordmark reads)
-  {f: 356, x: 540, y: 795, rx: 520, ry: 235, it: 0.74},
-  {f: 375, x: 532, y: 806, rx: 526, ry: 239, it: 0.72},
-  // beat 3 — 2026
-  {f: 382, x: 540, y: 1145, rx: 465, ry: 248, it: 0.78},
-  {f: 401, x: 548, y: 1152, rx: 470, ry: 252, it: 0.76},
-  // beat 4 — BUILD IT. CODE IT. RACE IT. / COMING SOON
-  {f: 408, x: 540, y: 1500, rx: 420, ry: 228, it: 0.8},
-  {f: 427, x: 534, y: 1494, rx: 424, ry: 232, it: 0.79},
-  // settle — the essential announcement readable, edges still shadowed
-  {f: 442, x: 540, y: 1075, rx: 560, ry: 680, it: 0.9},
-  {f: 499, x: 546, y: 1069, rx: 565, ry: 685, it: 0.89},
+  {f: 324, x: 540, y: 170, rx: 120, ry: 88, it: 0.1},
+  // beat 1 — ElecSoc logo
+  {f: 325, x: 540, y: 170, rx: 130, ry: 94, it: 0.16},
+  {f: 330, x: 540, y: 168, rx: 215, ry: 130, it: 0.7},
+  {f: 349, x: 547, y: 174, rx: 220, ry: 134, it: 0.68},
+  // beat 2 — the kicker and the headline together, wide enough that
+  // "IT KNOWS THE WAY OUT" reads as one block
+  {f: 356, x: 540, y: 655, rx: 410, ry: 275, it: 0.76},
+  {f: 375, x: 532, y: 664, rx: 416, ry: 279, it: 0.74},
+  // beat 3 — the radar contact
+  {f: 382, x: 540, y: 1140, rx: 300, ry: 285, it: 0.8},
+  {f: 401, x: 548, y: 1146, rx: 305, ry: 290, it: 0.78},
+  // beat 4 — DUBLIN MICROMOUSE OPEN / 2026 · COMING SOON
+  {f: 408, x: 540, y: 1690, rx: 500, ry: 150, it: 0.82},
+  {f: 427, x: 534, y: 1684, rx: 505, ry: 154, it: 0.81},
+  // settle — centred low enough that the headline, the radar and the
+  // "DUBLIN MICROMOUSE OPEN" line all sit inside the beam's clear zone rather
+  // than its feathered edge; the logo stays in shadow at the top.
+  // "DUBLIN MICROMOUSE OPEN" is nearly full-bleed (x 100–985), so the beam has
+  // to be wide as well as tall or its outer letters sit in the feather.
+  {f: 442, x: 540, y: 1170, rx: 720, ry: 840, it: 0.9},
+  {f: 499, x: 546, y: 1164, rx: 725, ry: 845, it: 0.89},
 ];
 
 export const ASSETS = {

@@ -36,7 +36,7 @@ const CLIPS = {
 const main = async () => {
   fs.mkdirSync(out, {recursive: true});
 
-  for (const poster of ['01_something_is_learning_the_maze.png', '02_micromouse_open_2026.png']) {
+  for (const poster of ['01_something_is_learning_the_maze.png', '02_it_knows_the_way_out.png']) {
     const from = path.join(src, 'posters', poster);
     const to = path.join(out, poster.startsWith('01') ? 'poster1.png' : 'poster2.png');
     fs.copyFileSync(from, to);
