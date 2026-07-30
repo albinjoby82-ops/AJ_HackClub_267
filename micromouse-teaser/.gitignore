@@ -8,9 +8,17 @@ public/score-raw.wav
 public/elecsoc-logo.png
 public/fonts/
 
+# Dublin cut. dublin-src/ is supplied media (source animation, soundtrack,
+# posters) and public/dublin/ is cut from it by tools/prepare-dublin.mjs and
+# tools/retime-dublin.mjs. Both are large binaries — see the README for where
+# the sources come from.
+dublin-src/
+public/dublin/
+
 # Render artefacts. The delivered MP4s are large binaries; regenerate rather
 # than commit them. The report and contact sheet are documentation and stay
 # tracked.
 output/*
 !output/render-report.md
 !output/micromouse-teaser-contact-sheet.png
+!output/micromouse-teaser-final-v2-contact-sheet.png

@@ -57,6 +57,41 @@ tools/
   validate.mjs              acceptance checks + contact sheet
 ```
 
+## The Dublin cut
+
+A second, separate composition — `DublinTeaser`, 1080×1920, 30 fps, 500 frames
+(16.667 s) — for the Dublin Micromouse Open '26. It shares nothing with the
+`Teaser` timeline above: two poster spotlight-reveals bracketing two sharp-turn
+shots, over a supplied soundtrack.
+
+```bash
+npm run dublin:all
+```
+
+| Script | Does |
+| --- | --- |
+| `npm run dublin:prepare` | Stages the posters into `public/dublin` and cuts the turn clips 1:1 |
+| `npm run dublin:retime` | Re-cuts the turn clips with the shipping retime — run after prepare, it overwrites them |
+| `npm run dublin:render` | Renders `DublinTeaser` and muxes the supplied soundtrack (stream copy, never re-encoded) |
+| `npm run dublin:validate` | Container/codec/frame-count acceptance checks |
+
+**Supplied media is not in the repo.** `dublin-src/` and the `public/dublin/`
+clips cut from it are gitignored, same as `public/primary-1080.mp4`. To build
+you need:
+
+```
+dublin-src/
+  source/current_mouse_animation.mp4     1080×1920 @ 30 fps — the ramp and
+                                         frame maths assume exactly this
+  audio/reference_music_trimmed.m4a      AAC-LC 44.1 kHz, already the exact
+                                         production audio
+  posters/01_something_is_learning_the_maze.png
+  posters/02_micromouse_open_2026.png    2160×3840, downsampled by the renderer
+```
+
+`src/dublin/timeline.ts` is the source of truth: cut points, beat frames, the
+two spotlight tracks and the poster geometry they were measured against.
+
 ## Two things worth knowing before editing
 
 **The source animation has typography burned into it.** `SMALLER.` / `FASTER.` /

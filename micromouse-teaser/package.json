@@ -7,10 +7,15 @@
     "prepare-media": "node tools/prepare-media.mjs",
     "audio": "node tools/generate-audio.mjs",
     "studio": "remotion studio",
-    "render:preview": "remotion render Teaser output/master-preview.mp4 --scale=0.5 --muted && node tools/finalise.mjs output/master-preview.mp4 output/micromouse-teaser-preview.mp4",
-    "render:final": "remotion render Teaser output/master-final.mp4 --muted && node tools/finalise.mjs output/master-final.mp4 output/micromouse-teaser-final.mp4",
+    "render:preview": "remotion render Teaser output/master-preview.mp4 --scale=0.5 --muted && node tools/finalise.mjs output/master-preview.mp4 output/micromouse-teaser-preview-v2.mp4",
+    "render:final": "remotion render Teaser output/master-final-v2.mp4 --muted && node tools/finalise.mjs output/master-final-v2.mp4 output/micromouse-teaser-final-v2.mp4",
     "validate": "node tools/validate.mjs",
-    "build:all": "npm run prepare-media && npm run audio && npm run render:preview && npm run render:final && npm run validate"
+    "build:all": "npm run prepare-media && npm run audio && npm run render:preview && npm run render:final && npm run validate",
+    "dublin:prepare": "node tools/prepare-dublin.mjs",
+    "dublin:retime": "node tools/retime-dublin.mjs --variant=reshot",
+    "dublin:render": "remotion render DublinTeaser output/dublin-master.mp4 --muted && node tools/finalise-dublin.mjs output/dublin-master.mp4 output/dublin_micromouse_open_teaser.mp4",
+    "dublin:validate": "node tools/validate-dublin.mjs output/dublin_micromouse_open_teaser.mp4",
+    "dublin:all": "npm run dublin:prepare && npm run dublin:retime && npm run dublin:render && npm run dublin:validate"
   },
   "dependencies": {
     "@remotion/cli": "4.0.418",
