@@ -65,6 +65,20 @@
 
     .mm-hero { text-align: center; }
 
+    .mm-byline {
+        margin: 0 0 14px;
+        color: var(--mm-paper-faint);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .mm-byline strong {
+        color: var(--mm-paper-dim);
+        font-weight: 700;
+    }
+
     .event-kicker {
         display: inline-flex;
         align-items: center;
@@ -536,6 +550,7 @@
     <div class="mm-shell">
 
         <section class="mm-hero" aria-labelledby="eventTitle">
+            <p class="mm-byline">Brought to you by <strong>Albin Andrews Joby</strong></p>
             <span class="event-kicker">ElecSoc event reveal</span>
             <h1 id="eventTitle">Dublin Micromouse Open <span class="mm-year">2026</span></h1>
             <p class="event-meta">
