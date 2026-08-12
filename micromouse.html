@@ -79,6 +79,43 @@
         font-weight: 700;
     }
 
+    /* Partner lockup — mirrors the badge on the deck's title slide. */
+    .mm-partner-row { display: block; }
+
+    .mm-partner {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+        padding: 8px 16px;
+        border: 1px solid var(--mm-line);
+        border-radius: 2px;
+        background: var(--mm-panel);
+    }
+
+    .mm-partner-label {
+        color: var(--mm-mint);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .mm-partner-rule {
+        width: 1px;
+        height: 16px;
+        background: var(--mm-line);
+    }
+
+    .mm-partner-name {
+        color: var(--mm-paper);
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
     .event-kicker {
         display: inline-flex;
         align-items: center;
@@ -551,6 +588,13 @@
 
         <section class="mm-hero" aria-labelledby="eventTitle">
             <p class="mm-byline">Brought to you by <strong>Albin Andrews Joby</strong></p>
+            <div class="mm-partner-row">
+                <div class="mm-partner">
+                    <span class="mm-partner-label">Technical partner</span>
+                    <span class="mm-partner-rule" aria-hidden="true"></span>
+                    <span class="mm-partner-name">Anthropic</span>
+                </div>
+            </div>
             <span class="event-kicker">ElecSoc event reveal</span>
             <h1 id="eventTitle">Dublin Micromouse Open <span class="mm-year">2026</span></h1>
             <p class="event-meta">
