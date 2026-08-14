@@ -1,0 +1,6 @@
+# Arduino Arcade - runtime dependencies (deliberately tiny)
+pygame>=2.5,<3
+pyserial>=3.5
+
+# Development / tests
+pytest>=7.4

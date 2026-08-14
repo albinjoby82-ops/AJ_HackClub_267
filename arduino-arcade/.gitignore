@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+build/
+.smoke-settings.json
+.pytest_cache/
+assets/sounds/*.wav
