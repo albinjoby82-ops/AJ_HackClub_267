@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 672 706" role="img" aria-label="Micromouse maze layout: a square grid of cells with the start cell in one corner and a goal area at the centre">
+<title>DIA-A3-01: maze layout concept</title>
+<style>.g{stroke:#c9c9cf;stroke-width:1}.w{stroke:#27272a;stroke-width:4;stroke-linecap:square}.t{font-family:system-ui,sans-serif;fill:#3f3f46}.m{font-family:ui-monospace,Menlo,Consolas,monospace;fill:#8a8a93}</style>
+<rect width="672" height="706" fill="#ffffff"/>
+<line class="g" x1="64" y1="64" x2="64" y2="608"/>
+<line class="g" x1="64" y1="64" x2="608" y2="64"/>
+<line class="g" x1="98" y1="64" x2="98" y2="608"/>
+<line class="g" x1="64" y1="98" x2="608" y2="98"/>
+<line class="g" x1="132" y1="64" x2="132" y2="608"/>
+<line class="g" x1="64" y1="132" x2="608" y2="132"/>
+<line class="g" x1="166" y1="64" x2="166" y2="608"/>
+<line class="g" x1="64" y1="166" x2="608" y2="166"/>
+<line class="g" x1="200" y1="64" x2="200" y2="608"/>
+<line class="g" x1="64" y1="200" x2="608" y2="200"/>
+<line class="g" x1="234" y1="64" x2="234" y2="608"/>
+<line class="g" x1="64" y1="234" x2="608" y2="234"/>
+<line class="g" x1="268" y1="64" x2="268" y2="608"/>
+<line class="g" x1="64" y1="268" x2="608" y2="268"/>
+<line class="g" x1="302" y1="64" x2="302" y2="608"/>
+<line class="g" x1="64" y1="302" x2="608" y2="302"/>
+<line class="g" x1="336" y1="64" x2="336" y2="608"/>
+<line class="g" x1="64" y1="336" x2="608" y2="336"/>
+<line class="g" x1="370" y1="64" x2="370" y2="608"/>
+<line class="g" x1="64" y1="370" x2="608" y2="370"/>
+<line class="g" x1="404" y1="64" x2="404" y2="608"/>
+<line class="g" x1="64" y1="404" x2="608" y2="404"/>
+<line class="g" x1="438" y1="64" x2="438" y2="608"/>
+<line class="g" x1="64" y1="438" x2="608" y2="438"/>
+<line class="g" x1="472" y1="64" x2="472" y2="608"/>
+<line class="g" x1="64" y1="472" x2="608" y2="472"/>
+<line class="g" x1="506" y1="64" x2="506" y2="608"/>
+<line class="g" x1="64" y1="506" x2="608" y2="506"/>
+<line class="g" x1="540" y1="64" x2="540" y2="608"/>
+<line class="g" x1="64" y1="540" x2="608" y2="540"/>
+<line class="g" x1="574" y1="64" x2="574" y2="608"/>
+<line class="g" x1="64" y1="574" x2="608" y2="574"/>
+<line class="g" x1="608" y1="64" x2="608" y2="608"/>
+<line class="g" x1="64" y1="608" x2="608" y2="608"/>
+<rect x="302" y="302" width="68" height="68" fill="#ec3750" fill-opacity="0.18" stroke="#ec3750" stroke-width="3"/>
+<text class="t" x="336" y="342" text-anchor="middle" font-size="15" font-weight="600" fill="#ec3750">GOAL</text>
+<rect x="64" y="574" width="34" height="34" fill="#33d6a6" fill-opacity="0.25" stroke="#0f8a68" stroke-width="3"/>
+<text class="t" x="81.0" y="596.0" text-anchor="middle" font-size="13" font-weight="600" fill="#0f8a68">S</text>
+<path d="M 81.0 570 l 0 -22" stroke="#0f8a68" stroke-width="3" fill="none" marker-end="url(#a)"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0f8a68"/></marker></defs>
+<rect class="w" x="64" y="64" width="544" height="544" fill="none"/>
+<line class="w" x1="132" y1="166" x2="268" y2="166"/>
+<line class="w" x1="268" y1="166" x2="268" y2="302"/>
+<line class="w" x1="370" y1="132" x2="370" y2="268"/>
+<line class="w" x1="166" y1="370" x2="166" y2="506"/>
+<line class="w" x1="166" y1="506" x2="336" y2="506"/>
+<line class="w" x1="404" y1="404" x2="540" y2="404"/>
+<line class="w" x1="438" y1="200" x2="438" y2="336"/>
+<line class="w" x1="234" y1="234" x2="234" y2="370"/>
+<text class="m" x="64" y="30" font-size="15">DIA-A3-01  Maze layout concept</text>
+<text class="m" x="64" y="50" font-size="13">Grid size, cell size, wall dimensions, start position and goal size: DECISION REQUIRED (clauses 3.3.1 to 3.3.4)</text>
+<text class="m" x="64" y="634" font-size="13">S = start cell, arrow shows the facing direction. Interior walls shown are illustrative only, not the competition maze.</text>
+</svg>

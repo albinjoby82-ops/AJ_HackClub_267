@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-label="Arduino IDE showing a successful upload and serial output">
+  <title>IMG-A6-01: placeholder</title>
+  <rect width="800" height="450" fill="#f4f4f5" stroke="#c9c9cf" stroke-width="2" stroke-dasharray="10 8"/>
+  <text x="400" y="176" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="26" fill="#8a8a93">IMG-A6-01</text>
+  <text x="400" y="224" text-anchor="middle" font-family="system-ui,sans-serif" font-size="22" fill="#3f3f46">Successful flash screenshot</text>
+  <text x="400" y="264" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17" fill="#8a8a93">Placeholder. Asset not yet supplied.</text>
+  <text x="400" y="292" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" fill="#8a8a93">See docs/assets/ASSET_INDEX.md</text>
+</svg>
