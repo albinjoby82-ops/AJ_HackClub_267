@@ -1,0 +1,197 @@
+# Machine-readable index of Dublin Micromouse Open 2026 documentation.
+# Purpose: let a future Claude Code session locate the correct source file
+# without searching blindly. Update this whenever a page is added or its
+# status changes. Paths are relative to this file.
+#
+# status: draft | review | ready | blocked
+#   blocked = written, but cannot publish until a human decision lands.
+# priority: P0 (needed before registration opens) | P1 | P2
+
+event:
+  name: Dublin Micromouse Open 2026
+  date: 2026-09-26
+  venue: UCD Village, University College Dublin
+  host: UCD ElecSoc
+  web_home: hackclub.ucdelecsoc.com/micromouse
+  facts_source: EVENT_FACTS.md
+
+sections:
+  - id: A
+    name: competitor
+    path: competitor/
+    index: competitor/index.md
+    status: in_progress
+  - id: B
+    name: technical
+    path: technical/
+    status: not_started
+  - id: C
+    name: internal
+    path: internal/
+    status: not_started
+
+documents:
+  - id: A1
+    title: What is Micromouse?
+    path: competitor/01-what-is-micromouse.md
+    section: competitor
+    priority: P0
+    audience: competitors
+    status: ready
+    due: before registration opens
+    dependencies: []
+    related: [A2]
+    requires_human_input: []
+    last_reviewed: 2026-08-15
+
+  - id: A2
+    title: Competition format
+    path: competitor/02-competition-format.md
+    section: competitor
+    priority: P0
+    audience: competitors
+    status: draft
+    due: before registration opens
+    dependencies: [A3]
+    related: [A1, A3, A6, A7, A8]
+    requires_human_input:
+      - running order and start/finish times
+      - team size
+      - shared tools list
+      - competitor-supplied components and tools
+      - prize list
+      - catering
+    last_reviewed: 2026-08-15
+
+  - id: A3
+    title: Rules and scoring
+    path: competitor/03-rules-and-scoring.md
+    section: competitor
+    priority: P0
+    audience: [competitors, judges]
+    status: blocked
+    due: before registration opens
+    dependencies: [D5]
+    related: [A2, A4]
+    requires_human_input:
+      - maze dimensions and construction
+      - micromouse dimension limits
+      - run limits and timing method
+      - handling and touch penalties
+      - scoring formula and tie breakers
+      - design and reliability award criteria
+    last_reviewed: 2026-08-15
+
+  - id: A4
+    title: AI coding agent policy
+    path: competitor/04-ai-agent-policy.md
+    section: competitor
+    priority: P0
+    audience: competitors
+    status: draft
+    due: before registration opens
+    dependencies: []
+    related: [A3, A7]
+    requires_human_input:
+      - pre-event code rules
+      - starter repository URL
+    last_reviewed: 2026-08-15
+
+  - id: A5
+    title: Registration and FAQ
+    path: competitor/05-registration-and-faq.md
+    section: competitor
+    priority: P0
+    audience: competitors
+    status: draft
+    due: before registration opens
+    dependencies: [A2, A3, A6, A8]
+    related: [A6, A8, A9]
+    requires_human_input:
+      - registration mechanism, dates and fee
+      - team size and solo entries
+      - eligibility and minimum age
+      - kit retention
+      - accessibility and catering
+    last_reviewed: 2026-08-15
+
+  - id: A6
+    title: Laptop setup
+    path: competitor/06-laptop-setup.md
+    section: competitor
+    priority: P0
+    audience: competitors
+    status: draft
+    due: at least three weeks before the event
+    dependencies: []
+    related: [A7, A8]
+    requires_human_input:
+      - exact ESP32 board model shipped in the kit
+    last_reviewed: 2026-08-15
+
+  - id: A7
+    title: Sponsor credits
+    path: competitor/07-sponsor-credits.md
+    section: competitor
+    priority: P1
+    audience: competitors
+    status: blocked
+    due: before the event
+    dependencies: [sponsor confirmations]
+    related: [A4]
+    requires_human_input:
+      - Anthropic credits redemption mechanism, value and expiry
+      - whether credits go to all teams or the winning team only
+      - remaining technical partner slots
+    last_reviewed: 2026-08-15
+
+  - id: A8
+    title: Venue, travel and what to bring
+    path: competitor/08-venue-and-what-to-bring.md
+    section: competitor
+    priority: P0
+    audience: competitors
+    status: draft
+    due: two weeks before the event
+    dependencies: [venue confirmation]
+    related: [A2, A6]
+    requires_human_input:
+      - exact room within UCD Village
+      - start and finish times
+      - catering and dietary requests
+      - accessibility provision
+      - filming arrangements
+      - on-the-day contact number
+    last_reviewed: 2026-08-15
+
+  - id: A9
+    title: Code of conduct
+    path: competitor/09-code-of-conduct.md
+    section: competitor
+    priority: P0
+    audience: [competitors, volunteers, sponsors]
+    status: blocked
+    due: before registration opens
+    dependencies: [reporting contacts]
+    related: [A5]
+    requires_human_input:
+      - named reporting contacts
+      - reporting channel
+      - which UCD policy this event sits under
+    last_reviewed: 2026-08-15
+
+support_files:
+  - path: index.md
+    purpose: documentation home, all sections
+  - path: DOCS_GUIDE.md
+    purpose: editing rules, front matter, navigation, publishing
+  - path: EVENT_FACTS.md
+    purpose: single source of truth for shared facts and terminology
+  - path: competitor/index.md
+    purpose: Section A homepage
+  - path: assets/ASSET_INDEX.md
+    purpose: every image and diagram with a stable ID and status
+  - path: audits/A_SECTION_AUDIT.md
+    purpose: requirement coverage check
+  - path: audits/HUMAN_DECISIONS_REQUIRED.md
+    purpose: consolidated decision queue for the committee
