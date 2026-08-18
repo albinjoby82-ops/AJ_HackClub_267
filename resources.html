@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resource Hub &mdash; Hack Club Build Hub</title>
+<meta name="description" content="Event resources, hardware guides and software documentation for Hack Club Build Hub events.">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="site.css?nav=2">
+<style>
+    body {
+        min-height: 100vh;
+        background: var(--color-paper);
+    }
+
+    .hub-hero {
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid var(--color-line);
+        padding: clamp(64px, 10vw, 112px) 24px clamp(52px, 8vw, 88px);
+        background:
+            radial-gradient(circle at 82% 20%, rgba(236, 55, 80, 0.12), transparent 28%),
+            linear-gradient(135deg, rgba(51, 142, 218, 0.05), transparent 46%),
+            var(--color-paper);
+    }
+
+    .hub-hero::after {
+        content: "";
+        position: absolute;
+        right: -56px;
+        bottom: -54px;
+        width: 300px;
+        height: 180px;
+        opacity: 0.42;
+        background:
+            linear-gradient(90deg, transparent 31px, var(--color-line) 32px, transparent 33px),
+            linear-gradient(transparent 31px, var(--color-line) 32px, transparent 33px);
+        background-size: 32px 32px;
+        transform: rotate(-8deg);
+        pointer-events: none;
+    }
+
+    .hub-shell {
+        position: relative;
+        z-index: 1;
+        width: min(var(--container-max-width), 100%);
+        margin: 0 auto;
+    }
+
+    .hub-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--color-mint-deep);
+        font: 700 11px/1 var(--font-mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .hub-eyebrow::before {
+        content: "";
+        width: 28px;
+        height: 2px;
+        background: var(--color-orange);
+    }
+
+    .hub-hero h1 {
+        max-width: 760px;
+        margin: 18px 0 20px;
+        color: var(--color-ink);
+        font-size: clamp(44px, 8vw, 76px);
+        line-height: 0.98;
+        letter-spacing: -0.035em;
+    }
+
+    .hub-hero h1 span { color: var(--color-mint); }
+
+    .hub-lede {
+        max-width: 620px;
+        margin: 0;
+        color: var(--color-ink-soft);
+        font-size: clamp(17px, 2.2vw, 20px);
+        line-height: 1.65;
+    }
+
+    .events {
+        padding: clamp(52px, 8vw, 88px) 24px 96px;
+    }
+
+    .events-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 28px;
+    }
+
+    .events-head h2 {
+        margin: 0;
+        color: var(--color-ink);
+        font-size: clamp(28px, 5vw, 40px);
+    }
+
+    .events-head p {
+        max-width: 430px;
+        margin: 0;
+        color: var(--color-ink-soft);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .event-list {
+        display: grid;
+        gap: 20px;
+    }
+
+    .event-entry {
+        display: grid;
+        grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+        overflow: hidden;
+        border: 1px solid var(--color-line);
+        border-radius: var(--radius-lg);
+        color: inherit;
+        background: var(--color-card);
+        box-shadow: var(--card-shadow);
+        text-decoration: none;
+        transition:
+            transform var(--transition-base),
+            border-color var(--transition-base),
+            box-shadow var(--transition-base);
+    }
+
+    .event-entry:hover {
+        transform: translateY(-3px);
+        border-color: var(--color-mint);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .event-entry:focus-visible {
+        outline: 4px solid rgba(236, 55, 80, 0.22);
+        outline-offset: 3px;
+    }
+
+    .event-visual {
+        position: relative;
+        min-height: 280px;
+        overflow: hidden;
+        background: #080F12;
+    }
+
+    .event-visual img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .event-status {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        border-radius: var(--radius-full);
+        padding: 7px 11px;
+        color: #fff;
+        background: var(--color-orange);
+        font: 700 10px/1 var(--font-mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .event-copy {
+        display: flex;
+        flex-direction: column;
+        padding: clamp(26px, 5vw, 46px);
+    }
+
+    .event-copy h3 {
+        max-width: 620px;
+        margin: 0;
+        color: var(--color-ink);
+        font-size: clamp(27px, 4.5vw, 42px);
+        line-height: 1.05;
+    }
+
+    .event-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 18px;
+        margin-top: 30px;
+    }
+
+    .event-detail {
+        border-top: 2px solid var(--color-mint);
+        padding-top: 13px;
+    }
+
+    .event-detail span {
+        display: block;
+        color: var(--color-ink-soft);
+        font: 700 10px/1 var(--font-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .event-detail strong {
+        display: block;
+        margin-top: 10px;
+        color: var(--color-ink);
+        font-size: clamp(20px, 2.7vw, 28px);
+        line-height: 1.1;
+    }
+
+    .event-open {
+        margin-top: auto;
+        padding-top: 30px;
+        color: var(--color-teal);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .event-entry:hover .event-open { color: var(--color-mint-deep); }
+
+    .events-note {
+        margin: 22px 0 0;
+        color: var(--color-ink-soft);
+        font: 600 11px/1.6 var(--font-mono);
+        letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 760px) {
+        .events-head { display: block; }
+        .events-head p { margin-top: 12px; }
+        .event-entry { grid-template-columns: 1fr; }
+        .event-visual { min-height: 210px; max-height: 300px; }
+    }
+
+    @media (max-width: 560px) {
+        .hub-hero,
+        .events { padding-inline: 16px; }
+        .event-copy { padding: 24px 20px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="index.html?nav=2">Home</a>
+            <a href="resources.html?nav=2">Resource Hub</a>
+            <a href="micromouse.html?nav=2" class="event-nav">Micromouse 2026</a>
+            <a href="learn.html?scope=workshops">Workshops</a>
+            <a href="learn.html?scope=wiki">Wiki</a>
+            <a href="videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main>
+    <section class="hub-hero" aria-labelledby="hubTitle">
+        <div class="hub-shell">
+            <span class="hub-eyebrow">Build Hub documentation</span>
+            <h1 id="hubTitle">Resource <span>Hub.</span></h1>
+            <p class="hub-lede">Find the event guides, hardware references and software resources your team needs before and during a build.</p>
+        </div>
+    </section>
+
+    <section class="events" aria-labelledby="eventsTitle">
+        <div class="hub-shell">
+            <div class="events-head">
+                <div>
+                    <span class="hub-eyebrow">Browse by event</span>
+                    <h2 id="eventsTitle">Event resources</h2>
+                </div>
+            </div>
+
+            <div class="event-list">
+                <a class="event-entry" href="micromouse-resources.html?nav=2">
+                    <div class="event-visual">
+                        <img src="assets/micromouse/start-line.jpg" alt="Dublin Micromouse Open 2026 start line artwork" width="1080" height="1080">
+                        <span class="event-status">Upcoming event</span>
+                    </div>
+                    <div class="event-copy">
+                        <h3>Dublin Micromouse Open 2026</h3>
+                        <div class="event-details" aria-label="Event date and location">
+                            <div class="event-detail">
+                                <span>Date</span>
+                                <strong>26 September 2026</strong>
+                            </div>
+                            <div class="event-detail">
+                                <span>Location</span>
+                                <strong>UCD Village</strong>
+                            </div>
+                        </div>
+                        <span class="event-open">Open Micromouse resources &rarr;</span>
+                    </div>
+                </a>
+            </div>
+
+            <p class="events-note">More event resource areas will be added here as they become available.</p>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

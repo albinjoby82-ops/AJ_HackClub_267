@@ -6,7 +6,7 @@
 <title>Dublin Micromouse Open 2026 — Hack Club Build Hub</title>
 <meta name="description" content="Ireland's first national Micromouse competition. Saturday 26 September 2026, UCD Village, hosted by UCD ElecSoc. Build it in six hours. Race it the same day.">
 <link rel="stylesheet" href="design-tokens.css">
-<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="site.css?nav=2">
 <style>
     /* ------------------------------------------------------------------
        Dublin Micromouse Open 2026 — palette lifted from the ElecSoc
@@ -230,6 +230,41 @@
 
     .replay-button:focus-visible {
         outline: 3px solid rgba(244, 81, 30, 0.45);
+        outline-offset: 3px;
+    }
+
+    .mm-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 22px;
+    }
+
+    .mm-hero-actions .replay-button { margin-top: 0; }
+
+    .resource-hub-link {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--mm-mint);
+        border-radius: 2px;
+        padding: 11px 20px;
+        color: var(--mm-ink);
+        background: var(--mm-mint);
+        font: 700 11px/1 var(--font-mono);
+        letter-spacing: 0.14em;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .resource-hub-link:hover {
+        color: var(--mm-paper);
+        background: transparent;
+    }
+
+    .resource-hub-link:focus-visible {
+        outline: 3px solid rgba(127, 212, 188, 0.42);
         outline-offset: 3px;
     }
 
@@ -573,8 +608,9 @@
     <div class="topbar-inner">
         <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav" aria-label="Main navigation">
-            <a href="index.html">Home</a>
-            <a href="micromouse.html" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="index.html?nav=2">Home</a>
+            <a href="resources.html?nav=2">Resource Hub</a>
+            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
             <a href="learn.html?scope=workshops">Workshops</a>
             <a href="learn.html?scope=wiki">Wiki</a>
             <a href="videos.html">Search</a>
@@ -613,7 +649,10 @@
                 </video>
             </div>
 
-            <button class="replay-button" id="replayReveal" type="button">Replay animation</button>
+            <div class="mm-hero-actions">
+                <a class="resource-hub-link" href="resources.html?nav=2">Open Resource Hub</a>
+                <button class="replay-button" id="replayReveal" type="button">Replay animation</button>
+            </div>
         </section>
 
         <section class="mm-section" aria-labelledby="whatTitle">
