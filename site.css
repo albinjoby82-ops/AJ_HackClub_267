@@ -67,12 +67,18 @@
   transition: color var(--transition-fast);
 }
 
-.topbar-nav a:hover,
-.topbar-nav a.is-active {
+.topbar-nav a:hover {
   color: var(--color-ink);
 }
 
-.topbar-nav a.event-nav {
+.topbar-nav a[href^="index.html"] { order: 10; }
+.topbar-nav a[href^="resources.html"] { order: 50; }
+.topbar-nav a[href^="micromouse.html"] { order: 30; }
+.topbar-nav a[href="learn.html?scope=workshops"] { order: 40; }
+.topbar-nav a[href="learn.html?scope=wiki"] { order: 20; }
+.topbar-nav a[href="videos.html"] { order: 60; }
+
+.topbar-nav a[href^="micromouse.html"] {
   color: #9f2f19;
   background: rgba(255, 140, 55, 0.12);
   border: 1px solid rgba(255, 140, 55, 0.32);
@@ -85,8 +91,8 @@
   text-transform: uppercase;
 }
 
-.topbar-nav a.event-nav:hover,
-.topbar-nav a.event-nav.is-active {
+.topbar-nav a[href^="micromouse.html"]:hover,
+.topbar-nav a[href^="micromouse.html"].is-active {
   color: #7f2413;
   background: rgba(255, 140, 55, 0.2);
   border-color: rgba(255, 140, 55, 0.55);
@@ -546,5 +552,5 @@ a.chip { text-decoration: none; }
   .wordmark .mono-sub { display: none; }
   .topbar-nav { gap: 10px; }
   .topbar-nav a { font-size: 13px; }
-  .topbar-nav a.event-nav { padding: 6px 10px; font-size: 10px; }
+  .topbar-nav a[href^="micromouse.html"] { padding: 6px 10px; font-size: 10px; }
 }

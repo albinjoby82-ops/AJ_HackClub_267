@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Learn — Hack Club Build Hub</title>
 <link rel="stylesheet" href="design-tokens.css">
-<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="site.css?nav=2">
 </head>
 <body>
 
@@ -14,8 +14,9 @@
         <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav">
             <button class="menu-toggle" id="menuToggle">☰ MENU</button>
-            <a href="index.html">Home</a>
-            <a href="micromouse.html" class="event-nav">Micromouse 2026</a>
+            <a href="index.html?nav=2">Home</a>
+            <a href="resources.html?nav=2">Resource Hub</a>
+            <a href="micromouse.html?nav=2" class="event-nav" id="micromouseNav">Micromouse 2026</a>
             <a href="learn.html?scope=workshops" id="workshopsNav">Workshops</a>
             <a href="learn.html?scope=wiki" id="wikiNav">Wiki</a>
             <a href="videos.html">Search</a>
@@ -43,7 +44,7 @@
     </main>
 </div>
 
-<script src="content/content.js"></script>
+<script src="content/content.js?v=20260818-c2-c3"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 <script>
 (function () {
@@ -51,22 +52,46 @@
 
     var allPages = (window.SITE_CONTENT && window.SITE_CONTENT.pages) || {};
     var params = new URLSearchParams(location.search);
-    var scope = params.get('scope') === 'wiki' ? 'wiki' : 'workshops';
-    var scopePrefix = scope === 'wiki' ? 'docs/Wiki/' : 'docs/Workshops/';
+    var requestedScope = params.get('scope');
+    var scopeConfig = {
+        workshops: {
+            prefix: 'docs/Workshops/',
+            title: 'Workshops',
+            navId: 'workshopsNav',
+            rootPath: null,
+            searchPlaceholder: 'Search workshops…'
+        },
+        wiki: {
+            prefix: 'docs/Wiki/',
+            title: 'Wiki',
+            navId: 'wikiNav',
+            rootPath: 'docs/Wiki/index.md',
+            searchPlaceholder: 'Search the wiki…'
+        },
+        micromouse: {
+            prefix: 'docs/Micromouse2026/',
+            title: 'Micromouse 2026',
+            navId: 'micromouseNav',
+            rootPath: 'docs/Micromouse2026/index.md',
+            searchPlaceholder: 'Search Micromouse resources…'
+        }
+    };
+    var scope = scopeConfig[requestedScope] ? requestedScope : 'workshops';
+    var config = scopeConfig[scope];
+    var scopePrefix = config.prefix;
     var pages = {};
 
     Object.keys(allPages).forEach(function (path) {
         if (path.indexOf(scopePrefix) === 0) pages[path] = allPages[path];
     });
 
-    document.title = (scope === 'wiki' ? 'Wiki' : 'Workshops') + ' — Hack Club Build Hub';
-    document.getElementById(scope === 'wiki' ? 'wikiNav' : 'workshopsNav').classList.add('is-active');
-    var scopeRootPath = scope === 'wiki' ? 'docs/Wiki/index.md' : null;
+    document.title = config.title + ' — Hack Club Build Hub';
+    document.getElementById(config.navId).classList.add('is-active');
+    var scopeRootPath = config.rootPath;
     var sidebarTitle = document.getElementById('sidebarTitle');
-    sidebarTitle.textContent = scope === 'wiki' ? 'Wiki' : 'Workshops';
+    sidebarTitle.textContent = config.title;
     sidebarTitle.href = scopeRootPath ? '#/' + scopeRootPath : 'learn.html?scope=workshops';
-    document.getElementById('navSearch').placeholder =
-        scope === 'wiki' ? 'Search the wiki…' : 'Search workshops…';
+    document.getElementById('navSearch').placeholder = config.searchPlaceholder;
 
     /* ---------- build the tree ---------- */
 

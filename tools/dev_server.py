@@ -148,6 +148,14 @@ def search_youtube(query, page_token, api_key):
 
 
 class BuildHubHandler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        parsed = urllib.parse.urlparse(self.path)
+        if parsed.path != "/api/youtube-search":
+            self.send_header("Cache-Control", "no-store, max-age=0")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
+        super().end_headers()
+
     def send_json(self, status, payload):
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
