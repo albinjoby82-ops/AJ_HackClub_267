@@ -138,12 +138,70 @@
     .resource-toggle::before { content: "+"; }
     details[open] .resource-toggle::before { content: "−"; }
 
-    .resource-menu details p {
+    .resource-menu details > p {
         margin: 0;
         padding: 0 24px 24px 72px;
         color: var(--hub-paper-dim);
         font-size: 15px;
         line-height: 1.6;
+    }
+
+    .resource-links {
+        display: grid;
+        gap: 12px;
+        padding: 0 24px 24px 72px;
+    }
+
+    .resource-link {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 20px;
+        border: 1px solid var(--hub-line);
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.025);
+        color: var(--hub-paper);
+        text-decoration: none;
+        transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    .resource-link:hover {
+        border-color: var(--hub-orange);
+        background: rgba(232, 87, 45, 0.07);
+        transform: translateX(3px);
+    }
+
+    .resource-link-code {
+        color: var(--hub-mint);
+        font: 700 12px/1 var(--font-mono);
+        letter-spacing: 0.12em;
+    }
+
+    .resource-link-copy {
+        display: grid;
+        gap: 5px;
+    }
+
+    .resource-link-copy strong {
+        font-size: 17px;
+        line-height: 1.25;
+    }
+
+    .resource-link-copy span {
+        color: var(--hub-paper-dim);
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .resource-link-arrow {
+        color: var(--hub-orange);
+        font: 700 20px/1 var(--font-mono);
+    }
+
+    .resource-link:focus-visible {
+        outline: 3px solid rgba(127, 212, 188, 0.42);
+        outline-offset: 3px;
     }
 
     .resource-menu summary:focus-visible,
@@ -163,7 +221,12 @@
     @media (max-width: 560px) {
         .resource-hub { padding-inline: 14px; }
         .resource-menu summary { gap: 12px; padding: 20px 16px; }
-        .resource-menu details p { padding: 0 16px 20px 52px; }
+        .resource-menu details > p { padding: 0 16px 20px 52px; }
+        .resource-links { padding: 0 16px 20px 16px; }
+        .resource-link {
+            grid-template-columns: auto minmax(0, 1fr);
+        }
+        .resource-link-arrow { display: none; }
     }
 </style>
 </head>
@@ -212,13 +275,22 @@
                 <p>Kit, assembly and electronics resources will be added here.</p>
             </details>
 
-            <details>
+            <details open>
                 <summary>
                     <span class="resource-number">03</span>
                     <span class="resource-name">Software</span>
                     <span class="resource-toggle" aria-hidden="true"></span>
                 </summary>
-                <p>Toolchain, Git and maze-solving resources will be added here.</p>
+                <div class="resource-links">
+                    <a class="resource-link" href="learn.html?scope=micromouse#/docs/Micromouse2026/Software/C3_WorkingWithAIAgents.md">
+                        <span class="resource-link-code">C3</span>
+                        <span class="resource-link-copy">
+                            <strong>Working with AI agents on hardware</strong>
+                            <span>Give the agent hardware context, debug with real serial output and make small verified changes.</span>
+                        </span>
+                        <span class="resource-link-arrow" aria-hidden="true">→</span>
+                    </a>
+                </div>
             </details>
         </div>
 
