@@ -34,6 +34,7 @@ by ID in prose so a swapped file does not orphan a caption.
 | [IMG-A8-02](#img-a8-02) | A8 | Map | Needed |
 | [VID-A1-01](#vid-a1-01) | A1 | Video embed | Needed |
 | [VID-A2-01](#vid-a2-01) | A2 | Animated explainer | Needed |
+| [VID-A1-02](#vid-a1-02) | A1 | Algorithm animation | Needed |
 
 ## Generated diagrams
 
@@ -161,6 +162,15 @@ by ID in prose so a swapped file does not orphan a caption.
 **Type** Cartoon storyboard, twelve frames, 16:9
 **Brief** [BRIEF-VID-A2-01-animation.md](BRIEF-VID-A2-01-animation.md), contains a copy-paste design prompt
 **Source requirement** Commissioned or generated. The brief lists what must not be invented
+**Status** Needed. Brief written, not commissioned
+
+### VID-A1-02
+**Title** Flood fill search, animated
+**Used in** A1, route planning section
+**Purpose** Show how a micromouse actually searches, honestly enough to implement from
+**Type** Simulated algorithm animation, 16:9, looping
+**Brief** [BRIEF-VID-A1-02-flood-fill.md](BRIEF-VID-A1-02-flood-fill.md), full algorithm spec with pseudocode
+**Source requirement** The algorithm must be simulated, not faked with a pre-drawn path. 8x8 maze so distance numbers stay legible
 **Status** Needed. Brief written, not commissioned
 
 ## Map specification, IMG-A8-01 and IMG-A8-02
