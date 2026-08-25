@@ -115,3 +115,79 @@ Twelve artboards, 16:9, laid out in reading order on one canvas, numbered, each
 with its caption set as real text so it can be edited. Add a thirteenth artboard
 holding the palette swatches and the mouse mascot turnaround, so the style can be
 reused for posters and slides.
+
+---
+
+## Alternative prompt: timed motion piece
+
+Use this instead of the storyboard prompt when the target tool builds animation
+from timed sections rather than artboards. Same facts, same do-not-invent list.
+
+Build a 30 second looping animation, 1920x1080, explaining the Dublin Micromouse
+Open 2026 to someone who has never heard of Micromouse. Cartoon-ish and warm, not
+corporate abstract motion. The subject is a real event, so every beat must carry
+information.
+
+**Subject.** A micromouse is a small robot that solves a maze entirely on its own.
+No remote control, no driver, no human input once the run starts. It explores,
+maps the maze, plans the fastest route to the centre, then drives it flat out.
+
+At the Dublin Micromouse Open, every team gets six hours and an identical box of
+parts, and builds the robot from scratch on the day. Nobody arrives with a
+finished robot. Saturday 26 September 2026, UCD Village, University College
+Dublin, hosted by UCD ElecSoc.
+
+**Sections.**
+
+1. **Drop in, 3s.** An empty 16x16 maze grid draws itself in, walls settling into
+   place. A small robot fades in at the bottom-left cell. Caption: "It has never
+   seen this maze."
+2. **Explore, 6s.** The robot drives cell to cell, sensor cones pulsing left,
+   right and ahead. Walls it detects light up and stay lit. It hits a dead end,
+   reverses, tries another branch. Trail dims behind it. Caption: "Explore."
+3. **Map, 4s.** The camera lifts. The discovered walls resolve into a clean
+   overhead map. Unvisited cells stay dark. Caption: "Map."
+4. **Plan, 3s.** Flood fill: numbers or colour spread outward from the centre cell
+   across the map, then one route ignites from start to centre and everything else
+   dims. Caption: "Plan."
+5. **Speed run, 4s.** The robot runs that route at speed, motion blur, tight
+   corners. It hits the centre. Brief flash of the accent colour. Caption:
+   "Race."
+6. **Hard cut to the build, 5s.** The maze shrinks away. An identical parts box
+   opens: ESP32 microcontroller, encoded motors, motor driver, IMU, distance
+   sensors, battery management system, buck converter, battery pack. Components
+   fly into place and assemble into the robot from section 1. Caption: "Now build
+   one."
+7. **The day, 3s.** A horizontal ribbon fills left to right: ARRIVE, BRIEFING,
+   BUILD, TEST, MAP, RACE, PRIZES. BUILD, TEST and MAP visibly loop back on each
+   other. A six hour counter runs alongside it. No clock times.
+8. **Close, 2s.** Title lands: Dublin Micromouse Open 2026. Below it: Saturday 26
+   September 2026, UCD Village, UCD. Tagline: "Build it. Code it. Race it." Then
+   one line, smaller: "No experience needed."
+
+Loop back to section 1 cleanly.
+
+**Motion.** The robot is the through-line and should never cut. It persists across
+sections 1 to 6 and glides between them. Easing should feel mechanical but eager,
+quick starts and settled stops, like a small motor. Nothing floats or drifts.
+
+**Style.** Flat vector cartoon, bold outlines, minimal shading. Maze walls read as
+physical walls on a board, not a screen grid. Legible at thumbnail size.
+
+**Palette.** Near-black `#1F2D3D` line and text, warm off-white `#F9FAFC` ground,
+`#EC3750` red as the single loud accent, `#338EDA` blue for sensor cones and the
+planned route, `#FF8C37` orange used exactly once, when the robot reaches the
+centre.
+
+**Type.** One confident geometric sans. Captions are one short line, lower third,
+no paragraphs anywhere.
+
+**Copy rules.** Irish and British English. Never use em dashes. Say "team", "kit",
+"speed run", "exploration run", "micromouse", "six hours".
+
+**Do not invent.** Undecided, so leave out rather than guess: any clock time, team
+size or number of people shown, real maze dimensions or cell measurements, number
+of runs, penalties, scoring, prize amounts, the room or any specific interior, and
+any sponsor logo. A plain text credit to Anthropic as technical partner and the
+UCD School of Electrical and Electronic Engineering is fine. The 16x16 grid in
+section 1 is a visual convention only and must not be labelled with dimensions.
