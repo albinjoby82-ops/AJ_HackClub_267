@@ -33,6 +33,7 @@ by ID in prose so a swapped file does not orphan a caption.
 | [IMG-A8-01](#img-a8-01) | A8 | Map | Blocked |
 | [IMG-A8-02](#img-a8-02) | A8 | Map | Needed |
 | [VID-A1-01](#vid-a1-01) | A1 | Video embed | Needed |
+| [VID-A2-01](#vid-a2-01) | A2 | Animated explainer | Needed |
 
 ## Generated diagrams
 
@@ -152,6 +153,15 @@ by ID in prose so a swapped file does not orphan a caption.
 **Caption** Arriving at UCD Belfield
 **Source requirement** Base map licence must be confirmed. Do not trace a copyrighted map. Keep it legible in greyscale
 **Status** Needed
+
+### VID-A2-01
+**Title** Animated explainer, how the day works
+**Used in** A2, and as a recruitment asset on the event page
+**Purpose** Explain the six hour build sprint faster than A1 and A2 can
+**Type** Cartoon storyboard, twelve frames, 16:9
+**Brief** [BRIEF-VID-A2-01-animation.md](BRIEF-VID-A2-01-animation.md), contains a copy-paste design prompt
+**Source requirement** Commissioned or generated. The brief lists what must not be invented
+**Status** Needed. Brief written, not commissioned
 
 ## Map specification, IMG-A8-01 and IMG-A8-02
 
