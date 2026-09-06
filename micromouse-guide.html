@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Competition, The Rules, The Theory — Dublin Micromouse Open 2026</title>
+<meta name="description" content="A full write-up of the Dublin Micromouse Open 2026: what Micromouse is, the 16 x 16 UKMARS classic maze standard, the rules of a run, and the algorithms and control theory that actually win races.">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="site.css?nav=2">
+<style>
+    /* ------------------------------------------------------------------
+       Guide page. Palette and stage treatment are inherited from
+       micromouse.html so the event reads as one campaign.
+       ------------------------------------------------------------------ */
+    .mm {
+        --mm-ink: #080F12;
+        --mm-panel: #0C161A;
+        --mm-panel-soft: #0A1216;
+        --mm-paper: #EDF2F0;
+        --mm-paper-dim: rgba(237, 242, 240, 0.74);
+        --mm-paper-faint: rgba(237, 242, 240, 0.5);
+        --mm-orange: #F4511E;
+        --mm-orange-soft: rgba(244, 81, 30, 0.14);
+        --mm-mint: #7FD4BC;
+        --mm-line: rgba(127, 212, 188, 0.2);
+        --mm-line-strong: rgba(127, 212, 188, 0.34);
+    }
+
+    body { min-height: 100vh; background: #080F12; }
+
+    .mm-stage {
+        position: relative;
+        overflow: hidden;
+        padding: clamp(24px, 5vw, 56px) 24px clamp(56px, 8vw, 96px);
+        background:
+            linear-gradient(115deg, rgba(244, 81, 30, 0.07) 0 8%, transparent 8% 20%,
+                                    rgba(244, 81, 30, 0.05) 20% 27%, transparent 27% 44%,
+                                    rgba(244, 81, 30, 0.06) 44% 51%, transparent 51%),
+            var(--mm-ink);
+    }
+
+    .mm-stage::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            linear-gradient(var(--mm-line) 1px, transparent 1px),
+            linear-gradient(90deg, var(--mm-line) 1px, transparent 1px);
+        background-size: 72px 72px;
+        opacity: 0.24;
+    }
+
+    .mm-shell {
+        position: relative;
+        z-index: 1;
+        width: min(1120px, 100%);
+        margin: 0 auto;
+    }
+
+    /* ---- Typography ---- */
+
+    .mm h1, .mm h2, .mm h3, .mm h4 { color: var(--mm-paper); }
+
+    .mm h1 {
+        margin: 0 0 18px;
+        font-size: clamp(34px, 5.4vw, 58px);
+        font-weight: 600;
+        line-height: 1.08;
+        letter-spacing: -0.015em;
+    }
+
+    .mm h2 {
+        margin: 0 0 18px;
+        font-size: clamp(25px, 3vw, 33px);
+        font-weight: 600;
+        line-height: 1.18;
+        letter-spacing: -0.01em;
+    }
+
+    .mm h3 {
+        margin: 32px 0 10px;
+        font-size: 19px;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .mm h4 {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .mm p, .mm li { color: var(--mm-paper-dim); font-size: 16px; line-height: 1.68; }
+    .mm p { margin: 0 0 16px; }
+    .mm strong { color: var(--mm-paper); font-weight: 600; }
+    .mm em { color: var(--mm-paper); font-style: italic; }
+
+    .mm a { color: var(--mm-mint); text-decoration: none; border-bottom: 1px solid var(--mm-line-strong); }
+    .mm a:hover { color: var(--mm-paper); border-bottom-color: var(--mm-orange); }
+
+    .mm-eyebrow {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--mm-mint);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .mm-lede {
+        max-width: 62ch;
+        color: var(--mm-paper);
+        font-size: clamp(17px, 2vw, 20px);
+        line-height: 1.55;
+    }
+
+    .mm-prose { max-width: 68ch; }
+
+    /* ---- Sections ---- */
+
+    .mm-section {
+        margin-top: clamp(48px, 6vw, 76px);
+        padding-top: clamp(40px, 5vw, 60px);
+        border-top: 1px solid var(--mm-line);
+        scroll-margin-top: 84px;
+    }
+
+    /* ---- Breadcrumb + contents ---- */
+
+    .mm-crumb {
+        margin: 0 0 20px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+    .mm-crumb a { color: var(--mm-paper-faint); border-bottom: none; }
+    .mm-crumb a:hover { color: var(--mm-mint); }
+    .mm-crumb span { color: var(--mm-paper-faint); padding: 0 8px; }
+
+    .mm-toc {
+        margin-top: 40px;
+        padding: 24px;
+        border: 1px solid var(--mm-line);
+        border-left: 2px solid var(--mm-orange);
+        background: var(--mm-panel);
+    }
+
+    .mm-toc ol {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 4px 28px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: toc;
+    }
+
+    .mm-toc li { counter-increment: toc; font-size: 15px; }
+
+    .mm-toc a {
+        display: block;
+        padding: 6px 0;
+        border-bottom: 1px solid transparent;
+        color: var(--mm-paper-dim);
+    }
+    .mm-toc a::before {
+        content: counter(toc, decimal-leading-zero) "  ";
+        color: var(--mm-mint);
+        font-family: var(--font-mono);
+        font-size: 11px;
+    }
+    .mm-toc a:hover { color: var(--mm-paper); border-bottom-color: transparent; }
+
+    /* ---- Figures ---- */
+
+    .mm-figure {
+        margin: 28px 0 0;
+        padding: 0;
+        border: 1px solid var(--mm-line);
+        background: var(--mm-panel);
+    }
+
+    /* Diagrams are drawn at a fixed natural size; never upscale them into mush. */
+    .mm-figure img {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+        padding: 18px;
+    }
+
+    .mm-figure.is-photo img { width: 100%; padding: 0; }
+
+    .mm-figure figcaption {
+        padding: 12px 16px;
+        border-top: 1px solid var(--mm-line);
+        color: var(--mm-paper-faint);
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        line-height: 1.5;
+        letter-spacing: 0.04em;
+    }
+
+    .mm-figure.is-photo img { aspect-ratio: 4 / 3; object-fit: cover; }
+
+    @media (max-width: 700px) { .mm-figure img { padding: 10px; } }
+
+    /* ---- Split layout ---- */
+
+    .mm-split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(24px, 4vw, 52px);
+        align-items: start;
+    }
+    .mm-split.is-flipped .mm-copy { order: 2; }
+
+    /* ---- Spec table ---- */
+
+    .mm-table-wrap { overflow-x: auto; margin-top: 24px; }
+
+    .mm-table {
+        width: 100%;
+        min-width: 460px;
+        border-collapse: collapse;
+        font-size: 15px;
+    }
+
+    .mm-table-caption {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .mm-table th, .mm-table td {
+        padding: 12px 16px 12px 0;
+        border-bottom: 1px solid var(--mm-line);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .mm-table th {
+        width: 34%;
+        color: var(--mm-paper);
+        font-weight: 600;
+    }
+
+    .mm-table td { color: var(--mm-paper-dim); }
+
+    .mm .mono {
+        color: var(--mm-mint);
+        font-family: var(--font-mono);
+        font-size: 13.5px;
+    }
+
+    /* ---- Rule list ---- */
+
+    .mm-rules { margin: 24px 0 0; padding: 0; list-style: none; counter-reset: rule; }
+
+    .mm-rules > li {
+        position: relative;
+        counter-increment: rule;
+        margin-bottom: 20px;
+        padding-left: 46px;
+    }
+
+    .mm-rules > li::before {
+        content: counter(rule, decimal-leading-zero);
+        position: absolute;
+        left: 0;
+        top: 1px;
+        color: var(--mm-orange);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+    }
+
+    .mm-rules h4 { margin-bottom: 4px; }
+    .mm-rules p { margin: 0; }
+
+    /* ---- Cards ---- */
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 18px;
+        margin-top: 26px;
+    }
+
+    .mm-card {
+        padding: 22px;
+        border: 1px solid var(--mm-line);
+        background: var(--mm-panel);
+    }
+    .mm-card p { margin: 0; font-size: 15px; }
+    .mm-card .mm-eyebrow { margin-bottom: 8px; }
+
+    /* ---- Callout ---- */
+
+    .mm-callout {
+        margin-top: 28px;
+        padding: 22px 24px;
+        border: 1px solid var(--mm-line);
+        border-left: 2px solid var(--mm-mint);
+        background: var(--mm-panel);
+    }
+    .mm-callout.is-signal { border-left-color: var(--mm-orange); background: var(--mm-orange-soft); }
+    .mm-callout p:last-child { margin-bottom: 0; }
+
+    /* ---- Code ---- */
+
+    .mm-code {
+        overflow-x: auto;
+        margin: 22px 0 0;
+        padding: 20px 22px;
+        border: 1px solid var(--mm-line);
+        background: var(--mm-panel-soft);
+    }
+
+    .mm-code code {
+        color: var(--mm-paper-dim);
+        font-family: var(--font-mono);
+        font-size: 13px;
+        line-height: 1.72;
+        white-space: pre;
+    }
+
+    .mm-code .c { color: var(--mm-paper-faint); font-style: italic; }
+    .mm-code .k { color: var(--mm-orange); }
+    .mm-code .f { color: var(--mm-mint); }
+
+    /* ---- Body lists ---- */
+
+    .mm-list { margin: 0 0 16px; padding-left: 22px; }
+    .mm-list li { margin-bottom: 9px; }
+    .mm-list li::marker { color: var(--mm-mint); }
+
+    /* ---- Timeline ---- */
+
+    .mm-timeline { margin: 26px 0 0; padding: 0; list-style: none; }
+
+    .mm-timeline > li {
+        position: relative;
+        padding: 0 0 26px 30px;
+        border-left: 1px solid var(--mm-line);
+    }
+    .mm-timeline > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+
+    .mm-timeline > li::before {
+        content: "";
+        position: absolute;
+        left: -4.5px;
+        top: 6px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--mm-mint);
+    }
+    .mm-timeline > li.is-signal::before { background: var(--mm-orange); }
+
+    .mm-timeline .clock {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--mm-orange);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+    .mm-timeline p { margin: 0; font-size: 15px; }
+
+    /* ---- Reference cards ---- */
+
+    .ref-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+        gap: 14px;
+        margin-top: 24px;
+    }
+
+    .ref {
+        display: block;
+        padding: 18px 20px;
+        border: 1px solid var(--mm-line);
+        border-bottom: 1px solid var(--mm-line);
+        background: var(--mm-panel);
+        transition: transform .15s ease, border-color .15s ease;
+    }
+    .ref:hover { transform: translateY(-2px); border-color: var(--mm-line-strong); }
+
+    .ref .kind {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--mm-mint);
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+    .ref.is-video .kind { color: var(--mm-orange); }
+
+    .ref .name { display: block; color: var(--mm-paper); font-size: 15.5px; font-weight: 600; line-height: 1.35; }
+    .ref .note { display: block; margin-top: 7px; color: var(--mm-paper-faint); font-size: 13.5px; line-height: 1.5; }
+
+    /* ---- Footer nav ---- */
+
+    .mm-endnav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 34px;
+    }
+
+    .mm-btn {
+        display: inline-block;
+        padding: 13px 22px;
+        border: 1px solid var(--mm-orange);
+        background: var(--mm-orange);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .mm-btn:hover { background: transparent; color: var(--mm-orange); border-bottom-color: var(--mm-orange); }
+
+    .mm-btn.is-ghost {
+        border-color: var(--mm-line-strong);
+        background: transparent;
+        color: var(--mm-paper);
+    }
+    .mm-btn.is-ghost:hover { border-color: var(--mm-mint); color: var(--mm-mint); }
+
+    @media (max-width: 820px) {
+        .mm-split { grid-template-columns: 1fr; }
+        .mm-split.is-flipped .mm-copy { order: 0; }
+    }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="index.html?nav=2">Home</a>
+            <a href="resources.html?nav=2">Resource Hub</a>
+            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="learn.html?scope=workshops">Workshops</a>
+            <a href="learn.html?scope=wiki">Wiki</a>
+            <a href="videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main class="mm mm-stage">
+    <div class="mm-shell">
+
+        <header class="mm-hero">
+            <p class="mm-crumb">
+                <a href="micromouse.html?nav=2">Dublin Micromouse Open 2026</a>
+                <span>/</span>
+                The competition guide
+            </p>
+            <span class="mm-eyebrow">Rules &amp; theory</span>
+            <h1>Everything the maze is going to ask you</h1>
+            <p class="mm-lede">
+                What Micromouse is, the exact maze you will be racing in, the rules that decide a
+                legal run, and — the part most teams get wrong — the algorithms and control theory
+                that separate a mouse that <em>finishes</em> from a mouse that <em>wins</em>.
+            </p>
+
+            <nav class="mm-toc" aria-label="Contents">
+                <span class="mm-eyebrow">On this page</span>
+                <ol>
+                    <li><a href="#origins">Where this came from</a></li>
+                    <li><a href="#maze">The maze: the 16 x 16 standard</a></li>
+                    <li><a href="#mouse">What counts as a micromouse</a></li>
+                    <li><a href="#run">How a run is scored</a></li>
+                    <li><a href="#dublin">The Dublin format</a></li>
+                    <li><a href="#two-phase">Strategy: the two-phase race</a></li>
+                    <li><a href="#wallfollow">Why wall following loses</a></li>
+                    <li><a href="#floodfill">Flood fill, properly explained</a></li>
+                    <li><a href="#exploration">Exploration: what to look at</a></li>
+                    <li><a href="#cost">Cost turns, not cells</a></li>
+                    <li><a href="#diagonals">Diagonals: the big win</a></li>
+                    <li><a href="#motion">Motion control and localisation</a></li>
+                    <li><a href="#hardware">Hardware decisions that cost time</a></li>
+                    <li><a href="#playbook">A six-hour playbook</a></li>
+                    <li><a href="#failures">Failure modes to design against</a></li>
+                    <li><a href="#reading">Reading, code and video</a></li>
+                </ol>
+            </nav>
+        </header>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="origins" aria-labelledby="originsTitle">
+            <div class="mm-split">
+                <div class="mm-copy">
+                    <span class="mm-eyebrow">01 &#183; Origins</span>
+                    <h2 id="originsTitle">A challenge that has been unsolved-then-solved for fifty years</h2>
+                    <p>
+                        In 1977 <em>IEEE Spectrum</em> announced the Amazing Micro-Mouse Maze Contest: build a
+                        self-contained robot that finds its own way to the centre of a maze it has never seen.
+                        Around six thousand people registered an interest. When the contest actually ran in New York
+                        in 1979, fifteen mice turned up, and the machine that won — <em>Moonlight Flash</em> — was a
+                        plain wall follower that got lucky with the maze it was given.
+                    </p>
+                    <p>
+                        That embarrassment is the reason every maze since has been built the way it is. Within a
+                        year the contest had crossed the Atlantic to London and been taken back to Tokyo, where the
+                        first All Japan Micromouse Contest ran in November 1980 and <em>not one mouse</em> reached the
+                        centre. The rules hardened, the mazes got nastier, and the sport turned into what it is now:
+                        a fifty-year-old benchmark problem that people still shave milliseconds off every year.
+                    </p>
+                    <p>
+                        The numbers at the top end are genuinely absurd. The most-cited benchmark run is Ng Beng Kiat's
+                        3.921&nbsp;seconds at the 32nd All Japan contest in 2011; current machines are quoted at road
+                        speeds around 7&nbsp;m/s with cornering loads past 6&nbsp;g, held down by on-board suction fans.
+                        You are not going to do that in six hours. You do not need to. You need to understand
+                        <em>why</em> those numbers are possible, because the same ideas at one tenth the speed win a
+                        one-day contest.
+                    </p>
+                </div>
+                <figure class="mm-figure is-photo">
+                    <img src="assets/micromouse/radar-contact.jpg" alt="Radar sweep artwork from the campaign: one contact detected." loading="lazy" width="1080" height="1080">
+                    <figcaption>The problem has not changed since 1977. Only the mice have.</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="maze" aria-labelledby="mazeTitle">
+            <span class="mm-eyebrow">02 &#183; The arena</span>
+            <h2 id="mazeTitle">The maze is a fixed, published standard. Design to the millimetre.</h2>
+            <div class="mm-prose">
+                <p>
+                    We run to the same classic 16 x 16 standard as the UK Micromouse and Robotics Society
+                    (UKMARS). This matters more than it sounds: it means every maze file, every simulator, every
+                    tuning value and every write-up from forty years of the sport applies directly to the maze
+                    you will be standing in front of. Nothing here is bespoke to Dublin.
+                </p>
+            </div>
+
+            <figure class="mm-figure">
+                <img src="assets/micromouse/diagrams/maze-anatomy.svg" alt="A 16 by 16 micromouse maze with the start cell in the bottom-left corner and a two-by-two goal region at the centre." loading="lazy" width="620" height="622">
+                <figcaption>16 x 16 cells &#183; 2880 mm square &#183; start in a corner, goal at the centre. Walls shown are illustrative only.</figcaption>
+            </figure>
+
+            <div class="mm-table-wrap">
+                <table class="mm-table">
+                    <caption class="mm-table-caption">Classic micromouse maze specification</caption>
+                    <tbody>
+                        <tr><th scope="row">Grid</th><td>16 x 16 cells, <span class="mono">256</span> cells total</td></tr>
+                        <tr><th scope="row">Cell pitch</th><td><span class="mono">180 mm</span> centre to centre, so the maze is <span class="mono">2880 mm</span> square</td></tr>
+                        <tr><th scope="row">Wall thickness</th><td><span class="mono">12 mm</span>, leaving <span class="mono">168 mm</span> of clear passage between two walls</td></tr>
+                        <tr><th scope="row">Wall height</th><td><span class="mono">50 mm</span></td></tr>
+                        <tr><th scope="row">Finish</th><td>White wall sides, red wall tops, matt (non-gloss) black floor</td></tr>
+                        <tr><th scope="row">Posts</th><td><span class="mono">12 x 12 mm</span> at every lattice point, including where no wall is fitted</td></tr>
+                        <tr><th scope="row">Start</th><td>A corner cell, walled on three sides, so the exit direction is unambiguous</td></tr>
+                        <tr><th scope="row">Goal</th><td>The <span class="mono">2 x 2</span> block of cells at the centre of the maze</td></tr>
+                        <tr><th scope="row">Outer boundary</th><td>Fully walled &#8212; the maze is closed</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <figure class="mm-figure">
+                <img src="assets/micromouse/diagrams/cell-dimensions.svg" alt="Plan and elevation of a single maze cell showing 180 mm pitch, 168 mm clear passage, 12 mm wall thickness and 50 mm wall height." loading="lazy" width="700" height="336">
+                <figcaption>The four numbers your firmware is built around: 180, 168, 12, 50.</figcaption>
+            </figure>
+
+            <div class="mm-prose">
+                <h3>Read those numbers as engineering constraints</h3>
+                <p>
+                    They are not trivia. They are the spec your mouse is designed against, and each one has a
+                    direct consequence:
+                </p>
+                <ul class="mm-list">
+                    <li>
+                        <strong>168 mm of clear passage.</strong> A 90 mm-wide mouse leaves 39 mm of clearance either
+                        side. That sounds generous until you are travelling a metre per second with a heading error
+                        of two degrees. Narrow is forgiving; wide is fast to build but punishing to steer.
+                    </li>
+                    <li>
+                        <strong>50 mm wall height.</strong> Your side sensors have to see a wall reliably at that
+                        height and see <em>nothing</em> when the wall is absent. Mount them so the beam lands on the
+                        wall face, not over the top of it and not down into the floor.
+                    </li>
+                    <li>
+                        <strong>Matt black floor, white walls, red tops.</strong> That contrast exists so optical
+                        sensors have something to work with. It also means a mouse tuned under one lighting rig can
+                        read differently under another &#8212; calibrate in the room you are racing in.
+                    </li>
+                    <li>
+                        <strong>Posts at every lattice point.</strong> Even a corridor with no side walls has posts
+                        at the cell corners. These give you a periodic 180 mm feature you can use to correct your
+                        distance estimate &#8212; and they will also produce sensor spikes you must not mistake
+                        for walls.
+                    </li>
+                    <li>
+                        <strong>The goal is a 2 x 2 block, not a point.</strong> Four cells count as "arrived", and
+                        the block has exactly one entrance. Your search target is a set, not a coordinate. Write it
+                        that way from the start.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="mouse" aria-labelledby="mouseTitle">
+            <span class="mm-eyebrow">03 &#183; The machine</span>
+            <h2 id="mouseTitle">What counts as a micromouse</h2>
+            <div class="mm-prose">
+                <p>
+                    The constraints on the robot are deliberately loose. There is no weight limit, no cost cap and
+                    no height limit. What the rules protect is the <em>spirit</em> of the problem: the mouse solves
+                    the maze itself, on board, without cheating the geometry.
+                </p>
+            </div>
+
+            <ol class="mm-rules">
+                <li>
+                    <h4>It must fit inside a 25 cm square</h4>
+                    <p>
+                        Measured on the floor, at all times &#8212; you cannot start compact and unfold. There is no
+                        height restriction. In practice competitive mice are far smaller than the limit, because
+                        size costs you cornering radius, not because the rule forces it.
+                    </p>
+                </li>
+                <li>
+                    <h4>It must be autonomous and self-contained</h4>
+                    <p>
+                        No remote control, no tethers, no off-board computation, no human input once the run starts.
+                        Everything the mouse knows, it works out itself from its own sensors.
+                    </p>
+                </li>
+                <li>
+                    <h4>It must stay on the floor and use the openings</h4>
+                    <p>
+                        No flying, jumping or climbing over walls. Combustion and rocket propulsion are out. The
+                        maze is to be solved by driving through it.
+                    </p>
+                </li>
+                <li>
+                    <h4>It must not damage or mark the maze</h4>
+                    <p>
+                        No scratching, cutting, burning or marking walls, and nothing may be deposited in the maze.
+                        Leaving a trail to navigate by is the oldest disallowed trick in the sport.
+                    </p>
+                </li>
+                <li>
+                    <h4>It must not shed parts</h4>
+                    <p>
+                        The mouse that finishes is the mouse that started. Anything that falls off is a problem for
+                        you and for the team running after you.
+                    </p>
+                </li>
+            </ol>
+
+            <div class="mm-callout">
+                <p>
+                    <strong>The rule that actually shapes your design is the one nobody writes down:</strong> the
+                    maze is unseen. You cannot hard-code a route, pre-load a map, or tune to a layout. Every line of
+                    code you write has to work on a maze that is handed to you cold.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="run" aria-labelledby="runTitle">
+            <span class="mm-eyebrow">04 &#183; The rules of a run</span>
+            <h2 id="runTitle">How a run is timed and scored</h2>
+            <div class="mm-prose">
+                <p>
+                    This is the part teams skim, and it is the part that decides contests. Under the UKMARS classic
+                    rules the shape of your slot is fixed, and it rewards a very specific kind of behaviour.
+                </p>
+
+                <h3>Your slot</h3>
+                <ul class="mm-list">
+                    <li>
+                        You get <strong>ten minutes</strong> in the maze &#8212; reducible to seven or fewer by the
+                        judges if the entry list demands it &#8212; and within that, up to <strong>five runs</strong>.
+                    </li>
+                    <li>
+                        A run is timed from the mouse leaving the start cell to the mouse reaching the goal.
+                        Time spent between runs, thinking, or returning to the start is <em>not</em> part of a run
+                        time, but it absolutely is part of your ten minutes.
+                    </li>
+                    <li>
+                        Your score is your <strong>best single run</strong>. The slow exploratory first run does not
+                        drag your result down. This is the single most important fact on this page.
+                    </li>
+                </ul>
+
+                <h3>Touching the mouse</h3>
+                <p>
+                    You may not touch a running mouse unless a judge tells you to. If the mouse has clearly
+                    malfunctioned or cannot continue, the judge will allow a manual recovery. You can also request a
+                    recovery in other circumstances &#8212; but the price is that <strong>all of the mouse's memory
+                    of the maze is erased</strong>, and it starts again knowing nothing.
+                </p>
+                <p>
+                    Where a touch is permitted and the run continues, expect a <strong>touch penalty of three
+                    seconds plus one tenth of the run time</strong> added to that run.
+                </p>
+
+                <div class="mm-callout is-signal">
+                    <p>
+                        <strong>Work out what that means before you write any code.</strong> Five runs, best time
+                        counts, and a wipe if you ask for help at the wrong moment. The optimal play is not
+                        "go as fast as possible". It is: explore, <em>bank a safe finish</em>, then escalate speed
+                        run by run until either the clock or the mouse gives out. A team with one recorded 45-second
+                        run beats a team with four spectacular crashes and no time on the board.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="dublin" aria-labelledby="dublinTitle">
+            <div class="mm-split is-flipped">
+                <div class="mm-copy">
+                    <span class="mm-eyebrow">05 &#183; Our format</span>
+                    <h2 id="dublinTitle">Standard maze. Very non-standard build window.</h2>
+                    <p>
+                        Most Micromouse entries represent months of work. The Dublin Micromouse Open compresses
+                        the whole thing into one Saturday: <strong>six hours, one identical kit per team, design,
+                        build, program and race on the day.</strong> The maze standard is the classic one described
+                        above. The build sprint is the competition.
+                    </p>
+                    <p>
+                        Every team gets the same box: an ESP32, encoded motors, a motor driver, an IMU, distance
+                        sensors, a battery management system, a buck converter and a battery pack. The kit is
+                        modular deliberately &#8212; there is no single correct mouse, and the same parts will walk
+                        out of the room as very different machines.
+                    </p>
+                    <p>
+                        Judging is the <strong>fastest verified run to the centre</strong>, with further awards for
+                        design and reliability. Full-size and mini practice mazes are open all day, and one of the
+                        mini mazes is built so that the fastest route cuts diagonally through it. A mouse that only
+                        knows how to follow the grid will finish that maze. A mouse that can reason about the path
+                        will beat it.
+                    </p>
+                    <p>
+                        Everything on this page is written to be useful on that day: the theory is the general
+                        theory of the sport, and the timings assume you are starting from an empty bench at
+                        nine in the morning.
+                    </p>
+                    <p><a href="micromouse.html?nav=2">Event details, kit list and registration &#8594;</a></p>
+                </div>
+                <figure class="mm-figure is-photo">
+                    <img src="assets/micromouse/figure-it-out-photo.jpg" alt="A workbench mid-build with monitors, keyboard, multimeter and loose electronics." loading="lazy" width="1400" height="1750">
+                    <figcaption>Six hours, one kit, one maze you have never seen.</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="two-phase" aria-labelledby="twoTitle">
+            <span class="mm-eyebrow">06 &#183; Strategy</span>
+            <h2 id="twoTitle">Micromouse is two different races wearing one costume</h2>
+            <div class="mm-prose">
+                <p>
+                    Almost every mouse that has ever won splits the problem in half, because the two halves have
+                    opposite objectives.
+                </p>
+
+                <h3>The search run</h3>
+                <p>
+                    The mouse leaves the start knowing nothing except the maze dimensions and where the goal is. It
+                    drives carefully, reads walls, builds a map, and reaches the centre. <strong>Speed is not the
+                    objective here &#8212; information is.</strong> A search run that arrives with a complete, correct map
+                    of the useful part of the maze is worth more than one that arrives four seconds sooner with
+                    gaps in it.
+                </p>
+
+                <h3>The speed run</h3>
+                <p>
+                    The mouse returns to the start, computes the best route through the map it now has, and drives
+                    that route flat out with no exploration and no hesitation. This is the run that gets timed
+                    seriously. It can afford aggression precisely because it already knows every wall on the route.
+                </p>
+
+                <p>
+                    With five runs available, the standard ladder looks like this:
+                </p>
+
+                <ul class="mm-list">
+                    <li><strong>Run 1</strong> &#8212; search. Slow, careful, map-building. Reach the centre.</li>
+                    <li><strong>Run 2</strong> &#8212; conservative speed run. <em>Bank a time.</em> You now have a result no matter what happens next.</li>
+                    <li><strong>Run 3</strong> &#8212; faster, or a short re-exploration if you suspect a better route exists in cells you never visited.</li>
+                    <li><strong>Runs 4&#8211;5</strong> &#8212; escalate until it breaks. Now a crash costs you nothing but pride.</li>
+                </ul>
+
+                <div class="mm-callout">
+                    <p>
+                        <strong>The ladder is the whole strategy.</strong> Because only your best run counts, risk is
+                        cheap <em>after</em> you have a time on the board and ruinously expensive before it. Teams lose
+                        this contest by trying to win it on run one.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="wallfollow" aria-labelledby="wfTitle">
+            <span class="mm-eyebrow">07 &#183; The trap</span>
+            <h2 id="wfTitle">Why the obvious algorithm cannot work</h2>
+            <div class="mm-prose">
+                <p>
+                    The first idea everyone has is the left-hand rule: keep your left hand on the wall and walk.
+                    It is elegant, it needs almost no memory, and on a maze drawn on paper it genuinely works.
+                </p>
+                <p>
+                    It works on a <em>simply-connected</em> maze &#8212; one where every wall is ultimately joined to
+                    the outer boundary. Trace a connected wall surface and you must eventually visit everything
+                    attached to it.
+                </p>
+                <p>
+                    A contest maze is not built that way. The goal block at the centre is an <strong>island</strong>:
+                    its walls connect to nothing that touches the border. A hand kept on the boundary wall traces the
+                    boundary loop, comes back to the start, and does that forever. It never enters the centre,
+                    because the centre is not part of the surface it is following.
+                </p>
+            </div>
+
+            <figure class="mm-figure">
+                <img src="assets/micromouse/diagrams/wall-follower-fails.svg" alt="A maze where a left-hand wall follower traces the outer boundary in a loop and never enters the island goal region at the centre." loading="lazy" width="620" height="446">
+                <figcaption>The dashed path is a perfect left-hand follower doing exactly what it was told, forever.</figcaption>
+            </figure>
+
+            <div class="mm-prose">
+                <p>
+                    This is not a theoretical concern; it is the specific reason the modern rules exist. The 1979
+                    contest was won by a wall follower, the organisers concluded the maze had been too kind, and
+                    detached centre islands have been standard ever since. If your fallback plan is "at least the
+                    wall follower will finish", <strong>your fallback plan does not finish</strong>.
+                </p>
+                <p>
+                    What you need instead is a mouse that builds a map and searches it. That is a bigger idea, but
+                    not a harder one &#8212; and there is one algorithm that does it in a form small enough to run on a
+                    microcontroller between cells.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="floodfill" aria-labelledby="ffTitle">
+            <span class="mm-eyebrow">08 &#183; The core algorithm</span>
+            <h2 id="ffTitle">Flood fill: turn the whole maze into a hill, then roll downhill</h2>
+            <div class="mm-prose">
+                <p>
+                    Flood fill is the algorithm that wins Micromouse, and it has been for decades. The idea is
+                    almost insultingly simple.
+                </p>
+                <p>
+                    Label the goal cells <span class="mono">0</span>. Label every cell that is one move from a goal
+                    cell <span class="mono">1</span>. Every cell one move from <em>those</em>, <span class="mono">2</span>.
+                    Keep going until every reachable cell carries a number: <strong>its distance from the
+                    goal</strong>. That number field is the entire solution.
+                </p>
+                <p>
+                    Now the mouse's decision at every cell collapses to something a microcontroller can do in
+                    microseconds: <em>look at the neighbours you can reach, and move to the one with the smallest
+                    number</em>. No path finding at run time, no route stored, no backtracking logic. Just descend
+                    the gradient. Because every step strictly decreases the distance, you cannot loop, and you
+                    cannot fail to arrive.
+                </p>
+            </div>
+
+            <figure class="mm-figure">
+                <img src="assets/micromouse/diagrams/flood-fill.svg" alt="A maze with every cell labelled by its distance from the goal, and a path descending the numbers from the start to the centre." loading="lazy" width="660" height="496">
+                <figcaption>Every cell knows how far it is from home. The mouse only ever compares four numbers.</figcaption>
+            </figure>
+
+            <div class="mm-prose">
+                <p>
+                    Under the hood this is a breadth-first search run <em>backwards</em> from the goal, which is
+                    what makes it cheap: one flood gives you the optimal move from <em>every</em> cell at once,
+                    not just from where you are standing.
+                </p>
+            </div>
+
+            <pre class="mm-code"><code><span class="c"># The flood: breadth-first, outward from the goal cells.</span>
+<span class="k">def</span> <span class="f">flood</span>(walls, goal_cells):
+    dist = [INFINITY] * 256
+    queue = deque()
+    <span class="k">for</span> cell <span class="k">in</span> goal_cells:
+        dist[cell] = 0
+        queue.append(cell)
+
+    <span class="k">while</span> queue:
+        cell = queue.popleft()
+        <span class="k">for</span> nb <span class="k">in</span> open_neighbours(cell, walls):
+            <span class="k">if</span> dist[nb] &gt; dist[cell] + 1:
+                dist[nb] = dist[cell] + 1
+                queue.append(nb)
+    <span class="k">return</span> dist
+
+<span class="c"># The drive: at every cell, take the smallest reachable number.</span>
+<span class="k">def</span> <span class="f">next_move</span>(cell, walls, dist):
+    <span class="k">return</span> min(open_neighbours(cell, walls), key=<span class="k">lambda</span> nb: dist[nb])</code></pre>
+
+            <div class="mm-prose">
+                <h3>The part that makes it work on a real mouse</h3>
+                <p>
+                    The version above assumes you already know the maze. You do not. The mouse discovers walls as
+                    it drives, and every new wall can invalidate the numbers.
+                </p>
+                <p>
+                    The naive fix is to re-flood all 256 cells after every single cell you enter. On modern
+                    hardware that is genuinely fine &#8212; an ESP32 will do a full 256-cell flood in well under a
+                    millisecond, and <strong>if you are short on time on the day, do exactly this and move on.</strong>
+                </p>
+                <p>
+                    The classical refinement, usually called <em>modified</em> or <em>incremental</em> flood fill,
+                    only repairs the cells whose distances could actually have changed. When you discover a wall,
+                    push the affected cell onto a stack; pop cells and check whether each one is still exactly one
+                    more than its cheapest open neighbour; if it is not, correct it and push its neighbours. The
+                    correction ripples outward and dies out on its own, usually after touching a handful of cells.
+                    That is what lets the update happen <em>while the mouse is still moving</em>, which is the real
+                    prize: no stop-and-think pause at every cell boundary.
+                </p>
+
+                <div class="mm-callout">
+                    <p>
+                        <strong>The optimism rule.</strong> Treat every wall you have not yet seen as <em>absent</em>.
+                        A cell you have never visited is assumed wide open in all directions. This makes the mouse
+                        walk hopefully toward the shortest route that <em>could</em> exist; when it turns out to be
+                        blocked, the flood repairs itself and the mouse re-routes. Assume walls are present instead
+                        and your mouse becomes a pessimist that explores the whole maze before committing to
+                        anything &#8212; correct, and far too slow.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="exploration" aria-labelledby="expTitle">
+            <span class="mm-eyebrow">09 &#183; Exploration</span>
+            <h2 id="expTitle">Reaching the centre is not the same as knowing the maze</h2>
+            <div class="mm-prose">
+                <p>
+                    Here is the trap that catches good teams. Your search run reaches the goal. You return to the
+                    start, flood the map, and drive the best route you know. But the route you know is only the best
+                    route <em>through the cells you happened to walk through</em>. The genuinely fastest path may run
+                    through cells you never entered, and your map has no idea whether they are open.
+                </p>
+
+                <h3>The three-stage search</h3>
+                <ol class="mm-list">
+                    <li>
+                        <strong>Go to the goal.</strong> Flood toward the centre with unknown walls treated as open,
+                        and drive the gradient. You will arrive without exploring most of the maze.
+                    </li>
+                    <li>
+                        <strong>Come back to the start.</strong> Re-flood with the start cell as the target and drive
+                        home. This is free information: the return leg naturally sees walls from the other side, and
+                        it usually finds a shorter way back than the way you came.
+                    </li>
+                    <li>
+                        <strong>Go and look at the cells that matter.</strong> Not every unknown cell &#8212; only the
+                        ones that could shorten the route. Flood the map twice: once optimistically (unknowns open)
+                        and once pessimistically (unknowns walled). If the two give the same route cost, further
+                        exploration cannot help you and you should stop searching and start racing. If the
+                        optimistic cost is much lower, the difference is sitting in unexplored cells and it is
+                        worth spending clock to go and check them.
+                    </li>
+                </ol>
+
+                <p>
+                    That optimistic-versus-pessimistic comparison is the cheapest good decision in the whole
+                    contest. It answers "should I explore more or run now?" with a number instead of a feeling,
+                    and it costs two floods.
+                </p>
+
+                <div class="mm-callout is-signal">
+                    <p>
+                        <strong>Budget it against the clock, not against curiosity.</strong> You have ten minutes
+                        total. A search run on a 16 x 16 maze can comfortably eat two or three of them. Decide in
+                        advance &#8212; in code, not in the moment &#8212; how much of your slot goes to exploration
+                        before you commit to racing what you have.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="cost" aria-labelledby="costTitle">
+            <span class="mm-eyebrow">10 &#183; The cost function</span>
+            <h2 id="costTitle">Your flood counts cells. The clock counts seconds. Those are different.</h2>
+            <div class="mm-prose">
+                <p>
+                    A plain flood fill finds the path with the fewest <em>cells</em>. That is not the path with the
+                    lowest <em>time</em>, and once your mouse is quick the gap between the two becomes the whole
+                    margin of victory.
+                </p>
+                <p>
+                    A straight is nearly free: you are already at speed and you stay at speed. A turn is expensive:
+                    you decelerate into it, rotate or arc through it, and accelerate out. Every corner is a bite
+                    out of your average speed. So a staircase of eleven cells with ten turns and a straight-then-turn
+                    route of eleven cells with one turn look <em>identical</em> to a naive flood, and are seconds
+                    apart on the floor.
+                </p>
+            </div>
+
+            <figure class="mm-figure">
+                <img src="assets/micromouse/diagrams/route-cost.svg" alt="Three routes between the same two cells: a staircase with ten turns, an L-shape with one turn, and a diagonal." loading="lazy" width="700" height="300">
+                <figcaption>Same start, same finish, same cell count for the first two. Wildly different run times.</figcaption>
+            </figure>
+
+            <div class="mm-prose">
+                <h3>Weighting the flood</h3>
+                <p>
+                    The fix is to flood over <em>time</em> instead of cell count. Give each move a cost that reflects
+                    what it actually does to your speed:
+                </p>
+            </div>
+
+            <pre class="mm-code"><code><span class="c"># Cost a move by what it does to the clock, not by counting squares.</span>
+STRAIGHT      = 1.0   <span class="c"># continue in the current heading</span>
+TURN_90       = 3.5   <span class="c"># decelerate, corner, accelerate again</span>
+
+<span class="k">def</span> <span class="f">move_cost</span>(heading_in, heading_out):
+    <span class="k">return</span> STRAIGHT <span class="k">if</span> heading_in == heading_out <span class="k">else</span> STRAIGHT + TURN_90</code></pre>
+
+            <div class="mm-prose">
+                <p>
+                    The moment cost depends on which direction you arrived from, a cell is no longer a single
+                    node. Model each cell as <strong>four states</strong> &#8212; one per heading &#8212; and flood
+                    over those 1024 states instead of 256 cells. It is still a breadth-first flood; it is still
+                    trivial for an ESP32; and it now produces routes that are actually fast rather than merely short.
+                </p>
+                <p>
+                    Get <span class="mono">TURN_90</span> from measurement, not from taste. Time your mouse over ten
+                    straight cells, then over ten cells with a turn in each, and let the difference set the number.
+                    A mouse with a slow pivot turn should be routed almost entirely along straights; a mouse with
+                    good arc turns can afford corners and should be told so.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="diagonals" aria-labelledby="diagTitle">
+            <span class="mm-eyebrow">11 &#183; The big win</span>
+            <h2 id="diagTitle">Diagonals: stop driving cell to cell</h2>
+            <div class="mm-prose">
+                <p>
+                    Everything so far assumes the mouse drives along cell centres and turns in 90&#176; steps. Nothing
+                    in the rules says it has to. The maze is a grid of walls; it is not a set of rails.
+                </p>
+                <p>
+                    A staircase of alternating left-right turns is really a straight line at 45&#176;, and a mouse that
+                    can recognise that pattern and drive it as one continuous diagonal gets two enormous wins at
+                    once. The distance drops by a factor of &#8730;2 &#8212; about <strong>29% less ground</strong> &#8212;
+                    and, far more importantly, ten decelerate-corner-accelerate cycles collapse into one entry
+                    turn, one straight diagonal and one exit turn.
+                </p>
+                <p>
+                    This is where serious mice separate from good ones, and it is exactly why one of the mini
+                    practice mazes on the day is built so the fastest line cuts through it diagonally. That maze
+                    is not decoration. It is a test of whether your mouse follows the grid or reasons about the path.
+                </p>
+
+                <h3>How to implement it without rewriting everything</h3>
+                <ul class="mm-list">
+                    <li>
+                        <strong>Keep the flood on the orthogonal grid.</strong> Do not try to make the search itself
+                        diagonal. Solve for the route in cells as before.
+                    </li>
+                    <li>
+                        <strong>Turn the route into a string of moves</strong> &#8212; a sequence like
+                        <span class="mono">F F L R L R F R F</span>.
+                    </li>
+                    <li>
+                        <strong>Pattern-match the string.</strong> Any alternating <span class="mono">L R L R</span>
+                        run is a diagonal. Rewrite it as "enter diagonal, travel <em>n</em> half-cells, exit
+                        diagonal". Runs of <span class="mono">F F F</span> become one long acceleration instead of
+                        several short ones.
+                    </li>
+                    <li>
+                        <strong>Then hand the rewritten string to the motion controller.</strong> Your route
+                        planner never has to know what a diagonal is; only the driver does.
+                    </li>
+                </ul>
+
+                <div class="mm-callout">
+                    <p>
+                        <strong>Be honest about the cost.</strong> On a diagonal your mouse sits at 45&#176; between
+                        posts, with much less wall to see and much less room either side &#8212; the effective
+                        clearance is far tighter than the 168&#160;mm you get in a corridor. Diagonals demand
+                        good heading control and a narrow mouse. Build the orthogonal speed run first, get it
+                        reliable, and add diagonals as an upgrade when you have a banked time to protect.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="motion" aria-labelledby="motionTitle">
+            <span class="mm-eyebrow">12 &#183; Control</span>
+            <h2 id="motionTitle">The algorithm is the easy half</h2>
+            <div class="mm-prose">
+                <p>
+                    Flood fill is a page of code and it is correct on the first try. What separates finishing mice
+                    from crashing ones is everything underneath it: making the robot actually go where the
+                    algorithm said, and knowing where it is while it does.
+                </p>
+
+                <h3>Motion profiles, not "drive for 400 ms"</h3>
+                <p>
+                    Do not command motion in time. Command it in <em>distance</em>, with a velocity profile:
+                    accelerate at a fixed rate to a cruise speed, hold, then decelerate so that you arrive at the
+                    target distance with your speed at (or near) zero. This trapezoidal profile is the standard
+                    tool and it buys you two things &#8212; repeatability, and the ability to change your top speed
+                    between runs by editing one constant.
+                </p>
+                <p>
+                    That last point is how you climb the ladder from section 06. A conservative banked run and a
+                    flat-out final run should be <strong>the same code with a different cruise speed and
+                    acceleration</strong>, not two different programs written under time pressure.
+                </p>
+
+                <h3>Pivot turns versus arc turns</h3>
+                <p>
+                    The simplest 90&#176; turn stops the mouse, rotates it on the spot, and drives on. It is easy,
+                    it is accurate, and it is slow: every corner costs you a full stop and a full restart. The
+                    faster approach is a smooth arc that carries speed through the bend.
+                </p>
+            </div>
+
+            <figure class="mm-figure">
+                <img src="assets/micromouse/diagrams/velocity-profile.svg" alt="Velocity against distance for a pivot turn, which drops to zero at the corner, compared with a smooth arc turn that holds most of its speed." loading="lazy" width="660" height="300">
+                <figcaption>Two ways through the same corner. The gap between the curves, repeated 40 times, is the race.</figcaption>
+            </figure>
+
+            <div class="mm-prose">
+                <p>
+                    Build the pivot turn first &#8212; it is your reliable fallback and it will get you a finish.
+                    Then characterise an arc turn as a fixed, tested manoeuvre: a known entry offset, a known
+                    radius, a known exit offset. Store those numbers, verify them on the practice maze, and let
+                    the route planner call them by name. Do not compute turn geometry on the fly during a run.
+                </p>
+
+                <h3>Knowing where you are</h3>
+                <p>
+                    Your position estimate comes from wheel encoders, and it is <em>wrong</em>. Wheels slip, tyre
+                    diameter is not exactly what you measured, and the two wheels do not travel identically. Over
+                    a few cells that error is invisible; over a 40-cell speed run it will put you into a wall.
+                    You need three corrections working together:
+                </p>
+                <ul class="mm-list">
+                    <li>
+                        <strong>Heading from the IMU.</strong> Integrating the gyro's rate gives you a far better
+                        heading than differencing two encoders. It drifts, so calibrate the zero-rate offset with
+                        the mouse absolutely still at power-up, and re-zero whenever you are legitimately stationary.
+                        Never calibrate a gyro while someone is nudging the bench.
+                    </li>
+                    <li>
+                        <strong>Lateral position from the side walls.</strong> Run a PID loop on the difference
+                        between your left and right distance readings to stay centred in the corridor. This is your
+                        highest-value control loop &#8212; and note that it silently stops working the moment a wall
+                        disappears, so detect that case and hold your heading instead of steering into the gap.
+                    </li>
+                    <li>
+                        <strong>Longitudinal position from the front wall.</strong> When you can see a wall ahead,
+                        you know exactly how far you are into the cell. Use it to reset your distance-travelled
+                        estimate outright. Every front wall is a free re-zero of accumulated encoder error, and
+                        a mouse that uses them can run much longer routes without losing itself.
+                    </li>
+                </ul>
+
+                <div class="mm-callout">
+                    <p>
+                        <strong>Sensor discipline.</strong> Sample your wall sensors at a fixed rate in a timer,
+                        not "whenever the loop gets round to it". Decide wall-present versus wall-absent with
+                        <em>hysteresis</em> &#8212; two different thresholds &#8212; so a marginal reading cannot chatter
+                        between the two. And read walls at a consistent point in the cell: a reading taken while
+                        passing a post is not the same measurement as one taken mid-cell, and mixing them is how
+                        phantom walls get into your map. A single false wall in the map will send an otherwise
+                        perfect mouse confidently into a dead end.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="hardware" aria-labelledby="hwTitle">
+            <span class="mm-eyebrow">13 &#183; Hardware</span>
+            <h2 id="hwTitle">Decisions you make in hour one that you cannot undo in hour five</h2>
+            <div class="mm-prose">
+                <p>
+                    You get the same parts as everyone else. What differs is how you arrange them, and a few of
+                    those choices are effectively permanent once the mouse is soldered.
+                </p>
+            </div>
+
+            <div class="card-grid">
+                <article class="mm-card">
+                    <span class="mm-eyebrow">Geometry</span>
+                    <h4>Put the wheel axis under the centre of rotation</h4>
+                    <p>
+                        If the mouse rotates about a point between its wheels, a turn is a turn. If the mass hangs
+                        well behind or ahead of that axis, every turn is also a translation, and your position
+                        estimate quietly diverges every time you corner.
+                    </p>
+                </article>
+                <article class="mm-card">
+                    <span class="mm-eyebrow">Mass</span>
+                    <h4>Light beats powerful</h4>
+                    <p>
+                        Acceleration, braking and cornering all improve with less mass, and none of them cost
+                        anything to implement. The battery is usually the heaviest single item &#8212; where you
+                        mount it is a handling decision, not a packaging one.
+                    </p>
+                </article>
+                <article class="mm-card">
+                    <span class="mm-eyebrow">Width</span>
+                    <h4>Narrow is not just about fitting</h4>
+                    <p>
+                        The 168&#160;mm passage will accept a wide mouse comfortably. Diagonals will not. Every
+                        millimetre you save is margin you get back when you start cutting corners.
+                    </p>
+                </article>
+                <article class="mm-card">
+                    <span class="mm-eyebrow">Sensors</span>
+                    <h4>Angle them, do not just point them</h4>
+                    <p>
+                        Side sensors angled slightly forward see the wall ahead of the wheels, which gives the
+                        steering loop a lead on the error instead of reacting to it late. Aim them at the wall
+                        face at mid-height, and check they cannot see the floor or clip over the top.
+                    </p>
+                </article>
+                <article class="mm-card">
+                    <span class="mm-eyebrow">Power</span>
+                    <h4>Budget for sag, not for nominal</h4>
+                    <p>
+                        A battery under hard acceleration is not at its resting voltage. If your control loops are
+                        tuned at full charge they will behave differently at the end of a ten-minute slot. That is
+                        what the buck converter in the kit is for &#8212; give the logic a stable rail and keep motor
+                        transients off it.
+                    </p>
+                </article>
+                <article class="mm-card">
+                    <span class="mm-eyebrow">Traction</span>
+                    <h4>Grip is the real speed limit</h4>
+                    <p>
+                        Past a certain point the motors are not the constraint &#8212; friction is. This is why the
+                        fastest mice in the world carry suction fans that press themselves into the floor. You will
+                        not build one on the day, but it explains why your mouse stops improving when you raise
+                        the acceleration constant.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="playbook" aria-labelledby="playTitle">
+            <span class="mm-eyebrow">14 &#183; On the day</span>
+            <h2 id="playTitle">A six-hour playbook</h2>
+            <div class="mm-prose">
+                <p>
+                    Six hours is less than it sounds. The single most common way to lose this event is to spend
+                    five hours building something ambitious and forty minutes discovering it does not drive
+                    straight. Work in the order below and you will always have a mouse that <em>works</em>, only
+                    progressively faster.
+                </p>
+            </div>
+
+            <ol class="mm-timeline">
+                <li>
+                    <span class="clock">Hour 0 &#8211; 1 &#183; Move something</span>
+                    <p>
+                        Power up, flash a blink, and get both motors turning under command. Confirm encoder counts
+                        change in the right direction for each wheel. Do not build a chassis around a motor you
+                        have not spun. Split the team here: one person on mechanics, one on motion, one on sensors.
+                    </p>
+                </li>
+                <li>
+                    <span class="clock">Hour 1 &#8211; 2 &#183; Drive one cell</span>
+                    <p>
+                        Get the mouse to travel exactly 180&#160;mm and stop, and to turn exactly 90&#176; and stop.
+                        Repeat each ten times and measure the drift. This hour is unglamorous and it is the whole
+                        contest &#8212; every later capability is built on these two primitives being trustworthy.
+                    </p>
+                </li>
+                <li>
+                    <span class="clock">Hour 2 &#8211; 3 &#183; See walls</span>
+                    <p>
+                        Read the distance sensors, print raw values, and set your wall-present thresholds against
+                        the actual practice maze under the actual room lights. Add hysteresis. Then get the
+                        wall-centring loop steering the mouse down a corridor without touching either side.
+                    </p>
+                </li>
+                <li>
+                    <span class="clock">Hour 3 &#8211; 4 &#183; Solve the maze slowly</span>
+                    <p>
+                        Wire the flood fill to the movement primitives and let it search a practice maze at a
+                        deliberately embarrassing speed. When it reaches the centre, you have a competition-legal
+                        mouse. Everything from here is optimisation, and you should feel much calmer than you did
+                        an hour ago.
+                    </p>
+                </li>
+                <li>
+                    <span class="clock">Hour 4 &#8211; 5 &#183; Return, re-run, speed up</span>
+                    <p>
+                        Add the return-to-start leg and the speed run over the stored map. Then raise cruise speed
+                        and acceleration in steps, testing after each change, until the mouse starts making
+                        mistakes &#8212; and back off one step. Add the turn cost weighting if you have the map
+                        working cleanly.
+                    </p>
+                </li>
+                <li class="is-signal">
+                    <span class="clock">Hour 5 &#8211; 6 &#183; Freeze and rehearse</span>
+                    <p>
+                        Stop writing features. Charge the battery. Run the full sequence end to end &#8212; start
+                        button, search, return, speed run &#8212; at least twice, exactly as you will on the maze.
+                        Decide now, as a team, which speed setting is your banked run and which is your gamble.
+                        Write it down. You will not think clearly with a judge's stopwatch running.
+                    </p>
+                </li>
+            </ol>
+
+            <div class="mm-callout is-signal">
+                <p>
+                    <strong>The rule that beats every other piece of advice on this page:</strong> a mouse that
+                    reliably reaches the centre in 60 seconds beats a mouse that would have done it in 12 and
+                    didn't. Build for a finish first. Optimise second. Always have a working version you can go
+                    back to.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="failures" aria-labelledby="failTitle">
+            <span class="mm-eyebrow">15 &#183; Pre-mortem</span>
+            <h2 id="failTitle">The ways mice actually fail</h2>
+            <div class="mm-prose">
+                <p>
+                    None of these are exotic. Every one of them will happen to somebody in the room on the day.
+                    Reading them now costs you two minutes; finding them at hour five costs you the contest.
+                </p>
+                <ul class="mm-list">
+                    <li>
+                        <strong>A phantom wall in the map.</strong> One bad sensor reading records a wall that is not
+                        there. The mouse is now confidently solving a different maze. Guard the map: only record a
+                        wall from a reading taken at a consistent position in the cell.
+                    </li>
+                    <li>
+                        <strong>Accumulated heading error.</strong> The mouse is 3&#176; off after ten cells and
+                        clips a post. Correct heading against the walls continuously; do not trust the gyro alone
+                        over a long run.
+                    </li>
+                    <li>
+                        <strong>The corridor with no side walls.</strong> The wall-centring PID loses its reference
+                        and steers hard toward the missing wall. Detect "no wall on this side" explicitly and fall
+                        back to holding heading.
+                    </li>
+                    <li>
+                        <strong>Starting from the wrong place.</strong> The start cell is walled on three sides for
+                        a reason. If your code assumes the mouse starts centred and facing the opening, make sure a
+                        human placing it in a hurry cannot get that wrong.
+                    </li>
+                    <li>
+                        <strong>Flat battery mid-slot.</strong> Ten minutes of runs, motors stalling against walls,
+                        and a pack that was never fully charged. Charge between practice sessions, and know what
+                        your mouse does as voltage falls.
+                    </li>
+                    <li>
+                        <strong>The un-tested return leg.</strong> Teams test "drive to the centre" thoroughly and
+                        the trip home not at all &#8212; then discover on the maze that the mouse has no idea how to
+                        turn around inside the goal block.
+                    </li>
+                    <li>
+                        <strong>Asking for a recovery at the wrong moment.</strong> Remember that a recovery
+                        requested outside a clear malfunction can cost you the mouse's entire memory of the maze.
+                        Know before you raise your hand whether you are willing to pay that.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" id="reading" aria-labelledby="readTitle">
+            <span class="mm-eyebrow">16 &#183; Go deeper</span>
+            <h2 id="readTitle">Reading, code and video</h2>
+            <div class="mm-prose">
+                <p>
+                    Micromouse has an unusually generous community: forty years of people documenting exactly how
+                    they did it. Read before the day. Everything below is free.
+                </p>
+
+                <h3>Rules and reference</h3>
+            </div>
+            <div class="ref-grid">
+                <a class="ref" href="https://ukmars.org/contests/contest-rules/micromouse-classic/" target="_blank" rel="noopener">
+                    <span class="kind">Rules &#183; ukmars.org</span>
+                    <span class="name">UK Micromouse Classic rules</span>
+                    <span class="note">The definitive statement of the standard we run to: maze construction, mouse limits, run timing and penalties.</span>
+                </a>
+                <a class="ref" href="https://ukmars.org/contests/contest-rules/micromouse-half-size/" target="_blank" rel="noopener">
+                    <span class="kind">Rules &#183; ukmars.org</span>
+                    <span class="name">Half-size rules</span>
+                    <span class="note">The 32 x 32 variant on a 90 mm pitch. Worth reading to see which constraints are fundamental and which are just scale.</span>
+                </a>
+                <a class="ref" href="https://ukmars.org/contests/micromouse/micromouse-history/" target="_blank" rel="noopener">
+                    <span class="kind">History &#183; ukmars.org</span>
+                    <span class="name">A micromouse history</span>
+                    <span class="note">Year by year, from the 1979 New York contest onwards. Explains why the rules look the way they do.</span>
+                </a>
+                <a class="ref" href="https://micromouseonline.com/micromouse-book/" target="_blank" rel="noopener">
+                    <span class="kind">Book &#183; micromouseonline.com</span>
+                    <span class="name">Peter Harrison's Micromouse book</span>
+                    <span class="note">The single best resource in the sport. Chassis design, sensors, motion control, mazes and maze solving, all written by someone who has been building these for decades.</span>
+                </a>
+                <a class="ref" href="https://spectrum.ieee.org/the-amazing-micromouse-contest" target="_blank" rel="noopener">
+                    <span class="kind">Article &#183; IEEE Spectrum</span>
+                    <span class="name">The Amazing Micromouse Contest</span>
+                    <span class="note">Where the whole thing started, from the magazine that started it.</span>
+                </a>
+                <a class="ref" href="https://en.wikipedia.org/wiki/Micromouse" target="_blank" rel="noopener">
+                    <span class="kind">Overview &#183; Wikipedia</span>
+                    <span class="name">Micromouse</span>
+                    <span class="note">A fast orientation to the sport, its variants and its records.</span>
+                </a>
+                <a class="ref" href="https://hackaday.com/2023/05/28/the-fascinating-evolution-of-micromouse/" target="_blank" rel="noopener">
+                    <span class="kind">Article &#183; Hackaday</span>
+                    <span class="name">The fascinating evolution of Micromouse</span>
+                    <span class="note">How mice went from wall followers to 6 g cornering machines with suction fans.</span>
+                </a>
+                <a class="ref" href="https://bulebots.readthedocs.io/en/latest/micromouse_maze_building.html" target="_blank" rel="noopener">
+                    <span class="kind">Docs &#183; Bulebots</span>
+                    <span class="name">Micromouse maze building</span>
+                    <span class="note">Maze dimensions and construction from the perspective of people who built one. Useful sanity check on the numbers.</span>
+                </a>
+            </div>
+
+            <div class="mm-prose">
+                <h3>Algorithms</h3>
+            </div>
+            <div class="ref-grid">
+                <a class="ref" href="https://micromouseonline.com/micromouse-book/mazes-and-maze-solving/" target="_blank" rel="noopener">
+                    <span class="kind">Chapter &#183; micromouseonline.com</span>
+                    <span class="name">Mazes and maze solving</span>
+                    <span class="note">Flood fill, exploration strategy and route cost, written for micromouse specifically rather than for a textbook.</span>
+                </a>
+                <a class="ref" href="https://swati-mishra.com/wp-content/uploads/2020/02/advanced-algorithms-for-micro-mouse-maze-solving-las-vegas.pdf" target="_blank" rel="noopener">
+                    <span class="kind">Paper &#183; PDF</span>
+                    <span class="name">Advanced Algorithms for Micro Mouse Maze Solving</span>
+                    <span class="note">Mishra &amp; Bande. Compares wall following, Dijkstra and flood fill, and explains why flood fill wins on a microcontroller.</span>
+                </a>
+                <a class="ref" href="https://marsuniversity.github.io/ece387/FloodFill.pdf" target="_blank" rel="noopener">
+                    <span class="kind">Paper &#183; PDF</span>
+                    <span class="name">Flood fill, in detail</span>
+                    <span class="note">A careful treatment of the modified flood fill and the incremental update that keeps the mouse moving.</span>
+                </a>
+                <a class="ref" href="https://chengweihu.com/io/micromouse-mazesolving/" target="_blank" rel="noopener">
+                    <span class="kind">Write-up &#183; Cheng-Wei Hu</span>
+                    <span class="name">Micromouse maze solving</span>
+                    <span class="note">A student-level walkthrough of getting flood fill from concept to running code.</span>
+                </a>
+            </div>
+
+            <div class="mm-prose">
+                <h3>Code to read and build on</h3>
+            </div>
+            <div class="ref-grid">
+                <a class="ref" href="https://github.com/mackorone/mms" target="_blank" rel="noopener">
+                    <span class="kind">GitHub &#183; mackorone/mms</span>
+                    <span class="name">The micromouse simulator</span>
+                    <span class="note">Write and test your maze-solving algorithm with no robot at all. Install this before the event and turn up with a working flood fill.</span>
+                </a>
+                <a class="ref" href="https://github.com/mackorone/mms-arduino" target="_blank" rel="noopener">
+                    <span class="kind">GitHub &#183; mackorone</span>
+                    <span class="name">mms-arduino / mms-c / mms-cpp / mms-python</span>
+                    <span class="note">Starter templates that plug your algorithm into the simulator in the language you are actually writing in.</span>
+                </a>
+                <a class="ref" href="https://github.com/ukmars/mazerunner-core" target="_blank" rel="noopener">
+                    <span class="kind">GitHub &#183; ukmars</span>
+                    <span class="name">mazerunner-core</span>
+                    <span class="note">A complete, bare-bones micromouse firmware for the UKMARSBOT: motion profiles, sensors, flood fill and search, all in readable code.</span>
+                </a>
+                <a class="ref" href="https://github.com/ukmars/ukmarsbot" target="_blank" rel="noopener">
+                    <span class="kind">GitHub &#183; ukmars</span>
+                    <span class="name">UKMARSBOT</span>
+                    <span class="note">The reference beginner robot platform. Good hardware to compare your own layout against.</span>
+                </a>
+                <a class="ref" href="https://github.com/micromouseonline/mazefiles" target="_blank" rel="noopener">
+                    <span class="kind">GitHub &#183; micromouseonline</span>
+                    <span class="name">mazefiles</span>
+                    <span class="note">Decades of real contest mazes as text files. Test your solver against mazes designed by people trying to defeat solvers.</span>
+                </a>
+                <a class="ref" href="https://github.com/micromouseonline/micromouse-maze" target="_blank" rel="noopener">
+                    <span class="kind">GitHub &#183; micromouseonline</span>
+                    <span class="name">micromouse-maze</span>
+                    <span class="note">Library code for representing, flooding and manipulating mazes. Worth reading even if you write your own.</span>
+                </a>
+            </div>
+
+            <div class="mm-prose">
+                <h3>Watch</h3>
+            </div>
+            <div class="ref-grid">
+                <a class="ref is-video" href="https://www.youtube.com/watch?v=ZMQbHMgK2rw" target="_blank" rel="noopener">
+                    <span class="kind">Video &#183; Veritasium</span>
+                    <span class="name">The Fastest Maze-Solving Competition On Earth</span>
+                    <span class="note">The best twenty minutes you can spend before the event. Explains search runs, speed runs and why the top mice look the way they do. Watch this one first.</span>
+                </a>
+                <a class="ref is-video" href="https://www.youtube.com/watch?v=5Itos2Z6orQ" target="_blank" rel="noopener">
+                    <span class="kind">Video &#183; UKMARS</span>
+                    <span class="name">A full contest run, start to finish</span>
+                    <span class="note">Mr Fusion at UKMARS autumn 2023. What an entire slot actually looks like: explore, return, speed run, escalate.</span>
+                </a>
+                <a class="ref is-video" href="https://www.youtube.com/watch?v=ktn3C7aXVR0" target="_blank" rel="noopener">
+                    <span class="kind">Video &#183; IEEE Bruins</span>
+                    <span class="name">Micromouse lecture: flood fill</span>
+                    <span class="note">A university teaching session on flood fill from UCLA's micromouse course. Whiteboard-level, exactly the depth you need.</span>
+                </a>
+                <a class="ref is-video" href="https://www.youtube.com/playlist?list=PLMcEwKreLg4WbNIPXqCeG6kCuqmIpM-QJ" target="_blank" rel="noopener">
+                    <span class="kind">Playlist &#183; micromouseonline</span>
+                    <span class="name">Micromouse construction how-to</span>
+                    <span class="note">Peter Harrison building mice on camera. The practical half of the book.</span>
+                </a>
+                <a class="ref is-video" href="https://www.youtube.com/watch?v=GNYlBb1Paxo" target="_blank" rel="noopener">
+                    <span class="kind">Video &#183; APEC 2024</span>
+                    <span class="name">HAL900's fastest run yet</span>
+                    <span class="note">Modern top-tier diagonal running at full speed. Watch the route it chooses, not just how fast it goes.</span>
+                </a>
+                <a class="ref is-video" href="https://www.youtube.com/c/Greenye/videos" target="_blank" rel="noopener">
+                    <span class="kind">Channel &#183; Green Ye</span>
+                    <span class="name">Green Giant and friends</span>
+                    <span class="note">Years of competition footage and build detail from one of the best-known builders in the sport.</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="mm-section" aria-labelledby="closeTitle">
+            <span class="mm-eyebrow">Now go and build it</span>
+            <h2 id="closeTitle">You are not supposed to know how. You are supposed to figure it out.</h2>
+            <div class="mm-prose">
+                <p>
+                    Everything on this page is public, has been for forty years, and is still hard. That is the
+                    point. Turn up having watched one video and installed one simulator and you will be ahead of
+                    most of the room &#8212; and the rest of it you will work out at the bench, with a maze in front
+                    of you and five hours to go.
+                </p>
+            </div>
+            <div class="mm-endnav">
+                <a class="mm-btn" href="micromouse.html?nav=2">Event details &amp; registration</a>
+                <a class="mm-btn is-ghost" href="resources.html?nav=2">Open the Resource Hub</a>
+                <a class="mm-btn is-ghost" href="learn.html?scope=wiki">Electronics wiki</a>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+</body>
+</html>

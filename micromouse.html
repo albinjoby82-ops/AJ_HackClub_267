@@ -258,6 +258,28 @@
         transition: background var(--transition-fast), color var(--transition-fast);
     }
 
+    /* Inline links inside body copy on the dark stage. */
+    .mm-section p a {
+        color: var(--mm-mint);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(127, 212, 188, 0.34);
+    }
+
+    .mm-section p a:hover {
+        color: var(--mm-paper);
+        border-bottom-color: var(--mm-orange);
+    }
+
+    .resource-hub-link.is-ghost {
+        color: var(--mm-mint);
+        background: transparent;
+    }
+
+    .resource-hub-link.is-ghost:hover {
+        color: var(--mm-ink);
+        background: var(--mm-mint);
+    }
+
     .resource-hub-link:hover {
         color: var(--mm-paper);
         background: transparent;
@@ -650,7 +672,8 @@
             </div>
 
             <div class="mm-hero-actions">
-                <a class="resource-hub-link" href="resources.html?nav=2">Open Resource Hub</a>
+                <a class="resource-hub-link" href="micromouse-guide.html">Rules &amp; winning strategy</a>
+                <a class="resource-hub-link is-ghost" href="resources.html?nav=2">Open Resource Hub</a>
                 <button class="replay-button" id="replayReveal" type="button">Replay animation</button>
             </div>
         </section>
@@ -712,7 +735,7 @@
                 </article>
                 <article class="mm-card">
                     <h3>On the day</h3>
-                    <p>A 30 minute opening briefing with all the electronics diagrams prepared for you, walking through how to use the encoded motors, the motor driver, the IMU and the distance sensors, why there's a battery management system in the kit, why there's a buck converter, and how the battery packs actually work. We also cover GitHub basics for anyone who hasn't used it, and talk through the different maze-solving strategies so you can pick an approach rather than guess at one.</p>
+                    <p>A 30 minute opening briefing with all the electronics diagrams prepared for you, walking through how to use the encoded motors, the motor driver, the IMU and the distance sensors, why there's a battery management system in the kit, why there's a buck converter, and how the battery packs actually work. We also cover GitHub basics for anyone who hasn't used it, and talk through the different maze-solving strategies so you can pick an approach rather than guess at one. The same material is written up in full in the <a href="micromouse-guide.html">competition guide</a>, so you can read ahead.</p>
                 </article>
                 <article class="mm-card">
                     <h3>Throughout</h3>
@@ -740,6 +763,7 @@
             <span class="mm-eyebrow">Judging</span>
             <h2 id="judgingTitle">Fastest verified run wins</h2>
             <p>The main award goes to the fastest verified run to the centre of the maze, with further awards for design and reliability.</p>
+            <p>We run the classic 16 x 16 maze standard, and the rules of a run &#8212; how many attempts you get, how a run is timed, what happens if you touch the mouse &#8212; are set out in the <a href="micromouse-guide.html">competition guide</a>, along with the maze-solving theory that decides who wins.</p>
         </section>
 
         <section class="mm-section" aria-labelledby="campaignTitle">
