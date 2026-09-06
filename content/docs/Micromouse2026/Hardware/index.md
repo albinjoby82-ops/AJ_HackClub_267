@@ -5,12 +5,18 @@ parent: Micromouse 2026 Resources
 nav_order: 2
 ---
 
-# Hardware
+# Build your hardware
 
-Controller, power and wiring guides for the Dublin Micromouse Open 2026.
+Get the controller, motors and sensors working one at a time. Start with H1 to identify your board and make a pin map; use H5 before powering the controller from a battery.
 
-- [H1 - ESP32-C6 Controller Guide](#/docs/Micromouse2026/Hardware/ESP32C6.md)
-- [H2 - DFRobot DRI0044 Motor Driver](#/docs/Micromouse2026/Hardware/DRI0044.md)
-- [H3 - DFRobot SEN0142 IMU](#/docs/Micromouse2026/Hardware/SEN0142.md)
-- [H4 - 3x VL53L0X Distance Sensors](#/docs/Micromouse2026/Hardware/VL53L0X.md)
-- [H5 - 2S Battery to 5V Buck Converter](#/docs/Micromouse2026/Hardware/BuckConverter.md)
+<nav class="hardware-directory" aria-label="Hardware guides">
+<a href="#/docs/Micromouse2026/Hardware/ESP32C6.md"><span class="guide-code">H1</span><strong>ESP32-C6 controller →</strong><span class="guide-description">Choose your pins, plan the wiring and bring the controller online.</span></a>
+<a href="#/docs/Micromouse2026/Hardware/DRI0044.md"><span class="guide-code">H2</span><strong>Motor driver →</strong><span class="guide-description">Connect the DRI0044 and test each wheel’s direction and speed.</span></a>
+<a href="#/docs/Micromouse2026/Hardware/SEN0142.md"><span class="guide-code">H3</span><strong>Motion sensor →</strong><span class="guide-description">Wire the SEN0142 IMU, check its orientation and calibrate gyro bias.</span></a>
+<a href="#/docs/Micromouse2026/Hardware/VL53L0X.md"><span class="guide-code">H4</span><strong>Distance sensors →</strong><span class="guide-description">Connect three VL53L0X boards and give each a unique I²C address.</span></a>
+<a href="#/docs/Micromouse2026/Hardware/BuckConverter.md"><span class="guide-code">H5</span><strong>Battery & power →</strong><span class="guide-description">Set and verify a 5 V supply before connecting the controller.</span></a>
+</nav>
+
+## Before you connect anything
+
+Switch off power before changing wires. Keep your board’s pin map beside you, and check each connection against the guide for that component.

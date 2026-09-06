@@ -6,6 +6,7 @@
 <title>Learn — Hack Club Build Hub</title>
 <link rel="stylesheet" href="design-tokens.css">
 <link rel="stylesheet" href="site.css?v=20260906-hardware-guides">
+<link rel="stylesheet" href="hardware-guides.css?v=1">
 </head>
 <body>
 
@@ -13,7 +14,7 @@
     <div class="topbar-inner">
         <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav">
-            <button class="menu-toggle" id="menuToggle">☰ MENU</button>
+            <button class="menu-toggle" id="menuToggle" type="button" aria-controls="sidebar" aria-expanded="false">☰ MENU</button>
             <a href="index.html?nav=2">Home</a>
             <a href="resources.html?nav=2">Resource Hub</a>
             <a href="micromouse.html?nav=2" class="event-nav" id="micromouseNav">Micromouse 2026</a>
@@ -44,8 +45,9 @@
     </main>
 </div>
 
-<script src="content/content.js?v=20260906-buck-converter"></script>
+<script src="content/content.js?v=20260906-hardware-refresh"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="hardware-guides.js?v=1"></script>
 <script>
 (function () {
     'use strict';
@@ -367,6 +369,7 @@
         content.innerHTML = html;
         fixRelative(content, path);
         addCopyButtons(content);
+        enhanceHardwareGuide(content, path, page);
 
         breadcrumb.innerHTML = crumbFor(path).map(function (t, idx, arr) {
             return idx === arr.length - 1 ? t : '<a href="#/' + byTitle[t] + '">' + t + '</a> / ';
@@ -390,6 +393,7 @@
     }
 
     function renderNotFound(path) {
+        document.body.classList.remove('hardware-reading');
         content.className = 'md';
         content.innerHTML = '<h1>Page not found</h1><p>No page at <code>' + path + '</code>. Pick a section from the menu.</p>';
         breadcrumb.textContent = '';
@@ -440,6 +444,7 @@
             results.sort(function (a, b) { return b.score - a.score; });
         }
 
+        document.body.classList.remove('hardware-reading');
         content.className = 'search-results';
         breadcrumb.textContent = '';
         pager.innerHTML = '';
@@ -481,7 +486,15 @@
         if (h.indexOf('#search=') === 0) {
             renderSearch(h.slice(8));
         } else if (h.indexOf('#/') === 0) {
-            renderPage(h.slice(2));
+            var target = h.slice(2).split('#');
+            renderPage(target[0]);
+            if (target[1]) {
+                var section = document.getElementById(target[1]);
+                if (section && content.contains(section)) {
+                    section.scrollIntoView();
+                    section.focus({ preventScroll: true });
+                }
+            }
         } else if (DEFAULT_PAGE) {
             renderPage(DEFAULT_PAGE);
         }
@@ -499,9 +512,19 @@
 
     var sidebar = document.getElementById('sidebar');
     document.getElementById('menuToggle').addEventListener('click', function () {
-        sidebar.classList.toggle('is-open');
+        var open = sidebar.classList.toggle('is-open');
+        this.setAttribute('aria-expanded', String(open));
     });
-    function closeSidebar() { sidebar.classList.remove('is-open'); }
+    function closeSidebar() {
+        sidebar.classList.remove('is-open');
+        document.getElementById('menuToggle').setAttribute('aria-expanded', 'false');
+    }
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && sidebar.classList.contains('is-open')) {
+            closeSidebar();
+            document.getElementById('menuToggle').focus();
+        }
+    });
 
     route();
 })();

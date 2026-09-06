@@ -1,0 +1,64 @@
+/* Hardware reading tools, scoped to the Micromouse guides. */
+.hardware-reading .content-pane { max-width: 900px; padding: 40px 48px 80px; }
+.hardware-reading .breadcrumb { letter-spacing: .04em; font-size: 10px; }
+.hardware-reading .menu-toggle { white-space: nowrap; flex-shrink: 0; }
+.hardware-guide { font-size: 17px; line-height: 1.75; }
+.hardware-guide .hardware-back { display: inline-block; margin-bottom: 24px; font-size: 14px; text-decoration: none; }
+.hardware-guide .hardware-meta { margin-bottom: 10px; color: var(--color-mint-deep); font: 600 11px/1.5 var(--font-mono); letter-spacing: .1em; }
+.hardware-guide h1 { font-size: clamp(32px, 4vw, 48px); line-height: 1.1; letter-spacing: -.025em; max-width: 19ch; margin: 0 0 20px; }
+.hardware-guide .hardware-lead { font-size: 20px; line-height: 1.6; margin-bottom: 28px; max-width: 62ch; }
+.hardware-guide h2 { border-top: 1px solid var(--color-line); padding-top: 28px; margin-top: 44px; scroll-margin-top: 85px; }
+.hardware-guide h2:focus { outline: none; }
+.hardware-guide .hardware-jumps { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 18px 0; margin: 0 0 28px; border-block: 1px solid var(--color-line); }
+.hardware-jumps strong { flex-basis: 100%; font: 600 11px/1.8 var(--font-mono); text-transform: uppercase; letter-spacing: .1em; }
+.hardware-jumps a { font-size: 14px; text-underline-offset: 4px; }
+.hardware-guide .hardware-media-grid { align-items: start; gap: 16px; }
+.hardware-guide .hardware-media-grid figure { display: block; padding: 12px; background: var(--color-card); }
+.hardware-guide .hardware-media-grid .hardware-image img { min-height: 0; height: 200px; }
+.hardware-guide .hardware-media-grid figcaption { text-transform: none; letter-spacing: 0; font: 14px/1.5 var(--font-sans); }
+.hardware-guide .esp32-pinout-hero { margin: 24px 0; }
+.hardware-guide .hardware-image { display: block; width: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; color: var(--color-mint-deep); text-align: left; }
+.hardware-guide .hardware-image img { display: block; width: 100%; height: auto; margin: 0; object-fit: contain; background: #fff; }
+.hardware-image span { display: block; padding: 8px 0 0; font: 600 12px/1.4 var(--font-sans); }
+.hardware-image-fallback { display: block; padding: 24px 12px; font-size: 14px; }
+.hardware-guide .esp32-gpio-warning, .hardware-guide .hardware-alert { text-align: left; color: var(--color-ink); font: 400 16px/1.65 var(--font-sans); border: 1px solid var(--color-line); border-left: 3px solid var(--color-mint); background: var(--color-card); padding: 16px 20px; border-radius: 0 8px 8px 0; margin-block: 24px; }
+.hardware-table { overflow-x: auto; margin-bottom: 24px; border: 1px solid var(--color-line); border-radius: 10px; }
+.hardware-guide .hardware-table table { display: table; margin: 0; font-size: 15px; }
+.hardware-guide .hardware-table th { background: var(--color-card); font: 600 13px/1.5 var(--font-sans); text-transform: none; letter-spacing: 0; }
+.hardware-guide .hardware-table :is(td, th) { padding: 12px 16px; min-width: 110px; }
+.hardware-guide .hardware-table tr:last-child td { border-bottom: 0; }
+.hardware-guide .hardware-table td:first-child { color: var(--color-ink); }
+.hardware-guide pre { padding-top: 44px; }
+.hardware-guide li { margin-bottom: 10px; padding-left: 3px; }
+.hardware-reading .pager a { padding: 12px 0; }
+.hardware-viewer { width: min(1440px, 96vw); max-width: 96vw; max-height: 92vh; padding: 20px; border: 1px solid var(--color-line); border-radius: 14px; background: var(--color-card); color: var(--color-ink); }
+.hardware-viewer::backdrop { background: rgba(10, 20, 30, .75); }
+.hardware-viewer img { display: block; width: 100%; height: auto; background: white; }
+.hardware-viewer button { position: sticky; top: 0; display: block; margin: 0 0 16px auto; padding: 10px 16px; border: 1px solid var(--color-line); border-radius: 8px; background: var(--color-card); color: var(--color-ink); font: 600 14px/1.5 var(--font-sans); cursor: pointer; }
+:is(.hardware-guide, .hardware-viewer) :is(a, button, [tabindex="0"]):focus-visible { outline: 3px solid var(--color-mint); outline-offset: 4px; }
+.hardware-guide .hardware-directory { display: grid; margin: 24px 0; }
+.hardware-guide .hardware-directory a { display: grid; grid-template-columns: 44px 1fr; gap: 4px 16px; padding: 22px 0; border-top: 1px solid var(--color-line); text-decoration: none; }
+.hardware-directory .guide-code { grid-row: span 2; color: var(--color-mint-deep); font: 600 12px/1.8 var(--font-mono); }
+.hardware-directory strong { font-size: 21px; }
+.hardware-directory .guide-description { color: var(--color-ink-soft); font-size: 16px; }
+.hardware-directory a:hover strong { color: var(--color-mint-deep); text-decoration: underline; text-underline-offset: 4px; }
+.resource-menu #hardware { scroll-margin-top: 85px; }
+.resource-menu #hardware .resource-name { text-transform: none; }
+.hardware-start { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin: 0 24px 24px 72px; padding-block: 16px; border-block: 1px solid var(--hub-line); }
+.hardware-start p { flex: 1 1 260px; margin: 0; color: var(--hub-paper-dim); font-size: 15px; }
+.hardware-start a { color: var(--hub-paper); border: 1px solid var(--hub-line); padding: 10px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; }
+.hardware-start a:hover { border-color: var(--hub-mint); }
+.hardware-start a:focus-visible { outline: 3px solid var(--hub-mint); outline-offset: 3px; }
+@media (max-width: 900px) {
+  .hardware-reading .content-pane { padding: 28px 24px 64px; width: 100%; }
+}
+@media (max-width: 560px) {
+  .hardware-reading .content-pane { padding-inline: 18px; }
+  .hardware-guide { font-size: 16px; }
+  .hardware-guide .hardware-lead { font-size: 18px; }
+  .hardware-guide .hardware-jumps { gap: 4px 16px; }
+  .hardware-jumps a { padding-block: 5px; }
+  .hardware-guide .hardware-media-grid .hardware-image img { height: 220px; }
+  .hardware-viewer { padding: 12px; }
+  .hardware-start { margin-inline: 16px; }
+}

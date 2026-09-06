@@ -7,6 +7,8 @@ nav_order: 5
 
 # H5 - 2S Battery to 5V Buck Converter
 
+A buck converter steps the **2S battery voltage** down to a regulated **5.0 V system rail**. A 2S Li-ion pack is about 7.4 V nominal and reaches 8.4 V when fully charged.
+
 <div class="hardware-media-grid">
   <figure>
     <img src="https://shop4makers.com/wp-content/uploads/2023/07/MP1584EN.jpg" alt="Small adjustable MP1584EN buck converter module">
@@ -18,13 +20,11 @@ nav_order: 5
   </figure>
 </div>
 
-A buck converter steps the **2S battery voltage** down to a regulated **5.0 V system rail**. A 2S Li-ion pack is about 7.4 V nominal and reaches 8.4 V when fully charged.
-
 ![Power path from a protected 2S battery through a buck converter to the ESP32-C6 and 3.3 V sensors](../../assets/images/2S-5V-buck-power-flow.svg)
 
 <p class="hardware-alert">⚠ A buck converter is not a charger or a battery-protection circuit. Use a protected 2S pack or suitable BMS, the correct 2S balance charger, a fuse and a main switch.</p>
 
-## Connect it
+## Wiring
 
 | Buck terminal | Connection |
 |---|---|

@@ -7,15 +7,15 @@ nav_order: 1
 
 # H1 - ESP32-C6 Controller Guide
 
+The ESP32-C6 is the controller at the centre of your Micromouse. It reads sensors, measures wheel movement, generates motor-control signals and runs the navigation code.
+
 <figure class="esp32-pinout-hero">
   <img src="../../assets/images/ESP32C6-DevKitC1-Pinout.png" alt="ESP32-C6-DevKitC-1 GPIO pinout and peripheral functions">
 </figure>
 
 <p class="esp32-gpio-warning">⚠ GPIO matters: always check this ESP32-C6-DevKitC-1 pinout, your exact board revision and the team pin map before wiring hardware or assigning pins in code.</p>
 
-The ESP32-C6 is the controller at the centre of your Micromouse. It reads sensors, measures wheel movement, generates motor-control signals and runs the navigation code.
-
-This guide explains what each connection does, how to plan the wiring and how to bring the controller up safely. It does not give one universal pinout because ESP32-C6 development boards and custom carrier boards expose the chip differently.
+Start by identifying your exact board, then make a shared pin map. Development boards expose different pins, so check your board’s schematic before following a wiring example.
 
 By the end, you will be able to:
 
@@ -195,7 +195,7 @@ If upload fails, confirm the selected ESP32-C6 board and port. On boards without
 
 ### Step 3 - Test one output
 
-Connect one known-safe output such as an LED or one unpowered motor-driver logic input. Confirm the measured pin changes as expected before adding the rest.
+Test a chosen output with a multimeter or an LED and a suitable current-limiting resistor. Confirm that the pin changes as expected before connecting a peripheral.
 
 Use named constants rather than unexplained pin numbers:
 
