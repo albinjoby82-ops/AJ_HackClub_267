@@ -7,6 +7,8 @@ nav_order: 4
 
 # H4 - 3x VL53L0X Distance Sensors
 
+Use three VL53L0X Time-of-Flight sensors to measure the **left wall, front wall and right wall**. They share one I2C bus.
+
 <div class="hardware-media-grid">
   <figure>
     <img src="https://funduinoshop.com/media/image/a0/11/4e/GY-530-VL53-LOX-time-of-Flight-ToF-Sensor-top_600x600%402x.png" alt="Six-pin GY-530 VL53L0X Time-of-Flight distance sensor board">
@@ -18,11 +20,9 @@ nav_order: 4
   </figure>
 </div>
 
-Use three VL53L0X Time-of-Flight sensors to measure the **left wall, front wall and right wall**. They share one I2C bus.
-
 <p class="hardware-alert">⚠ All VL53L0X sensors start at the same I2C address. Connect every XSHUT pin to a different ESP32-C6 GPIO and assign new addresses at every boot, or the three boards will conflict.</p>
 
-## Connect all three
+## Wire the three sensors
 
 | GY-530 pin | ESP32-C6 connection |
 |---|---|
@@ -59,7 +59,7 @@ FRONT = 0x31
 RIGHT = 0x32
 ```
 
-## First test
+## Test it before mounting
 
 1. Test one board first and confirm it reports distance in millimetres.
 2. Add the other boards and check the three addresses after every restart.
