@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 650" role="img" aria-labelledby="title desc">
+  <title id="title">Three VL53L0X sensors connected to one ESP32-C6</title>
+  <desc id="desc">The sensors share power, ground, SDA and SCL. Each XSHUT pin connects to a separate ESP32-C6 GPIO. The sensors use addresses 0x30, 0x31 and 0x32.</desc>
+  <rect width="980" height="650" rx="24" fill="#f7f9fb"/>
+  <text x="490" y="45" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#202838">3x VL53L0X ON ONE I2C BUS</text>
+  <text x="490" y="76" text-anchor="middle" font-family="monospace" font-size="14" fill="#596477">SHARED BUS + ONE XSHUT GPIO PER SENSOR</text>
+
+  <rect x="45" y="145" width="230" height="360" rx="18" fill="#172230" stroke="#cc2d36" stroke-width="4"/>
+  <text x="160" y="193" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#ffffff">ESP32-C6</text>
+  <text x="160" y="222" text-anchor="middle" font-family="monospace" font-size="14" fill="#8de0cf">TEAM PIN MAP</text>
+
+  <g font-family="monospace" font-size="16" font-weight="700">
+    <text x="225" y="280" text-anchor="end" fill="#e34c56">3V3</text>
+    <text x="225" y="325" text-anchor="end" fill="#626d7f">GND</text>
+    <text x="225" y="370" text-anchor="end" fill="#3c86db">SDA</text>
+    <text x="225" y="415" text-anchor="end" fill="#c18b00">SCL</text>
+    <text x="225" y="460" text-anchor="end" fill="#e9683c">XSHUT L / F / R</text>
+  </g>
+
+  <g stroke-linecap="round" fill="none">
+    <path d="M240 275 H325 V155 H700" stroke="#e34c56" stroke-width="6"/>
+    <path d="M240 320 H350 V180 H725" stroke="#626d7f" stroke-width="6"/>
+    <path d="M240 365 H375 V205 H750" stroke="#3c86db" stroke-width="6"/>
+    <path d="M240 410 H400 V230 H775" stroke="#c18b00" stroke-width="6"/>
+    <path d="M240 455 H430 V290 H690" stroke="#e9683c" stroke-width="4"/>
+    <path d="M430 455 H715" stroke="#e9683c" stroke-width="4"/>
+    <path d="M240 455 H455 V570 H740" stroke="#e9683c" stroke-width="4"/>
+  </g>
+
+  <g font-family="monospace" font-size="12" font-weight="700" fill="#ffffff">
+    <g transform="translate(700 105)">
+      <rect width="235" height="140" rx="14" fill="#263548" stroke="#b8c4d1" stroke-width="2"/>
+      <circle cx="35" cy="39" r="17" fill="#111b26" stroke="#8de0cf" stroke-width="4"/>
+      <text x="67" y="34" font-size="18">LEFT</text>
+      <text x="67" y="57" fill="#8de0cf">ADDRESS 0x30</text>
+      <text x="20" y="88" fill="#e34c56">VIN</text>
+      <text x="65" y="88" fill="#626d7f">GND</text>
+      <text x="115" y="88" fill="#3c86db">SDA</text>
+      <text x="160" y="88" fill="#c18b00">SCL</text>
+      <text x="20" y="117" fill="#e9683c">XSHUT-L</text>
+    </g>
+    <g transform="translate(725 280)">
+      <rect width="210" height="140" rx="14" fill="#263548" stroke="#b8c4d1" stroke-width="2"/>
+      <circle cx="35" cy="39" r="17" fill="#111b26" stroke="#8de0cf" stroke-width="4"/>
+      <text x="67" y="34" font-size="18">FRONT</text>
+      <text x="67" y="57" fill="#8de0cf">ADDRESS 0x31</text>
+      <text x="20" y="88" fill="#e34c56">VIN</text>
+      <text x="65" y="88" fill="#626d7f">GND</text>
+      <text x="115" y="88" fill="#3c86db">SDA</text>
+      <text x="160" y="88" fill="#c18b00">SCL</text>
+      <text x="20" y="117" fill="#e9683c">XSHUT-F</text>
+    </g>
+    <g transform="translate(740 455)">
+      <rect width="195" height="140" rx="14" fill="#263548" stroke="#b8c4d1" stroke-width="2"/>
+      <circle cx="35" cy="39" r="17" fill="#111b26" stroke="#8de0cf" stroke-width="4"/>
+      <text x="67" y="34" font-size="18">RIGHT</text>
+      <text x="67" y="57" fill="#8de0cf">ADDRESS 0x32</text>
+      <text x="20" y="88" fill="#e34c56">VIN</text>
+      <text x="65" y="88" fill="#626d7f">GND</text>
+      <text x="115" y="88" fill="#3c86db">SDA</text>
+      <text x="160" y="88" fill="#c18b00">SCL</text>
+      <text x="20" y="117" fill="#e9683c">XSHUT-R</text>
+    </g>
+  </g>
+
+  <g font-family="monospace" font-size="14" font-weight="700">
+    <rect x="45" y="545" width="625" height="70" rx="12" fill="#fff4e9" stroke="#e9683c" stroke-width="2"/>
+    <text x="65" y="575" fill="#a93b1d">BOOT ORDER:</text>
+    <text x="175" y="575" fill="#202838">ALL OFF → LEFT 0x30 → FRONT 0x31 → RIGHT 0x32</text>
+    <text x="65" y="598" fill="#596477">Repeat after every reset or power cycle.</text>
+  </g>
+</svg>
