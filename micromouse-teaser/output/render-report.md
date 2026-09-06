@@ -2,6 +2,62 @@
 
 Generated from `micromouse-teaser/` on 2026-07-28.
 
+## V2 revision (current delivery)
+
+**`output/micromouse-teaser-final-v2.mp4` — 1080×1920, 30 fps, 16.67 s
+(500 frames), H.264 High/yuv420p, AAC 48 kHz stereo, fast-start.**
+Measured −14.02 LUFS integrated, −2.27 dBTP. All 15 checks in
+`tools/validate.mjs` pass. The V1 outputs remain untouched alongside it.
+
+Structural changes from V1:
+
+| Change | Detail |
+| --- | --- |
+| `SMALLER.` removed | Word, beat and audio impact deleted; gap closed, not paused. Copy list no longer contains the word |
+| Impacts retimed | `FASTER.` 7.40–8.70 s, `SMARTER.` 10.50–11.70 s, each on its own synthesised hit |
+| Teaser line trimmed | `THE MAZE IS WAITING.` now 3.20–5.20 s |
+| Bridge removed | The orange question-mark/route-draw animation and the standalone logo screen are gone entirely |
+| Chase extended | Runs through the robot's final head-on approach to source frame 416 — the last frame before the source's route line begins its step-draw (417) |
+| Direct reveal cut | Hard cut at frame 380 (12.67 s) from the parked, headlight-lit robot straight to the complete card, on the strongest hit in the score; 3-frame orange accent flash (0.16 → 0) |
+| One reveal only | Card is fully assembled from its first frame; whole-card settle of 6 frames (opacity 0.75→1, scale 1.025→1) |
+| Card held | Motionless 3.33 s (frames 388–488; mean luma delta 4.2e-3/255), then a 0.40 s fade with the audio |
+
+End-card design changes (palette, wording and the official logo bitmap are
+unchanged):
+
+- Logo 320 → 384 px wide (+20 %), still the exact official asset at its
+  native 376:235 aspect.
+- `MICRO-MOUSE ’26` 126 → 142 px (+12.7 %), the dominant element.
+- Tagline 34 → 44 px, tracking reduced to 8 — phone-readable without zooming.
+- `COMING SOON` 46 → 54 px in a lightened tint of the palette orange
+  (`#F0824F`) with a soft same-hue glow for contrast.
+- Vertical rhythm tightened (logo→title gap 160 → 90 px, title→tagline
+  54 → 56 px, tagline→callout 240 → 130 px); block optically centred in the
+  TikTok-safe area, everything inside the 96 px side margins and above the
+  reserved bottom 300 px.
+
+Audio: the score is re-synthesised on the revised cue sheet, not spliced, so
+retiming cannot produce jumps, repeated beats or clipped transients. The pulse
+now drives all the way into the cut, the riser leaves `SMARTER.` at 11.67 s,
+the reveal hit lands exactly on the cut, and a sustained 55/41 Hz pair carries
+the motionless card into the fade.
+
+Verified per the revision checklist: no frame contains `SMALLER.` (full
+every-5th-frame scan); the only word titles are `FASTER.` and `SMARTER.`; no
+route animation or logo-only screen exists after the final robot shot; the cut
+frames (379|380) were inspected directly, along with 0.5 s, 4.0 s, 7.8 s,
+10.8 s, 12.7 s, 13.1 s and 15.5 s.
+
+The cut lands at 12.67 s rather than the suggested ~12.9 s: the source's
+route-line animation visibly begins at source frame 417, so honouring the
+"remove the route animation" requirement takes the out-point three frames
+earlier than the suggested timing. The brief's few-frames adjustment allowance
+covers this.
+
+---
+
+# V1 report (previous delivery, retained)
+
 ## Deliverables
 
 | File | Detail |

@@ -15,7 +15,12 @@
     "dublin:retime": "node tools/retime-dublin.mjs --variant=reshot",
     "dublin:render": "remotion render DublinTeaser output/dublin-master.mp4 --muted && node tools/finalise-dublin.mjs output/dublin-master.mp4 output/dublin_micromouse_open_teaser.mp4",
     "dublin:validate": "node tools/validate-dublin.mjs output/dublin_micromouse_open_teaser.mp4",
-    "dublin:all": "npm run dublin:prepare && npm run dublin:retime && npm run dublin:render && npm run dublin:validate"
+    "dublin:all": "npm run dublin:prepare && npm run dublin:retime && npm run dublin:render && npm run dublin:validate",
+    "cv:prepare": "node tools/prepare-cv.mjs",
+    "cv:audio": "node tools/generate-cv-audio.mjs",
+    "cv:render": "remotion render CvTease output/cv-master.mp4 --muted && node tools/finalise-cv.mjs output/cv-master.mp4 output/cv-tease-dublin-micromouse-open-2026.mp4",
+    "cv:validate": "node tools/validate-cv.mjs",
+    "cv:all": "npm run cv:prepare && npm run cv:audio && npm run cv:render && npm run cv:validate"
   },
   "dependencies": {
     "@remotion/cli": "4.0.418",

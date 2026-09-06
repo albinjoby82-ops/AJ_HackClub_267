@@ -25,6 +25,12 @@ export const ASSETS = {
   logo: 'elecsoc-logo.png',
   font: 'fonts/bahnschrift.ttf',
   score: 'score.wav',
+  /**
+   * The supplied 1080x1920 announcement poster. It is the end card — it already
+   * carries the logo, the headline, the event name and the date line, so it is
+   * laid in at native resolution rather than rebuilt as live type.
+   */
+  endPoster: 'dublin/end-poster.png',
 };
 
 /** ElecSoc identity palette. */
@@ -36,10 +42,13 @@ export const COLORS = {
   offWhite: '#EEF3F5',
 };
 
-/** Exact copy. The apostrophe in the title is U+2019. */
+/**
+ * Exact copy. The apostrophe in the title is U+2019.
+ * V2 drops SMALLER. entirely — it is not replaced with another word.
+ */
 export const COPY = {
   teaser: 'THE MAZE IS WAITING.',
-  impacts: ['SMALLER.', 'FASTER.', 'SMARTER.'],
+  impacts: ['FASTER.', 'SMARTER.'],
   title: 'MICRO-MOUSE ’26',
   tagline: 'BUILD IT. CODE IT. RACE IT.',
   comingSoon: 'COMING SOON',
@@ -117,26 +126,21 @@ const SEGMENTS = [
     focus: [0.5, 0.55],
   },
   {
+    // Runs through the robot's final head-on approach and stops on source
+    // frame 416 — the last frame with a fully static route line. From source
+    // 417 the orange route begins its step-draw into the question-mark
+    // animation, which V2 removes entirely. The action peaks as the robot
+    // arrives at the wall, then hard-cuts to the card.
     id: 'chase',
-    durationInFrames: 199,
+    durationInFrames: 202,
     kind: 'video',
     sourceStartFrame: 215, // 7.167 s
     zoom: [1.0, 1.0],
     focus: [0.5, 0.5],
   },
   {
-    // The orange route line draws the ElecSoc circle. This is the bridge into
-    // the reveal, and it ends just before the source's own soft logo card.
-    id: 'bridge',
-    durationInFrames: 40,
-    kind: 'video',
-    sourceStartFrame: 414, // 13.800 s
-    zoom: [1.0, 1.03],
-    focus: [0.44, 0.4],
-  },
-  {
     id: 'endCard',
-    durationInFrames: 164,
+    durationInFrames: 120,
     kind: 'endCard',
   },
 ];
@@ -167,36 +171,43 @@ export const segment = (id) => {
 /**
  * Typography cues, in absolute composition frames.
  *
- * The teaser line clears the screen before the chase begins, and each impact
- * word gets its own moment with no overlap.
+ * V2: only FASTER. and SMARTER. remain — SMALLER. and its beat are removed and
+ * the gap is closed rather than left as a pause. Each word still gets its own
+ * moment with no overlap, and the teaser line clears before the first impact.
  */
 export const TEXT_CUES = {
-  teaser: { from: 96, durationInFrames: 68 },
+  teaser: { from: 96, durationInFrames: 60 },
   impacts: [
-    { word: COPY.impacts[0], from: 195, durationInFrames: 33 },
-    { word: COPY.impacts[1], from: 250, durationInFrames: 33 },
-    { word: COPY.impacts[2], from: 305, durationInFrames: 33 },
+    { word: COPY.impacts[0], from: 222, durationInFrames: 39 },
+    { word: COPY.impacts[1], from: 315, durationInFrames: 36 },
   ],
 };
 
 /**
  * End-card beats, relative to the start of the end card segment.
- * `hold` is the fully-assembled, completely motionless stretch.
+ *
+ * V3: the end card is the supplied announcement poster, and the chase hard-cuts
+ * straight onto it. There is still exactly one reveal — no ring match-cut, no
+ * logo-first screen, no line-by-line assembly. The poster lifts out of black
+ * over eight frames while a three-frame orange flash sells the cut on the bass
+ * hit, and it is fully lit and readable from frame 8 onward.
  */
 export const END_CARD = {
-  blackLead: 6,
-  ring: { from: 4, durationInFrames: 22 },
-  logo: { from: 6, durationInFrames: 20 },
-  title: { from: 22, durationInFrames: 20 },
-  tagline: { from: 40, durationInFrames: 16 },
-  comingSoon: { from: 54, durationInFrames: 16 },
+  /** Frames of the brief accent flash laid over the incoming poster. */
+  flashFrames: 3,
   /**
-   * Everything is settled by frame 70 and nothing moves again until the fade
-   * begins at 148 — a 78-frame (2.60 s) genuinely motionless hold.
+   * The lights-up reveal: the poster rises from black to full brightness while
+   * a whisper of scale settles out. Must finish by `settledAt` so the hold that
+   * follows is genuinely motionless.
    */
-  settledAt: 70,
-  holdUntil: 148,
-  fadeOutFrames: 16,
+  settleFrames: 8,
+  /**
+   * Nothing moves from frame 8 to the last frame — a 112-frame (3.73 s)
+   * motionless hold on the poster. V3 removes the fade to black entirely: the
+   * final frame of the teaser is the poster artwork itself, at full strength.
+   */
+  settledAt: 8,
+  holdUntil: 108,
 };
 
 /** Audio cue sheet, in seconds, consumed by tools/generate-audio.mjs. */
@@ -221,10 +232,10 @@ export const AUDIO = {
     pulseStart: segment('steady').from / FPS,
     chaseStart: segment('chase').from / FPS,
     impacts: TEXT_CUES.impacts.map((cue) => cue.from / FPS),
-    riserStart: 338 / FPS,
-    bridge: segment('bridge').from / FPS,
-    revealHit: (segment('endCard').from + END_CARD.logo.from) / FPS,
-    finalHit: (segment('endCard').from + END_CARD.comingSoon.from) / FPS,
+    /** Rise out of SMARTER. straight into the cut. */
+    riserStart: 350 / FPS,
+    /** The strongest hit lands exactly on the direct cut to the card. */
+    revealHit: segment('endCard').from / FPS,
     fadeStart: (segment('endCard').from + END_CARD.holdUntil) / FPS,
   },
 };

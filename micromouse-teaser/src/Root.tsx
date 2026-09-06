@@ -2,6 +2,14 @@ import React from 'react';
 import {Composition} from 'remotion';
 import {Teaser} from './Teaser';
 import {DublinTeaser} from './dublin/DublinTeaser';
+import {CvTease} from './cv/CvTease';
+// @ts-expect-error - plain-JS single source of truth
+import {
+  DURATION_IN_FRAMES as CV_DURATION,
+  FPS as CV_FPS,
+  HEIGHT as CV_HEIGHT,
+  WIDTH as CV_WIDTH,
+} from './cv/timeline.mjs';
 import {
   DURATION_IN_FRAMES as DUBLIN_DURATION,
   FPS as DUBLIN_FPS,
@@ -28,6 +36,14 @@ export const RemotionRoot: React.FC = () => (
       fps={DUBLIN_FPS}
       width={DUBLIN_WIDTH}
       height={DUBLIN_HEIGHT}
+    />
+    <Composition
+      id="CvTease"
+      component={CvTease}
+      durationInFrames={CV_DURATION}
+      fps={CV_FPS}
+      width={CV_WIDTH}
+      height={CV_HEIGHT}
     />
   </>
 );

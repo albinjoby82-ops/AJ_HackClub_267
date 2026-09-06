@@ -154,7 +154,8 @@ const pulseThump = (t, amp) => {
   let t = cues.pulseStart;
   const rampFrom = cues.pulseStart;
   const rampTo = cues.riserStart;
-  while (t < cues.bridge) {
+  // The pulse drives all the way to the direct cut, tightening as it goes.
+  while (t < cues.revealHit) {
     const p = clamp01((t - rampFrom) / (rampTo - rampFrom));
     const interval = 0.50 - 0.26 * p;
     const amp = 0.10 + 0.10 * p;
@@ -173,7 +174,8 @@ const pulseThump = (t, amp) => {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Three separate cinematic impacts, one per word.
+// 6. One cinematic impact per word — V2 has two: FASTER. and SMARTER.
+//    The SMALLER. beat is gone with its word; the cue sheet drives the count.
 // ---------------------------------------------------------------------------
 const impact = (t, base, bright) => {
   // Short anticipation swell before the hit.
@@ -191,9 +193,11 @@ const impact = (t, base, bright) => {
   // Sub tail.
   tone(t + 0.01, 1.0, () => 44, (p) => 0.13 * expDecay(p, 3.4));
 };
-impact(cues.impacts[0], 132, 0.85);
-impact(cues.impacts[1], 142, 1.0);
-impact(cues.impacts[2], 152, 1.15);
+{
+  const bases = [142, 152];
+  const brights = [1.0, 1.15];
+  cues.impacts.forEach((t, i) => impact(t, bases[i] ?? 152, brights[i] ?? 1.15));
+}
 
 // ---------------------------------------------------------------------------
 // 7. Controlled rise into the reveal.
@@ -208,28 +212,21 @@ impact(cues.impacts[2], 152, 1.15);
   tone(cues.riserStart, dur, (p) => 45 + 60 * p, (p) => 0.07 * p ** 1.5);
 }
 
-// Route-line whoosh across the bridge shot.
-noise(cues.bridge, 1.15, (p) => 0.07 * Math.sin(Math.PI * p) ** 1.6, {
-  tilt: 0.8,
-  pan: -0.5,
-  cutoffFn: (p) => 900 + 6000 * Math.sin(Math.PI * p),
-});
-
 // ---------------------------------------------------------------------------
-// 8. Reveal hit, then the long settle under the motionless end card.
+// 8. The reveal hit — the strongest impact in the piece, landing exactly on
+//    the direct cut to the announcement — then a sustained low tail that
+//    carries the motionless card through to the fade.
 // ---------------------------------------------------------------------------
-tone(cues.revealHit, 2.6, (p) => 120 * Math.exp(-3.2 * p) + 41, (p) => 0.34 * expDecay(p, 1.9));
-tone(cues.revealHit, 3.4, () => 55, (p) => 0.11 * expDecay(p, 1.1));
-noise(cues.revealHit, 0.5, (p) => 0.06 * expDecay(p, 6), {
+tone(cues.revealHit, 2.6, (p) => 120 * Math.exp(-3.2 * p) + 41, (p) => 0.38 * expDecay(p, 1.9));
+tone(cues.revealHit, 0.6, (p) => 190 * Math.exp(-4.0 * p) + 60, (p) => 0.12 * expDecay(p, 6));
+noise(cues.revealHit, 0.5, (p) => 0.07 * expDecay(p, 6), {
   tilt: 0.8,
   cutoffFn: (p) => 6000 - 4000 * p,
 });
-
-// Final low electronic hit as COMING SOON lands, with a long decaying tail
-// that carries through the hold and fades to silence.
-tone(cues.finalHit, 3.6, (p) => 96 * Math.exp(-3.6 * p) + 40, (p) => 0.30 * expDecay(p, 1.5));
-tone(cues.finalHit, 4.0, () => 60.5, (p) => 0.075 * expDecay(p, 1.2), {pan: 0.3});
-tone(cues.finalHit, 4.0, () => 40.2, (p) => 0.09 * expDecay(p, 1.0), {pan: -0.3});
+// Sustained bed under the announcement: a slow 55/41 Hz pair decaying gently
+// into the master fade rather than dying early.
+tone(cues.revealHit, 4.0, () => 55, (p) => 0.10 * expDecay(p, 0.9), {pan: 0.25});
+tone(cues.revealHit + 0.02, 4.0, () => 41.2, (p) => 0.09 * expDecay(p, 0.8), {pan: -0.25});
 
 // ---------------------------------------------------------------------------
 // 9. Master shaping: fade to silence over the fade to black, then normalise.

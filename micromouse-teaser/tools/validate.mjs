@@ -19,8 +19,17 @@ import {
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const outputDir = path.join(root, 'output');
-const target = path.join(outputDir, 'micromouse-teaser-final.mp4');
-const sheet = path.join(outputDir, 'micromouse-teaser-contact-sheet.png');
+
+/** Validates the V2 deliverable by default; pass a filename to override. */
+const targetName = process.argv[2] ?? 'micromouse-teaser-final-v2.mp4';
+const target = path.join(outputDir, targetName);
+const sheet = path.join(
+  outputDir,
+  `${path.basename(targetName, '.mp4')}-contact-sheet.png`,
+);
+
+/** The V2 brief's target duration window, seconds. */
+const DURATION_WINDOW = [16.5, 17.2];
 
 const checks = [];
 const check = (label, pass, detail) => {
@@ -124,8 +133,9 @@ const main = async () => {
   check('Audio codec AAC', info.audioCodec === 'aac', info.audioCodec);
   check('Audio 48 kHz', info.sampleRate === AUDIO.sampleRate, `${info.sampleRate} Hz`);
   check(
-    'Duration within 18-21 s',
-    info.durationInSeconds >= 18 && info.durationInSeconds <= 21,
+    `Duration within ${DURATION_WINDOW[0]}-${DURATION_WINDOW[1]} s`,
+    info.durationInSeconds >= DURATION_WINDOW[0] &&
+      info.durationInSeconds <= DURATION_WINDOW[1],
     `${info.durationInSeconds?.toFixed(2)} s`,
   );
   check(
@@ -173,7 +183,7 @@ const main = async () => {
 
   const failed = checks.filter((c) => !c.pass);
   fs.writeFileSync(
-    path.join(outputDir, 'validation.json'),
+    path.join(outputDir, `${path.basename(targetName, '.mp4')}-validation.json`),
     JSON.stringify({file: path.basename(target), info: {...info, raw: undefined}, loudness: loud, checks}, null, 2),
   );
 

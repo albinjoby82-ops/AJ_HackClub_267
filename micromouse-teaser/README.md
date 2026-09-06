@@ -108,3 +108,37 @@ build.
 
 Renders are deterministic: the score uses a seeded PRNG and the composition has
 no wall-clock animation or unseeded randomness.
+
+## CV tease (`CvTease`)
+
+A third cut in the same campaign: 1080x1920, 30 fps, exactly 450 frames
+(15.000 s). Unlike the other two it uses no source footage at all — every frame
+is drawn, so it renders from a clean checkout with nothing but the fonts and the
+ElecSoc logo.
+
+```
+npm run cv:all      # prepare assets -> score -> render -> validate
+```
+
+`src/cv/timeline.mjs` is the source of truth: scene boundaries, beat frames,
+layout geometry, the route polyline and the exact copy. Two things derive from
+it automatically and must not be hand-maintained:
+
+- **Turn frames.** The route is drawn at constant speed, so `TURN_FRAMES` is
+  just each vertex's distance fraction across the draw. The servo clicks in the
+  score and the five skill labels both read that array, which is what keeps the
+  clicks landing exactly on the 90-degree turns.
+- **The audio cue sheet.** `AUDIO.cues` is expressed in seconds derived from the
+  same frame numbers the picture uses.
+
+**The logo backdrop is keyed, not redrawn.** `tools/prepare-cv.mjs` keys the
+supplied file's flat rgb(0,39,50) backdrop to transparency so the mark sits on
+near-black the way it does on the posters. The mark's own pixels are untouched,
+and the unmodified file stays in `public/elecsoc-logo.png`.
+
+**Absolutely positioned children need an explicit parent width.** The skill
+column collapses to zero width otherwise, and every label wraps at each space.
+
+`tools/validate-cv.mjs` checks the copy against an independent transcription of
+the brief, rejects the forbidden event-name variants, measures the vertical safe
+bands on the encoded pixels and confirms the final card is motionless.
