@@ -15,6 +15,7 @@ Practical event, hardware and software guides for the Dublin Micromouse Open 202
 - [H3 - DFRobot SEN0142 IMU](#/docs/Micromouse2026/Hardware/SEN0142.md)
 - [H4 - 3x VL53L0X Distance Sensors](#/docs/Micromouse2026/Hardware/VL53L0X.md)
 - [H5 - 2S Battery to 5V Buck Converter](#/docs/Micromouse2026/Hardware/BuckConverter.md)
+- [H6 - 2x GA12-N20 Micro Gear Motors with Hall Encoders](#/docs/Micromouse2026/Hardware/GA12N20.md)
 
 ## Software
 
