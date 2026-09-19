@@ -5,22 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>S3 Flood Fill and Routing — Dublin Micromouse Open 2026</title>
 <meta name="description" content="Flood fill, weighting routes by time instead of cell count, and driving diagonals.">
-<link rel="stylesheet" href="design-tokens.css">
-<link rel="stylesheet" href="site.css?nav=2">
+<link rel="stylesheet" href="../design-tokens.css">
+<link rel="stylesheet" href="../site.css?nav=2">
 <link rel="stylesheet" href="micromouse-guide.css">
 </head>
 <body>
 
 <div class="topbar">
     <div class="topbar-inner">
-        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <a class="wordmark" href="../index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav" aria-label="Main navigation">
-            <a href="index.html?nav=2">Home</a>
-            <a href="resources.html?nav=2">Resource Hub</a>
-            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
-            <a href="learn.html?scope=workshops">Workshops</a>
-            <a href="learn.html?scope=wiki">Wiki</a>
-            <a href="videos.html">Search</a>
+            <a href="../index.html?nav=2">Home</a>
+            <a href="../resources.html?nav=2">Resource Hub</a>
+            <a href="../micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="../learn.html?scope=workshops">Workshops</a>
+            <a href="../learn.html?scope=wiki">Wiki</a>
+            <a href="../videos.html">Search</a>
         </nav>
     </div>
 </div>
@@ -30,7 +30,7 @@
 
         <header class="mm-hero">
             <p class="mm-crumb">
-                <a href="micromouse-resources.html">Resource Hub</a>
+                <a href="../micromouse-resources.html">Resource Hub</a>
                 <span>/</span>
                 Strategies
                 <span>/</span>
@@ -58,7 +58,7 @@
                         moves to the reachable neighbour with the smallest number. It cannot loop and cannot fail to arrive.
                     </p>
                     <figure class="mm-figure">
-                        <img src="assets/micromouse/diagrams/flood-fill.svg" alt="A maze with every cell labelled by its distance from the goal, and a path descending the numbers from the start to the centre." loading="lazy" width="660" height="496">
+                        <img src="../assets/micromouse/diagrams/flood-fill.svg" alt="A maze with every cell labelled by its distance from the goal, and a path descending the numbers from the start to the centre." loading="lazy" width="660" height="496">
                         <figcaption>Every cell knows how far it is from home. The mouse only compares four numbers.</figcaption>
                     </figure>
                     <pre class="mm-code"><code><span class="c"># The flood: breadth-first, outward from the goal cells.</span>
@@ -109,7 +109,7 @@
                         identical to a naive flood and are seconds apart on the floor.
                     </p>
                     <figure class="mm-figure">
-                        <img src="assets/micromouse/diagrams/route-cost.svg" alt="Three routes between the same two cells: a staircase with ten turns, an L-shape with one turn, and a diagonal." loading="lazy" width="700" height="300">
+                        <img src="../assets/micromouse/diagrams/route-cost.svg" alt="Three routes between the same two cells: a staircase with ten turns, an L-shape with one turn, and a diagonal." loading="lazy" width="700" height="300">
                         <figcaption>Same start and finish. Wildly different run times.</figcaption>
                     </figure>
                     <pre class="mm-code"><code><span class="c"># Cost a move by what it does to the clock, not by counting squares.</span>

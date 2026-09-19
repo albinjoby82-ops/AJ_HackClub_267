@@ -5,22 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>H6 2x GA12-N20 Micro Gear Motors — Dublin Micromouse Open 2026</title>
 <meta name="description" content="Wiring, encoder basics and distance calibration for the GA12-N20 motors.">
-<link rel="stylesheet" href="design-tokens.css">
-<link rel="stylesheet" href="site.css?nav=2">
+<link rel="stylesheet" href="../design-tokens.css">
+<link rel="stylesheet" href="../site.css?nav=2">
 <link rel="stylesheet" href="micromouse-guide.css">
 </head>
 <body>
 
 <div class="topbar">
     <div class="topbar-inner">
-        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <a class="wordmark" href="../index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav" aria-label="Main navigation">
-            <a href="index.html?nav=2">Home</a>
-            <a href="resources.html?nav=2">Resource Hub</a>
-            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
-            <a href="learn.html?scope=workshops">Workshops</a>
-            <a href="learn.html?scope=wiki">Wiki</a>
-            <a href="videos.html">Search</a>
+            <a href="../index.html?nav=2">Home</a>
+            <a href="../resources.html?nav=2">Resource Hub</a>
+            <a href="../micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="../learn.html?scope=workshops">Workshops</a>
+            <a href="../learn.html?scope=wiki">Wiki</a>
+            <a href="../videos.html">Search</a>
         </nav>
     </div>
 </div>
@@ -30,9 +30,9 @@
 
         <header class="mm-hero">
             <p class="mm-crumb">
-                <a href="micromouse-resources.html">Resource Hub</a>
+                <a href="../micromouse-resources.html">Resource Hub</a>
                 <span>/</span>
-                <a href="micromouse-resources.html#hardware">Hardware</a>
+                <a href="../micromouse-resources.html#hardware">Hardware</a>
                 <span>/</span>
                 H6
             </p>
@@ -52,7 +52,7 @@
                     <span class="mm-panel-toggle" aria-hidden="true"></span>
                 </summary>
                 <div class="mm-panel-body">
-<figure class="mm-figure"><img src="assets/micromouse/diagrams/GA12-N20-dual-encoder-wiring.svg" alt="Two GA12-N20 motors connected to a DRI0044 motor driver, with both Hall encoders connected to an ESP32-C6" loading="lazy"><figcaption>Motor power on the driver side, encoder signals on the 3.3 V logic side.</figcaption></figure><div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">M+</span>, <span class="mono">M-</span></th><td>One DRI0044 motor output pair</td></tr><tr><th scope="row">Encoder <span class="mono">VCC</span></th><td><span class="mono">3V3</span>, only if the encoder supports it</td></tr><tr><th scope="row">Encoder <span class="mono">GND</span></th><td>Common ground</td></tr><tr><th scope="row">Encoder <span class="mono">A</span>, <span class="mono">B</span></th><td>Two ESP32 GPIO inputs per motor</td></tr></tbody></table></div><p style="margin-top:16px">Wire colours and connector order vary, so check the label or seller pinout for your exact motor.</p><div class="mm-callout is-signal"><p><strong>Two voltage traps.</strong> A full 2S battery is 8.4&#160;V, above the motor's 6&#160;V rating, so use a suitable motor supply or an approved limit. And an encoder signal above 3.6&#160;V must never reach a GPIO, so power it from 3.3&#160;V or level-shift.</p></div>
+<figure class="mm-figure"><img src="../assets/micromouse/diagrams/GA12-N20-dual-encoder-wiring.svg" alt="Two GA12-N20 motors connected to a DRI0044 motor driver, with both Hall encoders connected to an ESP32-C6" loading="lazy"><figcaption>Motor power on the driver side, encoder signals on the 3.3 V logic side.</figcaption></figure><div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">M+</span>, <span class="mono">M-</span></th><td>One DRI0044 motor output pair</td></tr><tr><th scope="row">Encoder <span class="mono">VCC</span></th><td><span class="mono">3V3</span>, only if the encoder supports it</td></tr><tr><th scope="row">Encoder <span class="mono">GND</span></th><td>Common ground</td></tr><tr><th scope="row">Encoder <span class="mono">A</span>, <span class="mono">B</span></th><td>Two ESP32 GPIO inputs per motor</td></tr></tbody></table></div><p style="margin-top:16px">Wire colours and connector order vary, so check the label or seller pinout for your exact motor.</p><div class="mm-callout is-signal"><p><strong>Two voltage traps.</strong> A full 2S battery is 8.4&#160;V, above the motor's 6&#160;V rating, so use a suitable motor supply or an approved limit. And an encoder signal above 3.6&#160;V must never reach a GPIO, so power it from 3.3&#160;V or level-shift.</p></div>
                 </div>
             </details>
 
@@ -82,7 +82,7 @@
 
         <nav class="mm-pager" aria-label="Guide pages">
             <a href="micromouse-buck.html"><small>&#8592; Previous</small>H5 Buck converter</a>
-            <a class="is-next" href="micromouse-resources.html"><small>Back to &#8594;</small>Resource Hub</a>
+            <a class="is-next" href="../micromouse-resources.html"><small>Back to &#8594;</small>Resource Hub</a>
         </nav>
 
     </div>

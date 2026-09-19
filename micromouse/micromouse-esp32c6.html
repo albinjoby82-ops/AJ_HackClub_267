@@ -5,22 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>H1 ESP32-C6 — Dublin Micromouse Open 2026</title>
 <meta name="description" content="Pin budget, power rules and bring-up order for the ESP32-C6 in the Micromouse kit.">
-<link rel="stylesheet" href="design-tokens.css">
-<link rel="stylesheet" href="site.css?nav=2">
+<link rel="stylesheet" href="../design-tokens.css">
+<link rel="stylesheet" href="../site.css?nav=2">
 <link rel="stylesheet" href="micromouse-guide.css">
 </head>
 <body>
 
 <div class="topbar">
     <div class="topbar-inner">
-        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <a class="wordmark" href="../index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav" aria-label="Main navigation">
-            <a href="index.html?nav=2">Home</a>
-            <a href="resources.html?nav=2">Resource Hub</a>
-            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
-            <a href="learn.html?scope=workshops">Workshops</a>
-            <a href="learn.html?scope=wiki">Wiki</a>
-            <a href="videos.html">Search</a>
+            <a href="../index.html?nav=2">Home</a>
+            <a href="../resources.html?nav=2">Resource Hub</a>
+            <a href="../micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="../learn.html?scope=workshops">Workshops</a>
+            <a href="../learn.html?scope=wiki">Wiki</a>
+            <a href="../videos.html">Search</a>
         </nav>
     </div>
 </div>
@@ -30,9 +30,9 @@
 
         <header class="mm-hero">
             <p class="mm-crumb">
-                <a href="micromouse-resources.html">Resource Hub</a>
+                <a href="../micromouse-resources.html">Resource Hub</a>
                 <span>/</span>
-                <a href="micromouse-resources.html#hardware">Hardware</a>
+                <a href="../micromouse-resources.html#hardware">Hardware</a>
                 <span>/</span>
                 H1
             </p>
@@ -74,7 +74,7 @@
                     <span class="mm-panel-toggle" aria-hidden="true"></span>
                 </summary>
                 <div class="mm-panel-body">
-<p>Check your exact board revision, then agree one pin map and use the same names in the wiring and the firmware.</p><figure class="mm-figure"><img src="assets/micromouse/diagrams/ESP32C6-DevKitC1-Pinout.png" alt="ESP32-C6-DevKitC-1 GPIO pinout and peripheral functions" loading="lazy"><figcaption>ESP32-C6-DevKitC-1 pinout. Match the printed board name and revision, not a look-alike.</figcaption></figure><div style="height:16px"></div><ul class="mm-list"><li>Avoid the strapping pins (GPIO4, 5, 8, 9, 15 on the DevKitC-1) unless the circuit leaves them at a safe level during reset.</li><li>GPIO12 and GPIO13 are the native USB pins, so reusing them removes USB.</li><li>Use pulse counting or interrupts for encoders, and keep encoder wires away from motor leads.</li><li>Check for on-board pull-ups before adding I2C pull-ups.</li></ul>
+<p>Check your exact board revision, then agree one pin map and use the same names in the wiring and the firmware.</p><figure class="mm-figure"><img src="../assets/micromouse/diagrams/ESP32C6-DevKitC1-Pinout.png" alt="ESP32-C6-DevKitC-1 GPIO pinout and peripheral functions" loading="lazy"><figcaption>ESP32-C6-DevKitC-1 pinout. Match the printed board name and revision, not a look-alike.</figcaption></figure><div style="height:16px"></div><ul class="mm-list"><li>Avoid the strapping pins (GPIO4, 5, 8, 9, 15 on the DevKitC-1) unless the circuit leaves them at a safe level during reset.</li><li>GPIO12 and GPIO13 are the native USB pins, so reusing them removes USB.</li><li>Use pulse counting or interrupts for encoders, and keep encoder wires away from motor leads.</li><li>Check for on-board pull-ups before adding I2C pull-ups.</li></ul>
                 </div>
             </details>
 
@@ -92,7 +92,7 @@
         </div>
 
         <nav class="mm-pager" aria-label="Guide pages">
-            <a href="micromouse-resources.html"><small>&#8592; Previous</small>Resource Hub</a>
+            <a href="../micromouse-resources.html"><small>&#8592; Previous</small>Resource Hub</a>
             <a class="is-next" href="micromouse-dri0044.html"><small>Next &#8594;</small>H2 DRI0044 motor driver</a>
         </nav>
 

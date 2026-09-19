@@ -5,22 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>H4 3x VL53L0X Distance Sensors — Dublin Micromouse Open 2026</title>
 <meta name="description" content="Wiring, unique addresses and testing for three VL53L0X wall sensors.">
-<link rel="stylesheet" href="design-tokens.css">
-<link rel="stylesheet" href="site.css?nav=2">
+<link rel="stylesheet" href="../design-tokens.css">
+<link rel="stylesheet" href="../site.css?nav=2">
 <link rel="stylesheet" href="micromouse-guide.css">
 </head>
 <body>
 
 <div class="topbar">
     <div class="topbar-inner">
-        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <a class="wordmark" href="../index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
         <nav class="topbar-nav" aria-label="Main navigation">
-            <a href="index.html?nav=2">Home</a>
-            <a href="resources.html?nav=2">Resource Hub</a>
-            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
-            <a href="learn.html?scope=workshops">Workshops</a>
-            <a href="learn.html?scope=wiki">Wiki</a>
-            <a href="videos.html">Search</a>
+            <a href="../index.html?nav=2">Home</a>
+            <a href="../resources.html?nav=2">Resource Hub</a>
+            <a href="../micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="../learn.html?scope=workshops">Workshops</a>
+            <a href="../learn.html?scope=wiki">Wiki</a>
+            <a href="../videos.html">Search</a>
         </nav>
     </div>
 </div>
@@ -30,9 +30,9 @@
 
         <header class="mm-hero">
             <p class="mm-crumb">
-                <a href="micromouse-resources.html">Resource Hub</a>
+                <a href="../micromouse-resources.html">Resource Hub</a>
                 <span>/</span>
-                <a href="micromouse-resources.html#hardware">Hardware</a>
+                <a href="../micromouse-resources.html#hardware">Hardware</a>
                 <span>/</span>
                 H4
             </p>
@@ -52,7 +52,7 @@
                     <span class="mm-panel-toggle" aria-hidden="true"></span>
                 </summary>
                 <div class="mm-panel-body">
-<figure class="mm-figure"><img src="assets/micromouse/diagrams/VL53L0X-3-sensor-wiring.svg" alt="Three VL53L0X sensors sharing I2C with separate XSHUT control lines" loading="lazy"><figcaption>Left, front and right sensors share SDA and SCL. Each has its own XSHUT.</figcaption></figure><div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">VIN</span> / <span class="mono">GND</span></th><td>ESP32 <span class="mono">3V3</span> / common <span class="mono">GND</span></td></tr><tr><th scope="row"><span class="mono">SDA</span> / <span class="mono">SCL</span></th><td>The shared I2C bus</td></tr><tr><th scope="row"><span class="mono">XSHUT</span> &#215; 3</th><td>One dedicated output GPIO each (left, front, right)</td></tr><tr><th scope="row"><span class="mono">GPIO1</span></th><td>Leave unconnected</td></tr></tbody></table></div><div class="mm-callout"><p>Check your boards expose <span class="mono">XSHUT</span> before soldering. Some four-pin boards do not and cannot be used this way.</p></div>
+<figure class="mm-figure"><img src="../assets/micromouse/diagrams/VL53L0X-3-sensor-wiring.svg" alt="Three VL53L0X sensors sharing I2C with separate XSHUT control lines" loading="lazy"><figcaption>Left, front and right sensors share SDA and SCL. Each has its own XSHUT.</figcaption></figure><div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">VIN</span> / <span class="mono">GND</span></th><td>ESP32 <span class="mono">3V3</span> / common <span class="mono">GND</span></td></tr><tr><th scope="row"><span class="mono">SDA</span> / <span class="mono">SCL</span></th><td>The shared I2C bus</td></tr><tr><th scope="row"><span class="mono">XSHUT</span> &#215; 3</th><td>One dedicated output GPIO each (left, front, right)</td></tr><tr><th scope="row"><span class="mono">GPIO1</span></th><td>Leave unconnected</td></tr></tbody></table></div><div class="mm-callout"><p>Check your boards expose <span class="mono">XSHUT</span> before soldering. Some four-pin boards do not and cannot be used this way.</p></div>
                 </div>
             </details>
 
