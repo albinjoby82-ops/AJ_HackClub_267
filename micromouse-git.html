@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C2 Git and GitHub Basics — Dublin Micromouse Open 2026</title>
+<meta name="description" content="A short sprint workflow for sharing Micromouse firmware with Git and GitHub.">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="site.css?nav=2">
+<link rel="stylesheet" href="micromouse-guide.css">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="index.html?nav=2">Home</a>
+            <a href="resources.html?nav=2">Resource Hub</a>
+            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="learn.html?scope=workshops">Workshops</a>
+            <a href="learn.html?scope=wiki">Wiki</a>
+            <a href="videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main class="mm mm-stage">
+    <div class="mm-shell">
+
+        <header class="mm-hero">
+            <p class="mm-crumb">
+                <a href="micromouse-resources.html">Resource Hub</a>
+                <span>/</span>
+                <a href="micromouse-resources.html#software">Software</a>
+                <span>/</span>
+                C2
+            </p>
+            <span class="mm-eyebrow">C2 &#183; Version control</span>
+            <h1>Git and GitHub Basics</h1>
+            <p class="mm-lede">
+                Four people and an AI agent change firmware fast. Git gives you one shared history and a safe way back to the version that worked.
+            </p>
+        </header>
+
+        <div class="mm-panels">
+
+            <details class="mm-panel" open>
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">Set up once</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<pre class="mm-code"><code>git clone https://github.com/your-team/micromouse-firmware.git
+cd micromouse-firmware
+
+# integrator only, once:
+git switch -c sprint/micromouse
+git push -u origin sprint/micromouse
+
+# everyone else:
+git fetch origin
+git switch --track origin/sprint/micromouse</code></pre><p style="margin-top:16px">Replace the URL with your team's repository. Check <span class="mono">git branch --show-current</span> before editing.</p><div class="mm-callout is-signal"><p>Never commit passwords, tokens or Wi-Fi credentials. Deleting them later does not remove them from history.</p></div>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">The sprint loop</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<p>Use one shared branch, small changes and frequent pushes.</p><pre class="mm-code"><code>Pull -&gt; edit one task -&gt; test on hardware -&gt; commit -&gt; push
+
+git pull origin sprint/micromouse
+git diff
+git add src/sensors.cpp
+git commit -m &quot;fix: initialise right distance sensor&quot;
+git push</code></pre><div style="height:16px"></div><ul class="mm-list"><li>Give each active file <strong>one owner</strong> (for example sensors, motors, navigation, integration).</li><li>Test on the real mouse, then commit. Every 15&#8211;30 minutes, push a tested result.</li><li>Write one outcome per commit. Avoid <span class="mono">update</span> or <span class="mono">final</span>.</li><li>Before the final run: stop features, pull once, build, flash and test together.</li></ul>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Rejected push and conflicts</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<p>A rejected push means a teammate pushed first. <strong>Do not force push.</strong> Pull, test the combined code, then push.</p><pre class="mm-code"><code>git pull origin sprint/micromouse</code></pre><div style="height:16px"></div><ul class="mm-list"><li>A conflict shows markers: <span class="mono">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span> is yours, <span class="mono">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span> is theirs.</li><li>Ask why each side changed, decide what the robot should actually use, and delete the markers.</li><li>Build, flash and test, then <span class="mono">git add</span>, commit and push.</li><li>Unsure? <span class="mono">git merge --abort</span> returns you to before the pull.</li></ul>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">04</span>
+                    <span class="mm-panel-name">Get back to a working mouse</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<p>Commit a checkpoint after each real result: sensor reads, motors turn, mouse drives a cell, maze decision works.</p><pre class="mm-code"><code>git log --oneline --decorate -10
+git diff &lt;known-good&gt;..HEAD
+git revert &lt;bad-commit&gt;          # safe on the shared branch
+
+git switch -c diagnose/known-good &lt;known-good&gt;   # test an old version
+git switch sprint/micromouse                     # come back
+
+git stash push -m &quot;experiment&quot;   # park unfinished work
+git stash pop</code></pre><div class="mm-callout"><p>On the shared branch prefer <span class="mono">git revert</span> to <span class="mono">git reset --hard</span>. <span class="mono">git restore</span> discards uncommitted changes, so check <span class="mono">git diff</span> first.</p></div>
+                </div>
+            </details>
+
+        </div>
+
+        <nav class="mm-pager" aria-label="Guide pages">
+            <a href="micromouse-resources.html"><small>&#8592; Previous</small>Resource Hub</a>
+            <a class="is-next" href="micromouse-ai-agents.html"><small>Next &#8594;</small>C3 AI agents on hardware</a>
+        </nav>
+
+    </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H5 2S Battery to 5V Buck Converter — Dublin Micromouse Open 2026</title>
+<meta name="description" content="Wiring, setting and checking the 5 V buck converter for the Micromouse.">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="site.css?nav=2">
+<link rel="stylesheet" href="micromouse-guide.css">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="index.html?nav=2">Home</a>
+            <a href="resources.html?nav=2">Resource Hub</a>
+            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="learn.html?scope=workshops">Workshops</a>
+            <a href="learn.html?scope=wiki">Wiki</a>
+            <a href="videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main class="mm mm-stage">
+    <div class="mm-shell">
+
+        <header class="mm-hero">
+            <p class="mm-crumb">
+                <a href="micromouse-resources.html">Resource Hub</a>
+                <span>/</span>
+                <a href="micromouse-resources.html#hardware">Hardware</a>
+                <span>/</span>
+                H5
+            </p>
+            <span class="mm-eyebrow">H5 &#183; Power</span>
+            <h1>2S Battery to 5V Buck Converter</h1>
+            <p class="mm-lede">
+                Steps the 2S battery (7.4 V nominal, 8.4 V full) down to a stable 5.0 V rail for the controller and logic.
+            </p>
+        </header>
+
+        <div class="mm-panels">
+
+            <details class="mm-panel" open>
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">Power path</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<figure class="mm-figure"><img src="assets/micromouse/diagrams/2S-5V-buck-power-flow.svg" alt="Power path from a protected 2S battery through a buck converter to the ESP32-C6 and 3.3 V sensors" loading="lazy"><figcaption>Protected battery, fuse and switch, then the buck converter, then the ESP32-C6 and 3.3 V sensors.</figcaption></figure><div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">IN+</span> / <span class="mono">IN-</span></th><td>Protected battery output, through a fuse and switch</td></tr><tr><th scope="row"><span class="mono">OUT+</span></th><td>5 V rail and the ESP32-C6 <span class="mono">5V</span> pin</td></tr><tr><th scope="row"><span class="mono">OUT-</span></th><td>Common <span class="mono">GND</span></td></tr></tbody></table></div><div class="mm-callout is-signal"><p><strong>A buck converter is not a charger or battery protection.</strong> Use a protected 2S pack or BMS, the right 2S charger, a fuse and a main switch. Motor <span class="mono">VM</span> comes from the motor power path, not this logic rail.</p></div>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">Set 5.0 V before connecting anything</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ol class="mm-list"><li>Disconnect the ESP32, sensors and driver from the output.</li><li>Check battery polarity and power only the input.</li><li>Measure across <span class="mono">OUT+</span> and <span class="mono">OUT-</span> and turn the trimmer slowly until the meter reads <strong>5.00 V</strong>.</li><li>Switch off, connect the load, switch on and measure again.</li></ol><div class="mm-callout"><p>Never connect USB and the external 5&#160;V rail to the ESP32-C6 at the same time.</p></div>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Check it under load</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ul class="mm-list"><li>Rail stays at 5&#160;V and the 3.3&#160;V rail does not sag when the motors run.</li><li>Motor noise does not reset the ESP32 or corrupt sensor readings.</li><li>Module and wiring stay cool over a full-length slot.</li><li>Choosing a module: <strong>MP1584EN</strong> is compact, <strong>LM2596</strong> is larger with easier terminals. Size it for controller peak + sensors + margin, and test it under the real load.</li></ul><p>If the controller resets when the motors start, measure the rail and the battery during acceleration and fix the wiring, grounding or decoupling. Do not raise the output above 5&#160;V.</p>
+                </div>
+            </details>
+
+        </div>
+
+        <nav class="mm-pager" aria-label="Guide pages">
+            <a href="micromouse-vl53l0x.html"><small>&#8592; Previous</small>H4 VL53L0X sensors</a>
+            <a class="is-next" href="micromouse-motors.html"><small>Next &#8594;</small>H6 GA12-N20 motors</a>
+        </nav>
+
+    </div>
+</main>
+
+</body>
+</html>

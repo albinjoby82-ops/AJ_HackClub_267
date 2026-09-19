@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2 Race Strategy — Dublin Micromouse Open 2026</title>
+<meta name="description" content="The two-phase race, why wall following cannot work, and how to decide when to stop exploring and start racing.">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="site.css?nav=2">
+<link rel="stylesheet" href="micromouse-guide.css">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="index.html?nav=2">Home</a>
+            <a href="resources.html?nav=2">Resource Hub</a>
+            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="learn.html?scope=workshops">Workshops</a>
+            <a href="learn.html?scope=wiki">Wiki</a>
+            <a href="videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main class="mm mm-stage">
+    <div class="mm-shell">
+
+        <header class="mm-hero">
+            <p class="mm-crumb">
+                <a href="micromouse-resources.html">Resource Hub</a>
+                <span>/</span>
+                Strategies
+                <span>/</span>
+                S2
+            </p>
+            <span class="mm-eyebrow">S2 &#183; Strategy</span>
+            <h1>Race strategy</h1>
+            <p class="mm-lede">
+                Micromouse is two different races wearing one costume. Plan your five runs around that.
+            </p>
+        </header>
+
+        <div class="mm-panels">
+
+            <details class="mm-panel" open id="two-phase">
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">The two-phase race</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+                    <p>
+                        The <strong>search run</strong> knows nothing and drives carefully to build a map. Its goal is
+                        information, not speed. The <strong>speed run</strong> then computes the best route through that
+                        map and drives it flat out, because it already knows every wall on the way.
+                    </p>
+                    <ul class="mm-list">
+                        <li><strong>Run 1:</strong> search. Slow, careful, map-building. Reach the centre.</li>
+                        <li><strong>Run 2:</strong> conservative speed run. <em>Bank a time.</em></li>
+                        <li><strong>Run 3:</strong> faster, or a short re-exploration if a better route may exist in cells you never visited.</li>
+                        <li><strong>Runs 4&#8211;5:</strong> escalate until it breaks. A crash now costs you nothing.</li>
+                    </ul>
+                    <div class="mm-callout">
+                        <p>
+                            <strong>The ladder is the whole strategy.</strong> Only your best run counts, so risk is cheap
+                            once you have a time on the board and ruinous before it. Teams lose by trying to win on run one.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mm-panel" id="wallfollow">
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">Why wall following fails</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+                    <p>
+                        The left-hand rule only works on a maze where every wall connects to the outer boundary. The
+                        goal block at the centre is an <strong>island</strong>: a hand on the boundary wall loops back to
+                        the start forever and never enters the centre.
+                    </p>
+                    <figure class="mm-figure">
+                        <img src="assets/micromouse/diagrams/wall-follower-fails.svg" alt="A maze where a left-hand wall follower traces the outer boundary in a loop and never enters the island goal region at the centre." loading="lazy" width="620" height="446">
+                        <figcaption>The dashed path is a perfect left-hand follower doing exactly what it was told, forever.</figcaption>
+                    </figure>
+                    <p style="margin-top:20px">
+                        This is why detached centre islands are standard. If your fallback plan is "at least the wall
+                        follower will finish", <strong>it will not</strong>. You need a mouse that builds a map and searches it:
+                        <a href="micromouse-algorithms.html">S3 Flood fill and routing</a>.
+                    </p>
+                </div>
+            </details>
+
+            <details class="mm-panel" id="exploration">
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Reaching the centre is not knowing the maze</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+                    <p>
+                        Your map only holds the cells you walked through. The fastest path may run through cells you
+                        never entered, and your map cannot tell you whether they are open.
+                    </p>
+                    <ol class="mm-list">
+                        <li><strong>Go to the goal</strong> with unknown walls treated as open.</li>
+                        <li><strong>Come back to the start.</strong> The return leg sees walls from the other side for free.</li>
+                        <li><strong>Check only the cells that matter.</strong> Flood the map twice, once with unknowns open and once with unknowns walled. If the route costs match, stop searching and race. If the optimistic cost is much lower, the gap is in unexplored cells and worth checking.</li>
+                    </ol>
+                    <div class="mm-callout is-signal">
+                        <p>
+                            <strong>Budget exploration against the clock.</strong> A search can eat two or three of your
+                            ten minutes. Decide in code, not in the moment, how much of the slot goes to exploring.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+        </div>
+
+        <nav class="mm-pager" aria-label="Strategy pages">
+            <a href="micromouse-guide.html"><small>&#8592; Previous</small>S1 Rules and the maze</a>
+            <a class="is-next" href="micromouse-algorithms.html"><small>Next &#8594;</small>S3 Flood fill and routing</a>
+        </nav>
+
+    </div>
+</main>
+
+</body>
+</html>
