@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H3 DFRobot SEN0142 IMU — Dublin Micromouse Open 2026</title>
+<meta name="description" content="Wiring, orientation and calibration for the SEN0142 IMU.">
+<link rel="stylesheet" href="../design-tokens.css">
+<link rel="stylesheet" href="../site.css?nav=2">
+<link rel="stylesheet" href="micromouse-guide.css">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="../index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="../index.html?nav=2">Home</a>
+            <a href="../resources.html?nav=2">Resource Hub</a>
+            <a href="../micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="../learn.html?scope=workshops">Workshops</a>
+            <a href="../learn.html?scope=wiki">Wiki</a>
+            <a href="../videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main class="mm mm-stage">
+    <div class="mm-shell">
+
+        <header class="mm-hero">
+            <p class="mm-crumb">
+                <a href="../micromouse-resources.html">Resource Hub</a>
+                <span>/</span>
+                <a href="../micromouse-resources.html#hardware">Hardware</a>
+                <span>/</span>
+                H3
+            </p>
+            <span class="mm-eyebrow">H3 &#183; Motion sensor</span>
+            <h1>DFRobot SEN0142 IMU</h1>
+            <p class="mm-lede">
+                A 6-axis accelerometer and gyro. On the mouse its job is turn angle: the gyro tells you how far you have rotated.
+            </p>
+        </header>
+
+        <div class="mm-panels">
+
+            <details class="mm-panel" open>
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">What it gives you</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row">Sensor</th><td>MPU-6050 (3-axis accelerometer + 3-axis gyro)</td></tr><tr><th scope="row">Interface</th><td>I2C, address <span class="mono">0x68</span></td></tr><tr><th scope="row">Supply</th><td>3&#8211;5 V. Use the ESP32 <span class="mono">3V3</span> rail.</td></tr></tbody></table></div><div class="mm-callout is-signal"><p><strong>The gyro drifts and there is no compass.</strong> Use it for heading over a run, and correct it with encoders and wall sensors. See <a href="micromouse-build.html">S4 Motion and hardware</a>.</p></div>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">Wiring</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">VIN</span> / <span class="mono">GND</span></th><td>ESP32 <span class="mono">3V3</span> / <span class="mono">GND</span></td></tr><tr><th scope="row"><span class="mono">SDA</span> / <span class="mono">SCL</span></th><td>The shared I2C bus, alongside the distance sensors</td></tr><tr><th scope="row"><span class="mono">INT</span></th><td>Optional data-ready input</td></tr><tr><th scope="row"><span class="mono">AUX_DA</span>, <span class="mono">AUX_CL</span></th><td>Leave unconnected</td></tr></tbody></table></div><figure class="mm-figure"><img src="https://dfimg.dfrobot.com/99f64da1591d41a88712e46e2feb7a6b/wikien/e14c576930ba8daea73f5c38214275a5_0x0.png.webp" alt="Official DFRobot SEN0142 Arduino I2C wiring example" loading="lazy"><figcaption>Official wiring. Signal names match; the GPIO numbers are yours.</figcaption></figure>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Orientation and calibration</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ol class="mm-list"><li>Fix the board flat and note which edge points forward.</li><li>Run an I2C scan and look for <span class="mono">0x68</span>.</li><li>Keep the mouse completely still at power-up and average the gyro readings for a few seconds. That is your bias.</li><li>Rotate one axis at a time and confirm a left turn gives the sign your code expects.</li></ol><div class="mm-callout"><p>A rotated board or an uncorrected bias gives the wrong turn direction or a heading that walks off. Never calibrate while the bench is being nudged.</p></div>
+                </div>
+            </details>
+
+        </div>
+
+        <nav class="mm-pager" aria-label="Guide pages">
+            <a href="micromouse-dri0044.html"><small>&#8592; Previous</small>H2 DRI0044 motor driver</a>
+            <a class="is-next" href="micromouse-vl53l0x.html"><small>Next &#8594;</small>H4 VL53L0X sensors</a>
+        </nav>
+
+    </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H2 DFRobot DRI0044 — Dublin Micromouse Open 2026</title>
+<meta name="description" content="Ratings, wiring and first test for the DRI0044 dual motor driver.">
+<link rel="stylesheet" href="../design-tokens.css">
+<link rel="stylesheet" href="../site.css?nav=2">
+<link rel="stylesheet" href="micromouse-guide.css">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="../index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="../index.html?nav=2">Home</a>
+            <a href="../resources.html?nav=2">Resource Hub</a>
+            <a href="../micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="../learn.html?scope=workshops">Workshops</a>
+            <a href="../learn.html?scope=wiki">Wiki</a>
+            <a href="../videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main class="mm mm-stage">
+    <div class="mm-shell">
+
+        <header class="mm-hero">
+            <p class="mm-crumb">
+                <a href="../micromouse-resources.html">Resource Hub</a>
+                <span>/</span>
+                <a href="../micromouse-resources.html#hardware">Hardware</a>
+                <span>/</span>
+                H2
+            </p>
+            <span class="mm-eyebrow">H2 &#183; Motor driver</span>
+            <h1>DFRobot DRI0044</h1>
+            <p class="mm-lede">
+                Drives both wheel motors. Each motor needs one direction signal and one PWM speed signal.
+            </p>
+        </header>
+
+        <div class="mm-panels">
+
+            <details class="mm-panel" open>
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">Ratings and the one rule</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row">Channels</th><td>2 brushed DC motors, one per wheel</td></tr><tr><th scope="row">Continuous current</th><td>1.2 A per channel</td></tr><tr><th scope="row">Logic supply <span class="mono">VCC</span></th><td>2.7&#8211;5.5 V</td></tr><tr><th scope="row">Motor supply <span class="mono">VM</span></th><td>2.5&#8211;12 V</td></tr></tbody></table></div><figure class="mm-figure"><img src="https://dfimg.dfrobot.com/nobody/wiki/482ccc756bc6e0a4a3b5057c3d58571a_0x0.png.webp" alt="DFRobot DRI0044 pinout showing logic, motor and power connections" loading="lazy"><figcaption>Official DRI0044 pinout.</figcaption></figure><div class="mm-callout is-signal"><p><strong>Keep <span class="mono">VCC</span> and <span class="mono">VM</span> separate.</strong> <span class="mono">VCC</span> is logic, <span class="mono">VM</span> is motor power. The GA12-N20 motors are rated 6&#160;V, so check <a href="micromouse-motors.html">H6</a> before connecting <span class="mono">VM</span> to a full 2S pack.</p></div>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">Wiring</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">VCC</span></th><td>ESP32 <span class="mono">3V3</span></td></tr><tr><th scope="row"><span class="mono">GND</span></th><td>ESP32 ground and motor-supply ground</td></tr><tr><th scope="row"><span class="mono">DIR1</span> / <span class="mono">PWM1</span></th><td>Two ESP32 outputs: left direction / speed</td></tr><tr><th scope="row"><span class="mono">DIR2</span> / <span class="mono">PWM2</span></th><td>Two ESP32 outputs: right direction / speed</td></tr><tr><th scope="row"><span class="mono">VM</span></th><td>Motor supply</td></tr><tr><th scope="row"><span class="mono">M1+</span> <span class="mono">M1-</span> / <span class="mono">M2+</span> <span class="mono">M2-</span></th><td>Left motor / right motor</td></tr></tbody></table></div><p style="margin-top:16px">Take the four GPIO numbers from your <a href="micromouse-esp32c6.html">ESP32-C6 pin map</a>.</p>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Test before mounting</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ol class="mm-list"><li>Wheels off the table. Check battery polarity, <span class="mono">VCC</span>, <span class="mono">VM</span> and the shared ground.</li><li>Start one motor at about 20&#8211;25% PWM.</li><li>Test forward, stop and reverse, then repeat for the second motor.</li><li>Stop if the ESP32 resets, the driver heats quickly or the current is unexpected.</li></ol><p>If a wheel spins the wrong way, swap that motor's two output wires or invert its direction in software.</p>
+                </div>
+            </details>
+
+        </div>
+
+        <nav class="mm-pager" aria-label="Guide pages">
+            <a href="micromouse-esp32c6.html"><small>&#8592; Previous</small>H1 ESP32-C6</a>
+            <a class="is-next" href="micromouse-sen0142.html"><small>Next &#8594;</small>H3 SEN0142 IMU</a>
+        </nav>
+
+    </div>
+</main>
+
+</body>
+</html>

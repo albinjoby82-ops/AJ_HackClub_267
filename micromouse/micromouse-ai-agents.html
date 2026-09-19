@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C3 Working with AI Agents on Hardware — Dublin Micromouse Open 2026</title>
+<meta name="description" content="How to use an AI coding agent safely on Micromouse hardware.">
+<link rel="stylesheet" href="../design-tokens.css">
+<link rel="stylesheet" href="../site.css?nav=2">
+<link rel="stylesheet" href="micromouse-guide.css">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="../index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="../index.html?nav=2">Home</a>
+            <a href="../resources.html?nav=2">Resource Hub</a>
+            <a href="../micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="../learn.html?scope=workshops">Workshops</a>
+            <a href="../learn.html?scope=wiki">Wiki</a>
+            <a href="../videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main class="mm mm-stage">
+    <div class="mm-shell">
+
+        <header class="mm-hero">
+            <p class="mm-crumb">
+                <a href="../micromouse-resources.html">Resource Hub</a>
+                <span>/</span>
+                <a href="../micromouse-resources.html#software">Software</a>
+                <span>/</span>
+                C3
+            </p>
+            <span class="mm-eyebrow">C3 &#183; AI agents</span>
+            <h1>Working with AI Agents on Hardware</h1>
+            <p class="mm-lede">
+                An agent can write firmware and read logs, but it cannot see a loose wire or measure a voltage. Give it evidence from the real mouse.
+            </p>
+        </header>
+
+        <div class="mm-panels">
+
+            <details class="mm-panel" open>
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">Give it the facts it cannot see</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<p>Without them the agent fills the gaps with assumptions, and a confident answer can still be wrong for your board. Keep a context pack in the repo under <span class="mono">docs/</span>:</p><ul class="mm-list"><li>Your team's <a href="micromouse-esp32c6.html">pin map</a> and a short wiring table.</li><li>The exact board and revision, and the datasheets for each part.</li><li>Library names and versions, and the build, flash and serial-monitor commands.</li><li>Known-good test results.</li></ul><pre class="mm-code"><code>You are helping with an ESP32 Micromouse.
+Read first: docs/pinout.md, platformio.ini, src/sensors.cpp
+
+Hardware facts: [board and revision], [verified pins], [supply and logic voltage]
+Problem: [what you expected, what actually happened]
+
+Do not rewrite the subsystem.
+List the evidence you need, then propose one small test.</code></pre><div class="mm-callout is-signal"><p>Power off before rewiring. Check voltage levels, polarity and current limits against the real datasheet, not the agent's memory.</p></div>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">Debug from evidence</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ol class="mm-list"><li><strong>Observe</strong> the real behaviour.</li><li><strong>Log</strong> around one assumption.</li><li><strong>Run</strong> it on the mouse.</li><li><strong>Paste the real output</strong> back to the agent.</li><li><strong>Change one thing</strong>, then retest.</li></ol><pre class="mm-code"><code>Expected: all three sensors report a distance every 50 ms.
+Actual:   left and front work; right times out.
+
+I2C scan: 0x29
+left  init: OK   new address: 0x30
+right init: TIMEOUT</code></pre><p style="margin-top:16px">That report is far better than "the sensor does not work."</p>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Where agents go wrong</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ul class="mm-list"><li><strong>Invented library calls.</strong> Check the function against the installed version and its header.</li><li><strong>Generic ESP32 pins.</strong> ESP32 is a family. Confirm each pin on your exact board, and that it is safe at boot.</li><li><strong>Hardware faults treated as software.</strong> A missing ground, reversed power, a loose jumper or a level mismatch will not be fixed by more code. If a minimal test fails, inspect the circuit.</li><li><strong>Big rewrites.</strong> They hide the cause and make rollback hard.</li></ul>
+                </div>
+            </details>
+
+            <details class="mm-panel">
+                <summary>
+                    <span class="mm-panel-num">04</span>
+                    <span class="mm-panel-name">Working rules for the team</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ul class="mm-list"><li>Ask for <strong>small, reviewable changes</strong>: name the file, what must stay unchanged, what counts as success, and say "do not commit or push".</li><li>Commit a <a href="micromouse-git.html">checkpoint</a> before a big change and read <span class="mono">git diff</span> after it.</li><li>One owner per file. Never run two agents rewriting the same file.</li><li>Leave a handoff note: owner, files, what was tested, the result and the next test.</li><li><strong>Stop and get a human</strong> if a part is hot, voltage is uncertain, the board resets when a motor starts, or a change would disable a safety limit.</li></ul>
+                </div>
+            </details>
+
+        </div>
+
+        <nav class="mm-pager" aria-label="Guide pages">
+            <a href="micromouse-git.html"><small>&#8592; Previous</small>C2 Git and GitHub basics</a>
+            <a class="is-next" href="../micromouse-resources.html"><small>Back to &#8594;</small>Resource Hub</a>
+        </nav>
+
+    </div>
+</main>
+
+</body>
+</html>

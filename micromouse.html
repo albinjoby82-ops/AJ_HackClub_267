@@ -290,6 +290,37 @@
         outline-offset: 3px;
     }
 
+    /* Primary call to action: solid accent fill, larger, with an arrow. */
+    .resource-hub-link.is-primary {
+        gap: 12px;
+        padding: 16px 30px;
+        border-color: var(--mm-orange);
+        color: #fff;
+        background: var(--mm-orange);
+        font-size: 13px;
+        box-shadow: 0 0 0 0 rgba(244, 81, 30, 0.5), 0 10px 28px rgba(244, 81, 30, 0.28);
+        transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .resource-hub-link.is-primary::after {
+        content: "\2192";
+        font-size: 16px;
+        transition: transform var(--transition-fast);
+    }
+
+    .resource-hub-link.is-primary:hover {
+        color: #fff;
+        background: #ff6a3a;
+        transform: translateY(-2px);
+        box-shadow: 0 0 0 4px rgba(244, 81, 30, 0.22), 0 14px 32px rgba(244, 81, 30, 0.36);
+    }
+
+    .resource-hub-link.is-primary:hover::after { transform: translateX(4px); }
+
+    .resource-hub-link.is-primary:focus-visible {
+        outline: 3px solid rgba(244, 81, 30, 0.45);
+    }
+
     /* ---- Sections ---- */
 
     .mm-section { margin-top: clamp(52px, 8vw, 100px); }
@@ -672,7 +703,7 @@
             </div>
 
             <div class="mm-hero-actions">
-                <a class="resource-hub-link is-ghost" href="resources.html?nav=2">Open Resource Hub</a>
+                <a class="resource-hub-link is-primary" href="micromouse-resources.html">Open Resource Hub</a>
                 <button class="replay-button" id="replayReveal" type="button">Replay animation</button>
             </div>
         </section>

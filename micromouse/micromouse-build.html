@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S4 Motion and Hardware — Dublin Micromouse Open 2026</title>
+<meta name="description" content="Motion profiles, turns, position correction and the hardware decisions you cannot undo once the mouse is soldered.">
+<link rel="stylesheet" href="../design-tokens.css">
+<link rel="stylesheet" href="../site.css?nav=2">
+<link rel="stylesheet" href="micromouse-guide.css">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <a class="wordmark" href="../index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
+        <nav class="topbar-nav" aria-label="Main navigation">
+            <a href="../index.html?nav=2">Home</a>
+            <a href="../resources.html?nav=2">Resource Hub</a>
+            <a href="../micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+            <a href="../learn.html?scope=workshops">Workshops</a>
+            <a href="../learn.html?scope=wiki">Wiki</a>
+            <a href="../videos.html">Search</a>
+        </nav>
+    </div>
+</div>
+
+<main class="mm mm-stage">
+    <div class="mm-shell">
+
+        <header class="mm-hero">
+            <p class="mm-crumb">
+                <a href="../micromouse-resources.html">Resource Hub</a>
+                <span>/</span>
+                Strategies
+                <span>/</span>
+                S4
+            </p>
+            <span class="mm-eyebrow">S4 &#183; Control and build</span>
+            <h1>Motion and hardware</h1>
+            <p class="mm-lede">
+                The algorithm is the easy half. Finishing mice make the robot go where the algorithm said, and know where it is while it does.
+            </p>
+        </header>
+
+        <div class="mm-panels">
+
+            <details class="mm-panel" open id="motion">
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">Motion and turns</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+                    <p>
+                        Command motion in <em>distance</em>, not time: accelerate at a fixed rate to a cruise speed, hold,
+                        then decelerate to arrive at the target. A banked run and a flat-out run should be
+                        <strong>the same code with a different cruise speed and acceleration</strong>.
+                    </p>
+                    <p>
+                        Build the pivot turn (stop, rotate, go) first as your reliable fallback. Then characterise an arc
+                        turn as a fixed, tested manoeuvre with a known entry offset, radius and exit offset, and let the
+                        planner call it by name. Do not compute turn geometry during a run.
+                    </p>
+                    <figure class="mm-figure">
+                        <img src="../assets/micromouse/diagrams/velocity-profile.svg" alt="Velocity against distance for a pivot turn, which drops to zero at the corner, compared with a smooth arc turn that holds most of its speed." loading="lazy" width="660" height="300">
+                        <figcaption>Two ways through the same corner. Repeated 40 times, the gap is the race.</figcaption>
+                    </figure>
+                </div>
+            </details>
+
+            <details class="mm-panel" id="position">
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">Knowing where you are</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+                    <p>Encoder position is wrong: wheels slip and tyre diameters differ. Over a 40-cell run that error puts you in a wall. Use three corrections together.</p>
+                    <ul class="mm-list">
+                        <li><strong>Heading from the IMU.</strong> Calibrate the gyro's zero-rate offset with the mouse absolutely still at power-up.</li>
+                        <li><strong>Lateral position from the side walls.</strong> A PID loop on the left-right difference keeps you centred. It stops working when a wall disappears, so detect that and hold heading instead.</li>
+                        <li><strong>Longitudinal position from the front wall.</strong> Every visible front wall is a free reset of accumulated distance error.</li>
+                    </ul>
+                    <div class="mm-callout">
+                        <p>
+                            <strong>Sensor discipline.</strong> Sample at a fixed rate in a timer. Use hysteresis (two
+                            thresholds) for wall present or absent. Read walls at a consistent point in the cell, because
+                            a single false wall sends the mouse confidently into a dead end.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="mm-panel" id="hardware">
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Hardware decisions for hour one</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+                    <p>Everyone gets the same parts. These choices are effectively permanent once you solder.</p>
+                    <ul class="mm-list">
+                        <li><strong>Geometry.</strong> Put the wheel axis under the centre of rotation, or every turn also translates the mouse.</li>
+                        <li><strong>Mass.</strong> Light beats powerful. Where you mount the battery is a handling decision.</li>
+                        <li><strong>Width.</strong> Narrow is margin for diagonals, not just for fitting.</li>
+                        <li><strong>Sensors.</strong> Angle side sensors slightly forward, aimed at mid-height on the wall face, so they never see the floor or clip over the top.</li>
+                        <li><strong>Power.</strong> Battery voltage sags under acceleration. Give the logic a stable rail from the buck converter.</li>
+                        <li><strong>Traction.</strong> Grip is the real speed limit. If raising acceleration stops helping, this is why.</li>
+                    </ul>
+                    <p>Component details are in the <a href="../micromouse-resources.html#hardware">Hardware guides</a>.</p>
+                </div>
+            </details>
+
+        </div>
+
+        <nav class="mm-pager" aria-label="Strategy pages">
+            <a href="micromouse-algorithms.html"><small>&#8592; Previous</small>S3 Flood fill and routing</a>
+            <a class="is-next" href="micromouse-playbook.html"><small>Next &#8594;</small>S5 Playbook and failures</a>
+        </nav>
+
+    </div>
+</main>
+
+</body>
+</html>
