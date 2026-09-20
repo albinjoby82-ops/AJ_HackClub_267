@@ -32,10 +32,11 @@
             body.style.setProperty('--mm-topbar-h',
                 Math.round(topbar.getBoundingClientRect().height) + 'px');
         }
-        if (stickyBar) {
-            body.style.setProperty('--mm-secbar-h',
-                Math.round(stickyBar.getBoundingClientRect().height) + 'px');
-        }
+        // Always publish this one: guide pages have no second bar, and the
+        // stylesheet's non-zero fallback would push their anchor jumps down
+        // by a bar that isn't there.
+        body.style.setProperty('--mm-secbar-h',
+            (stickyBar ? Math.round(stickyBar.getBoundingClientRect().height) : 0) + 'px');
     }
 
     measure();

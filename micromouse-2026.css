@@ -69,13 +69,13 @@
    explicitly. The :where() keeps these resets at single-class specificity —
    high enough to beat design-tokens.css's element selectors, low enough
    that every .mm-* component class below still wins. */
-.mm26 :where(p, h1, h2, h3) {
+.mm26 :where(p, h1, h2, h3, h4, h5, h6) {
     margin: 0;
     color: inherit;
     font: inherit;
 }
 
-.mm26 :where(h1, h2, h3) {
+.mm26 :where(h1, h2, h3, h4, h5, h6) {
     font-family: var(--mm-font-display);
     font-weight: 800;
 }
@@ -203,6 +203,20 @@
     border-color: var(--mm-red);
     background: var(--mm-red);
     color: #fff;
+}
+
+/* A guide page is inside the Resource Hub without being it — tint rather
+   than fill, so "you are here" still means the solid red pill. */
+.mm-nav .mm-nav-section.is-parent {
+    border-color: transparent;
+    background: var(--mm-red-tint);
+    color: var(--mm-red-deep);
+}
+
+.mm-nav .mm-nav-section.is-parent:hover {
+    border-color: var(--mm-red);
+    background: var(--mm-red-tint);
+    color: var(--mm-red-deep);
 }
 
 .mm-nav .mm-nav-section[aria-current="page"]:hover {

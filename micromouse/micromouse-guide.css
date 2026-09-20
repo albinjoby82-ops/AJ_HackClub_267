@@ -1,182 +1,297 @@
-/* ------------------------------------------------------------------
-   Guide page. Palette and stage treatment are inherited from
-   micromouse.html so the event reads as one campaign.
-   ------------------------------------------------------------------ */
-.mm {
-    --mm-ink: #080F12;
-    --mm-panel: #0C161A;
-    --mm-panel-soft: #0A1216;
-    --mm-paper: #EDF2F0;
-    --mm-paper-dim: rgba(237, 242, 240, 0.74);
-    --mm-paper-faint: rgba(237, 242, 240, 0.5);
-    --mm-orange: #F4511E;
-    --mm-orange-soft: rgba(244, 81, 30, 0.14);
-    --mm-mint: #7FD4BC;
-    --mm-line: rgba(127, 212, 188, 0.2);
-    --mm-line-strong: rgba(127, 212, 188, 0.34);
-}
+/* ==========================================================================
+   Micromouse 2026 — guide pages (S1–S6, H1–H6, C2–C3)
 
-body { min-height: 100vh; background: #080F12; }
+   Loaded after micromouse-2026.css, which supplies the tokens, the topbar
+   and footer chrome, .mm-wrap, .mm-eyebrow, .mm-figure and the focus ring.
+   Everything here is the guide-specific vocabulary, scoped under .mm-guide
+   on <main> where it extends or overrides something that file already owns.
 
-.mm-stage {
-    position: relative;
-    overflow: hidden;
-    padding: clamp(24px, 5vw, 56px) 24px clamp(56px, 8vw, 96px);
-    background:
-        linear-gradient(115deg, rgba(244, 81, 30, 0.07) 0 8%, transparent 8% 20%,
-                                rgba(244, 81, 30, 0.05) 20% 27%, transparent 27% 44%,
-                                rgba(244, 81, 30, 0.06) 44% 51%, transparent 51%),
-        var(--mm-ink);
-}
+   Where the event page keeps exactly one dark surface as an accent, the
+   guides reserve dark for machine content: code blocks, and the maze
+   diagrams (which are dark because a real maze is a matt black floor with
+   white walls and red tops).
+   ========================================================================== */
 
-.mm-stage::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
+/* ==========================================================================
+   Header band — the same graph grid on cream as the Resource Hub
+   ========================================================================== */
+
+.mm-guide-head {
+    border-bottom: 1px solid var(--mm-line);
+    background-color: var(--mm-paper);
     background-image:
-        linear-gradient(var(--mm-line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--mm-line) 1px, transparent 1px);
-    background-size: 72px 72px;
-    opacity: 0.24;
+        linear-gradient(#EFE2D5 1px, transparent 1px),
+        linear-gradient(90deg, #EFE2D5 1px, transparent 1px);
+    background-size: 56px 56px;
 }
 
-.mm-shell {
-    position: relative;
-    z-index: 1;
-    width: min(1120px, 100%);
-    margin: 0 auto;
+.mm-guide-head-inner {
+    padding-block: clamp(26px, 4vw, 44px) clamp(24px, 3.5vw, 38px);
 }
-
-/* ---- Typography ---- */
-
-.mm h1, .mm h2, .mm h3, .mm h4 { color: var(--mm-paper); }
-
-.mm h1 {
-    margin: 0 0 18px;
-    font-size: clamp(34px, 5.4vw, 58px);
-    font-weight: 600;
-    line-height: 1.08;
-    letter-spacing: -0.015em;
-}
-
-.mm h2 {
-    margin: 0 0 18px;
-    font-size: clamp(25px, 3vw, 33px);
-    font-weight: 600;
-    line-height: 1.18;
-    letter-spacing: -0.01em;
-}
-
-.mm h3 {
-    margin: 32px 0 10px;
-    font-size: 19px;
-    font-weight: 600;
-    line-height: 1.3;
-}
-
-.mm h4 {
-    margin: 0 0 8px;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.mm p, .mm li { color: var(--mm-paper-dim); font-size: 16px; line-height: 1.68; }
-.mm p { margin: 0 0 16px; }
-.mm strong { color: var(--mm-paper); font-weight: 600; }
-.mm em { color: var(--mm-paper); font-style: italic; }
-
-.mm a { color: var(--mm-mint); text-decoration: none; border-bottom: 1px solid var(--mm-line-strong); }
-.mm a:hover { color: var(--mm-paper); border-bottom-color: var(--mm-orange); }
-
-.mm-eyebrow {
-    display: block;
-    margin-bottom: 12px;
-    color: var(--mm-mint);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-}
-
-.mm-lede {
-    max-width: 62ch;
-    color: var(--mm-paper);
-    font-size: clamp(17px, 2vw, 20px);
-    line-height: 1.55;
-}
-
-.mm-prose { max-width: 68ch; }
-
-/* ---- Sections ---- */
-
-.mm-section {
-    margin-top: clamp(48px, 6vw, 76px);
-    padding-top: clamp(40px, 5vw, 60px);
-    border-top: 1px solid var(--mm-line);
-    scroll-margin-top: 84px;
-}
-
-/* ---- Breadcrumb + contents ---- */
 
 .mm-crumb {
-    margin: 0 0 20px;
-    font-family: var(--font-mono);
-    font-size: 11px;
+    margin-bottom: 18px;
+    font: 700 11px/1.5 var(--mm-font-mono);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-}
-.mm-crumb a { color: var(--mm-paper-faint); border-bottom: none; }
-.mm-crumb a:hover { color: var(--mm-mint); }
-.mm-crumb span { color: var(--mm-paper-faint); padding: 0 8px; }
-
-.mm-toc {
-    margin-top: 40px;
-    padding: 24px;
-    border: 1px solid var(--mm-line);
-    border-left: 2px solid var(--mm-orange);
-    background: var(--mm-panel);
+    color: var(--mm-meta);
 }
 
-.mm-toc ol {
+.mm-crumb a {
+    color: var(--mm-red-deep);
+    text-decoration: none;
+    border-bottom: 0;
+}
+
+.mm-crumb a:hover {
+    color: var(--mm-ink);
+}
+
+.mm-crumb span {
+    padding: 0 8px;
+    color: var(--mm-meta);
+    opacity: 0.6;
+}
+
+.mm-guide-head .mm-eyebrow {
+    margin-bottom: 12px;
+    color: var(--mm-meta);
+}
+
+.mm-guide-title {
+    margin-bottom: 14px;
+    font-size: clamp(32px, 5.4vw, 58px);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+}
+
+.mm-guide-lede {
+    max-width: 62ch;
+    font-size: clamp(16px, 1.8vw, 20px);
+    line-height: 1.5;
+    color: var(--mm-body);
+}
+
+/* ==========================================================================
+   Page body
+   ========================================================================== */
+
+.mm-guide-body {
+    padding-block: clamp(26px, 4vw, 40px) clamp(52px, 7vw, 90px);
+}
+
+/* Prose inside panel bodies. */
+.mm-guide p {
+    margin-bottom: 16px;
+    line-height: 1.68;
+    color: var(--mm-muted);
+}
+
+.mm-guide li {
+    line-height: 1.68;
+    color: var(--mm-muted);
+}
+
+.mm-guide strong {
+    color: var(--mm-ink);
+    font-weight: 700;
+}
+
+.mm-guide em {
+    color: var(--mm-ink);
+    font-style: normal;
+    font-weight: 700;
+}
+
+.mm-guide a {
+    color: var(--mm-red-deep);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(195, 42, 63, 0.3);
+}
+
+.mm-guide a:hover {
+    color: var(--mm-red);
+    border-bottom-color: var(--mm-red);
+}
+
+.mm-guide h4 {
+    margin-bottom: 4px;
+    font-size: 16px;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--mm-ink);
+}
+
+/* Inline technical values — mono, in the hardware/technical colour. */
+.mm-guide .mono {
+    font-family: var(--mm-font-mono);
+    font-size: 0.86em;
+    font-weight: 700;
+    color: var(--mm-orange-deep);
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   Panels
+   ========================================================================== */
+
+.mm-panels {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 4px 28px;
-    margin: 0;
+    /* minmax(0,1fr), not the implicit auto: a grid item refuses to shrink
+       below its content, so a wide table or code block inside a panel would
+       stretch the page instead of scrolling inside its own wrapper. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+}
+
+.mm-guide-panel {
+    min-width: 0;
+    border: 1px solid var(--mm-line);
+    border-radius: 14px;
+    background: var(--mm-card);
+    transition: border-color 0.16s ease;
+}
+
+.mm-guide-panel[open] {
+    border-color: var(--mm-line-2);
+}
+
+.mm-guide-panel > summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    padding: 20px 24px;
+    border-radius: 14px;
+    color: var(--mm-ink);
+    cursor: pointer;
+    list-style: none;
+    transition: background 0.16s ease;
+}
+
+.mm-guide-panel > summary::-webkit-details-marker { display: none; }
+
+.mm-guide-panel > summary:hover {
+    background: var(--mm-paper);
+}
+
+.mm-panel-num {
+    font: 700 11px/1 var(--mm-font-mono);
+    letter-spacing: 0.12em;
+    color: var(--mm-red-deep);
+}
+
+.mm-panel-name {
+    font-family: var(--mm-font-display);
+    font-weight: 800;
+    font-size: clamp(18px, 2.6vw, 24px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+.mm-panel-toggle {
+    font: 700 20px/1 var(--mm-font-mono);
+    color: var(--mm-red);
+}
+
+.mm-panel-toggle::before { content: "+"; }
+.mm-guide-panel[open] .mm-panel-toggle::before { content: "\2212"; }
+
+.mm-panel-body {
+    padding: 0 24px 24px;
+}
+
+.mm-panel-body > :first-child { margin-top: 0; }
+.mm-panel-body > :last-child { margin-bottom: 0; }
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+.mm-list {
+    margin: 0 0 16px;
+    padding-left: 22px;
+}
+
+.mm-list li {
+    margin-bottom: 9px;
+}
+
+.mm-list li::marker {
+    color: var(--mm-red);
+    font-weight: 700;
+}
+
+/* Numbered rule list with mono counters. */
+.mm-rules {
+    margin: 22px 0 0;
     padding: 0;
     list-style: none;
-    counter-reset: toc;
+    counter-reset: rule;
 }
 
-.mm-toc li { counter-increment: toc; font-size: 15px; }
-
-.mm-toc a {
-    display: block;
-    padding: 6px 0;
-    border-bottom: 1px solid transparent;
-    color: var(--mm-paper-dim);
-}
-.mm-toc a::before {
-    content: counter(toc, decimal-leading-zero) "  ";
-    color: var(--mm-mint);
-    font-family: var(--font-mono);
-    font-size: 11px;
-}
-.mm-toc a:hover { color: var(--mm-paper); border-bottom-color: transparent; }
-
-/* ---- Figures ---- */
-
-.mm-figure {
-    margin: 28px 0 0;
-    padding: 0;
-    border: 1px solid var(--mm-line);
-    background: var(--mm-panel);
+.mm-rules > li {
+    position: relative;
+    counter-increment: rule;
+    margin-bottom: 20px;
+    padding-left: 46px;
 }
 
-/* Diagrams are drawn at a fixed natural size; never upscale them into mush. */
-.mm-figure img {
-    display: block;
+.mm-rules > li::before {
+    content: counter(rule, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 2px;
+    font: 700 12px/1 var(--mm-font-mono);
+    letter-spacing: 0.08em;
+    color: var(--mm-red-deep);
+}
+
+.mm-rules p { margin: 0; }
+
+/* ==========================================================================
+   Callouts
+   ========================================================================== */
+
+.mm-callout {
+    margin-top: 22px;
+    padding: 18px 22px;
+    border: 1px solid #F5DCC5;
+    border-left: 3px solid var(--mm-orange);
+    border-radius: 12px;
+    background: var(--mm-paper-alt);
+}
+
+.mm-callout p {
+    color: #6B5545;
+}
+
+.mm-callout p:last-child { margin-bottom: 0; }
+
+.mm-callout strong { color: var(--mm-ink); }
+
+.mm-callout.is-signal {
+    border-color: #F7D2D8;
+    border-left-color: var(--mm-red);
+    background: var(--mm-red-tint);
+}
+
+.mm-callout.is-signal p { color: #7A4450; }
+
+.mm-callout.is-signal .mono { color: var(--mm-red-deep); }
+
+/* ==========================================================================
+   Figures — the .mm-figure frame comes from micromouse-2026.css; diagrams
+   are drawn at a fixed natural size, so mount them rather than stretch them.
+   ========================================================================== */
+
+.mm-guide .mm-figure {
+    margin-top: 22px;
+    border-radius: 14px;
+}
+
+.mm-guide .mm-figure img {
     width: auto;
     max-width: 100%;
     height: auto;
@@ -184,35 +299,30 @@ body { min-height: 100vh; background: #080F12; }
     padding: 18px;
 }
 
-.mm-figure.is-photo img { width: 100%; padding: 0; }
+.mm-guide .mm-figure.is-photo img {
+    width: 100%;
+    padding: 0;
+}
 
-.mm-figure figcaption {
-    padding: 12px 16px;
-    border-top: 1px solid var(--mm-line);
-    color: var(--mm-paper-faint);
-    font-family: var(--font-mono);
-    font-size: 11.5px;
+.mm-guide .mm-figure figcaption {
+    padding: 11px 16px;
+    letter-spacing: 0.08em;
+    text-transform: none;
     line-height: 1.5;
-    letter-spacing: 0.04em;
 }
 
-.mm-figure.is-photo img { aspect-ratio: 4 / 3; object-fit: cover; }
-
-@media (max-width: 700px) { .mm-figure img { padding: 10px; } }
-
-/* ---- Split layout ---- */
-
-.mm-split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(24px, 4vw, 52px);
-    align-items: start;
+@media (max-width: 700px) {
+    .mm-guide .mm-figure img { padding: 10px; }
 }
-.mm-split.is-flipped .mm-copy { order: 2; }
 
-/* ---- Spec table ---- */
+/* ==========================================================================
+   Spec tables
+   ========================================================================== */
 
-.mm-table-wrap { overflow-x: auto; margin-top: 24px; }
+.mm-table-wrap {
+    overflow-x: auto;
+    margin-top: 22px;
+}
 
 .mm-table {
     width: 100%;
@@ -230,7 +340,8 @@ body { min-height: 100vh; background: #080F12; }
     white-space: nowrap;
 }
 
-.mm-table th, .mm-table td {
+.mm-table th,
+.mm-table td {
     padding: 12px 16px 12px 0;
     border-bottom: 1px solid var(--mm-line);
     text-align: left;
@@ -239,110 +350,57 @@ body { min-height: 100vh; background: #080F12; }
 
 .mm-table th {
     width: 34%;
-    color: var(--mm-paper);
-    font-weight: 600;
+    color: var(--mm-ink);
+    font-weight: 700;
 }
 
-.mm-table td { color: var(--mm-paper-dim); }
+.mm-table td { color: var(--mm-muted); }
 
-.mm .mono {
-    color: var(--mm-mint);
-    font-family: var(--font-mono);
-    font-size: 13.5px;
-}
-
-/* ---- Rule list ---- */
-
-.mm-rules { margin: 24px 0 0; padding: 0; list-style: none; counter-reset: rule; }
-
-.mm-rules > li {
-    position: relative;
-    counter-increment: rule;
-    margin-bottom: 20px;
-    padding-left: 46px;
-}
-
-.mm-rules > li::before {
-    content: counter(rule, decimal-leading-zero);
-    position: absolute;
-    left: 0;
-    top: 1px;
-    color: var(--mm-orange);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-}
-
-.mm-rules h4 { margin-bottom: 4px; }
-.mm-rules p { margin: 0; }
-
-/* ---- Cards ---- */
-
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 18px;
-    margin-top: 26px;
-}
-
-.mm-card {
-    padding: 22px;
-    border: 1px solid var(--mm-line);
-    background: var(--mm-panel);
-}
-.mm-card p { margin: 0; font-size: 15px; }
-.mm-card .mm-eyebrow { margin-bottom: 8px; }
-
-/* ---- Callout ---- */
-
-.mm-callout {
-    margin-top: 28px;
-    padding: 22px 24px;
-    border: 1px solid var(--mm-line);
-    border-left: 2px solid var(--mm-mint);
-    background: var(--mm-panel);
-}
-.mm-callout.is-signal { border-left-color: var(--mm-orange); background: var(--mm-orange-soft); }
-.mm-callout p:last-child { margin-bottom: 0; }
-
-/* ---- Code ---- */
+/* ==========================================================================
+   Code — dark, as code blocks are everywhere else on the web
+   ========================================================================== */
 
 .mm-code {
     overflow-x: auto;
     margin: 22px 0 0;
     padding: 20px 22px;
-    border: 1px solid var(--mm-line);
-    background: var(--mm-panel-soft);
+    border: 1px solid var(--mm-line-dark);
+    border-radius: 12px;
+    background: var(--mm-ink);
 }
 
 .mm-code code {
-    color: var(--mm-paper-dim);
-    font-family: var(--font-mono);
+    font-family: var(--mm-font-mono);
     font-size: 13px;
     line-height: 1.72;
     white-space: pre;
+    color: #F4EFE9;
 }
 
-.mm-code .c { color: var(--mm-paper-faint); font-style: italic; }
-.mm-code .k { color: var(--mm-orange); }
-.mm-code .f { color: var(--mm-mint); }
+.mm-code .c { color: #9BA0A6; font-style: italic; }  /* comment  */
+.mm-code .k { color: var(--mm-orange); }             /* keyword  */
+.mm-code .f { color: var(--mm-mint); }               /* function */
 
-/* ---- Body lists ---- */
+/* ==========================================================================
+   Timeline
+   ========================================================================== */
 
-.mm-list { margin: 0 0 16px; padding-left: 22px; }
-.mm-list li { margin-bottom: 9px; }
-.mm-list li::marker { color: var(--mm-mint); }
-
-/* ---- Timeline ---- */
-
-.mm-timeline { margin: 26px 0 0; padding: 0; list-style: none; }
+.mm-timeline {
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+}
 
 .mm-timeline > li {
     position: relative;
-    padding: 0 0 26px 30px;
-    border-left: 1px solid var(--mm-line);
+    padding: 0 0 24px 30px;
+    border-left: 1px solid var(--mm-line-2);
 }
-.mm-timeline > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+
+.mm-timeline > li:last-child {
+    padding-bottom: 0;
+    border-left-color: transparent;
+}
 
 .mm-timeline > li::before {
     content: "";
@@ -352,159 +410,147 @@ body { min-height: 100vh; background: #080F12; }
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--mm-mint);
+    background: var(--mm-red);
 }
+
 .mm-timeline > li.is-signal::before { background: var(--mm-orange); }
 
 .mm-timeline .clock {
     display: block;
     margin-bottom: 3px;
-    color: var(--mm-orange);
-    font-family: var(--font-mono);
-    font-size: 11px;
+    font: 700 11px/1 var(--mm-font-mono);
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    color: var(--mm-red-deep);
 }
-.mm-timeline p { margin: 0; font-size: 15px; }
 
-/* ---- Reference cards ---- */
+.mm-timeline p {
+    margin: 0;
+    font-size: 15px;
+}
+
+/* ==========================================================================
+   Reference cards
+   ========================================================================== */
 
 .ref-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
     gap: 14px;
-    margin-top: 24px;
+    margin-top: 22px;
 }
 
-.ref {
+.mm-guide .ref {
     display: block;
     padding: 18px 20px;
     border: 1px solid var(--mm-line);
-    border-bottom: 1px solid var(--mm-line);
-    background: var(--mm-panel);
-    transition: transform .15s ease, border-color .15s ease;
+    border-radius: 14px;
+    background: var(--mm-card);
+    transition: transform 0.16s ease, border-color 0.16s ease;
 }
-.ref:hover { transform: translateY(-2px); border-color: var(--mm-line-strong); }
+
+.mm-guide .ref:hover {
+    transform: translateY(-3px);
+    border-color: var(--mm-red);
+}
 
 .ref .kind {
     display: block;
     margin-bottom: 8px;
-    color: var(--mm-mint);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-}
-.ref.is-video .kind { color: var(--mm-orange); }
-
-.ref .name { display: block; color: var(--mm-paper); font-size: 15.5px; font-weight: 600; line-height: 1.35; }
-.ref .note { display: block; margin-top: 7px; color: var(--mm-paper-faint); font-size: 13.5px; line-height: 1.5; }
-
-/* ---- Footer nav ---- */
-
-.mm-endnav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 34px;
-}
-
-.mm-btn {
-    display: inline-block;
-    padding: 13px 22px;
-    border: 1px solid var(--mm-orange);
-    background: var(--mm-orange);
-    color: #fff;
-    font-size: 14px;
-    font-weight: 600;
-}
-.mm-btn:hover { background: transparent; color: var(--mm-orange); border-bottom-color: var(--mm-orange); }
-
-.mm-btn.is-ghost {
-    border-color: var(--mm-line-strong);
-    background: transparent;
-    color: var(--mm-paper);
-}
-.mm-btn.is-ghost:hover { border-color: var(--mm-mint); color: var(--mm-mint); }
-
-@media (max-width: 820px) {
-    .mm-split { grid-template-columns: 1fr; }
-    .mm-split.is-flipped .mm-copy { order: 0; }
-}
-
-/* ---- Collapsible panels (same treatment as the Resource Hub) ---- */
-
-.mm-panels { display: grid; gap: 14px; margin-top: 36px; }
-
-.mm-panel {
-    border: 1px solid var(--mm-line);
-    border-left: 3px solid var(--mm-orange);
-    border-radius: 3px;
-    background: var(--mm-panel);
-}
-
-.mm-panel > summary {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 18px;
-    padding: 22px 24px;
-    color: var(--mm-paper);
-    cursor: pointer;
-    list-style: none;
-}
-.mm-panel > summary::-webkit-details-marker { display: none; }
-.mm-panel > summary:focus-visible { outline: 3px solid rgba(127, 212, 188, 0.42); outline-offset: 3px; }
-
-.mm-panel-num {
-    color: var(--mm-mint);
-    font: 700 11px/1 var(--font-mono);
+    font: 700 10px/1.4 var(--mm-font-mono);
     letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mm-meta);
 }
 
-.mm-panel-name { font-size: clamp(19px, 3vw, 26px); font-weight: 700; line-height: 1.15; }
+.ref.is-video .kind { color: var(--mm-orange-deep); }
 
-.mm-panel-toggle { color: var(--mm-orange); font: 700 22px/1 var(--font-mono); }
-.mm-panel-toggle::before { content: "+"; }
-.mm-panel[open] .mm-panel-toggle::before { content: "\2212"; }
+.ref .name {
+    display: block;
+    font-family: var(--mm-font-display);
+    font-weight: 800;
+    font-size: 17px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--mm-ink);
+}
 
-.mm-panel-body { padding: 0 24px 24px 24px; }
-.mm-panel-body > :first-child { margin-top: 0; }
-.mm-panel-body > :last-child { margin-bottom: 0; }
-.mm-panel-body .mm-figure, .mm-panel-body .mm-code { margin-top: 20px; }
-.mm-panel-body .mm-callout { margin-top: 20px; }
+.ref .note {
+    display: block;
+    margin-top: 7px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--mm-muted);
+}
 
-/* ---- Prev / next between strategy pages ---- */
+/* ==========================================================================
+   Prev / next pager
+   ========================================================================== */
 
 .mm-pager {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
-    margin-top: clamp(40px, 6vw, 64px);
+    margin-top: clamp(32px, 5vw, 52px);
 }
-.mm-pager a {
+
+.mm-guide .mm-pager a {
     display: grid;
     gap: 6px;
     padding: 18px 20px;
     border: 1px solid var(--mm-line);
-    border-radius: 3px;
-    background: var(--mm-panel);
-    color: var(--mm-paper);
-    font-weight: 600;
+    border-radius: 14px;
+    background: var(--mm-card);
+    font-family: var(--mm-font-display);
+    font-weight: 800;
+    font-size: 17px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--mm-ink);
+    transition: transform 0.16s ease, border-color 0.16s ease;
 }
-.mm-pager a:hover { border-color: var(--mm-orange); color: var(--mm-paper); }
+
+.mm-guide .mm-pager a:hover {
+    transform: translateY(-3px);
+    border-color: var(--mm-red);
+    color: var(--mm-ink);
+}
+
 .mm-pager small {
-    color: var(--mm-mint);
-    font: 700 11px/1 var(--font-mono);
+    font: 700 11px/1 var(--mm-font-mono);
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    color: var(--mm-red-deep);
 }
-.mm-pager .is-next { text-align: right; grid-column: 2; }
+
+.mm-pager .is-next {
+    grid-column: 2;
+    text-align: right;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
 
 @media (max-width: 560px) {
-    .mm-panel > summary { gap: 12px; padding: 18px 16px; }
+    .mm-guide-panel > summary {
+        gap: 12px;
+        padding: 18px 16px;
+    }
+
     .mm-panel-body { padding: 0 16px 20px; }
-    .mm-pager { grid-template-columns: 1fr; }
-    .mm-pager .is-next { grid-column: 1; }
+
+    .mm-pager { grid-template-columns: minmax(0, 1fr); }
+
+    .mm-pager .is-next {
+        grid-column: 1;
+        text-align: left;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mm-guide .ref:hover,
+    .mm-guide .mm-pager a:hover {
+        transform: none;
+    }
 }
