@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>C3 Working with AI Agents on Hardware — Dublin Micromouse Open 2026</title>
-<meta name="description" content="How to use an AI coding agent safely on Micromouse hardware.">
+<title>C3 - Working with AI Agents on Hardware — Dublin Micromouse Open 2026</title>
+<meta name="description" content="AI coding agents can help you write firmware, inspect logs and test ideas faster. They become useful hardware teammates only when you give them evidence from the physical system.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -44,73 +44,307 @@
             </p>
             <span class="mm-eyebrow">C3 &#183; AI agents</span>
             <h1 class="mm-guide-title">Working with AI Agents on Hardware</h1>
-            <p class="mm-guide-lede">
-                An agent can write firmware and read logs, but it cannot see a loose wire or measure a voltage. Give it evidence from the real mouse.
-            </p>
+            <p class="mm-guide-lede">AI coding agents can help you write firmware, inspect logs and test ideas faster. They become useful hardware teammates only when you give them evidence from the physical system.</p>
         </div>
     </header>
 
     <div class="mm-guide-body mm-wrap">
 
         <div class="mm-panels">
+<p><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">Open the debug checks and full sketches →</a></p>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">01</span><span class="mm-panel-name">Wiring overview</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>In this guide you will learn how to:</p>
+<ul class="mm-list">
+<li>give an agent enough hardware context to make safe suggestions;</li>
+<li>turn a vague hardware fault into a repeatable debug loop;</li>
+<li>verify library APIs, board pins and electrical assumptions;</li>
+<li>use Git checkpoints and small changes to protect working code; and</li>
+<li>coordinate agent-assisted work across a team.</li>
+</ul>
+<blockquote class="mm-callout">
+<p>An AI agent cannot see a loose wire, measure a voltage or know that a component is hot. Power off before rewiring. Check voltage levels, polarity and current limits against the real datasheet.</p>
+</blockquote>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">02</span><span class="mm-panel-name">1. Start with the most important rule</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>A software agent can inspect files and reason about text. Your robot also depends on facts outside those files:</p>
+<ul class="mm-list">
+<li>which board revision is on the bench;</li>
+<li>which pins are physically connected;</li>
+<li>whether grounds are shared;</li>
+<li>the exact sensor and breakout-board versions;</li>
+<li>supply voltage and logic voltage;</li>
+<li>what the LEDs, motors and sensors actually do; and</li>
+<li>what appeared in the serial monitor.</li>
+</ul>
+<p>If the agent does not receive those facts, it fills the gaps with assumptions. A confident answer can still be wrong for your hardware.</p>
+<h3>Build a hardware context pack</h3>
+<p>Keep the following information in the repository, preferably under a <code>docs/</code> folder:</p>
+<ol class="mm-list">
+<li>a pinout card for your exact board and robot;</li>
+<li>links or copies of component datasheets;</li>
+<li>the library name and version used by the project;</li>
+<li>a short wiring table;</li>
+<li>known-good test results; and</li>
+<li>the commands needed to build, flash and open the serial monitor.</li>
+</ol>
+<p>A small wiring table is often more useful than a long description:</p>
+<div class="mm-table-wrap"><table class="mm-table">
+<thead>
+<tr>
+<th>Signal</th>
+<th align="right">Controller pin</th>
+<th>Device pin</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>I2C SDA</td>
+<td align="right">GPIO 6</td>
+<td>SDA</td>
+<td>3.3 V logic</td>
+</tr>
+<tr>
+<td>I2C SCL</td>
+<td align="right">GPIO 7</td>
+<td>SCL</td>
+<td>3.3 V logic</td>
+</tr>
+<tr>
+<td>Left XSHUT</td>
+<td align="right">GPIO 18</td>
+<td>XSHUT</td>
+<td>Address 0x30</td>
+</tr>
+<tr>
+<td>Front XSHUT</td>
+<td align="right">GPIO 19</td>
+<td>XSHUT</td>
+<td>Address 0x31</td>
+</tr>
+<tr>
+<td>Right XSHUT</td>
+<td align="right">GPIO 20</td>
+<td>XSHUT</td>
+<td>Address 0x29</td>
+</tr>
+<tr>
+<td>Ground</td>
+<td align="right">GND</td>
+<td>GND</td>
+<td>Common ground required</td>
+</tr>
+</tbody></table></div>
+<p>These are the event debug kit’s pin assignments. Give the agent the <a href="micromouse-esp32c6.html">event wiring map</a> and the exact <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">debug sketch</a> you are running. The comments at the top of that sketch are the wiring reference. GPIO21/22 belong to the Motor A encoder, not the sensor bus.</p>
+<h3>Use a context-first prompt</h3>
+<pre class="mm-code"><code class="language-text">You are helping with an ESP32 Micromouse.
 
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">01</span>
-                    <span class="mm-panel-name">Give it the facts it cannot see</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<p>Without them the agent fills the gaps with assumptions, and a confident answer can still be wrong for your board. Keep a context pack in the repo under <span class="mono">docs/</span>:</p><ul class="mm-list"><li>Your team's <a href="micromouse-esp32c6.html">pin map</a> and a short wiring table.</li><li>The exact board and revision, and the datasheets for each part.</li><li>Library names and versions, and the build, flash and serial-monitor commands.</li><li>Known-good test results.</li></ul><pre class="mm-code"><code>You are helping with an ESP32 Micromouse.
-Read first: docs/pinout.md, platformio.ini, src/sensors.cpp
+Read these files first:
+- docs/pinout.md
+- docs/sensors/VL53L0X-datasheet.pdf
+- platformio.ini
+- src/sensors.cpp
 
-Hardware facts: [board and revision], [verified pins], [supply and logic voltage]
-Problem: [what you expected, what actually happened]
+Hardware facts:
+- Board: [exact board and revision]
+- Sensor library: [name and version]
+- SDA/SCL pins: [verified pins]
+- XSHUT pins: [verified pins]
+- Supply and logic voltage: [verified voltage]
 
-Do not rewrite the subsystem.
-List the evidence you need, then propose one small test.</code></pre><div class="mm-callout is-signal"><p>Power off before rewiring. Check voltage levels, polarity and current limits against the real datasheet, not the agent's memory.</p></div>
-                </div>
-            </details>
+Problem:
+[Describe what you expected and what actually happened.]
 
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">02</span>
-                    <span class="mm-panel-name">Debug from evidence</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<ol class="mm-list"><li><strong>Observe</strong> the real behaviour.</li><li><strong>Log</strong> around one assumption.</li><li><strong>Run</strong> it on the mouse.</li><li><strong>Paste the real output</strong> back to the agent.</li><li><strong>Change one thing</strong>, then retest.</li></ol><pre class="mm-code"><code>Expected: all three sensors report a distance every 50 ms.
-Actual:   left and front work; right times out.
+Do not rewrite the whole subsystem.
+First list the evidence you need, then propose one small test.
+</code></pre>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">03</span><span class="mm-panel-name">2. Use an evidence-driven debug loop</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Do not ask the agent to guess until something works. Use the same short loop every time:</p>
+<ol class="mm-list">
+<li><strong>Observe</strong> the real behaviour.</li>
+<li><strong>Add logging</strong> around one assumption.</li>
+<li><strong>Run</strong> the code on the physical robot.</li>
+<li><strong>Paste the real output</strong> back to the agent.</li>
+<li><strong>Change one thing</strong>.</li>
+<li><strong>Retest</strong> and record the result.</li>
+</ol>
+<p>For example:</p>
+<pre class="mm-code"><code class="language-cpp">Serial.printf(
+    &quot;left_mm=%u right_mm=%u\n&quot;,
+    leftDistanceMm,
+    rightDistanceMm
+);
+</code></pre>
+<p>A useful report includes the actual output:</p>
+<pre class="mm-code"><code class="language-text">Expected: both sensors report a distance every 50 ms.
+Actual: left sensor works; right sensor times out.
 
+Serial output:
 I2C scan: 0x29
-left  init: OK   new address: 0x30
-right init: TIMEOUT</code></pre><p style="margin-top:16px">That report is far better than "the sensor does not work."</p>
-                </div>
-            </details>
+left init: OK
+left new address: 0x30
+right init: TIMEOUT
+</code></pre>
+<p>This is much better evidence than saying &quot;the sensor does not work.&quot;</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">04</span><span class="mm-panel-name">3. Worked example: add one distance sensor</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Use the supplied <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/03_tof_1.md">step 3: left ToF</a>, then <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/04_tof_2.md">step 4: left + front</a>. Each page includes the complete sketch and expected output.</p>
+<p>For step 4, wire both sensors to 3V3, GND, SDA GPIO6 and SCL GPIO7. Left XSHUT is GPIO18 and front XSHUT is GPIO19. Leave the right ToF disconnected for this test. The IMU may stay connected.</p>
+<p>The supplied code uses <strong>VL53L0X by Pololu</strong> and this startup sequence:</p>
+<ol class="mm-list">
+<li>Hold left and front XSHUT LOW.</li>
+<li>Wake left, initialize it at 0x29, and move it to 0x30.</li>
+<li>Wake front, initialize it at 0x29, and move it to 0x31.</li>
+<li>Confirm both PASS and that covering each sensor changes its own reading.</li>
+</ol>
+<p>Step 5 adds right XSHUT on GPIO20. Right wakes last and <strong>keeps 0x29</strong>. Do not ask an agent to change that to 0x32 when using the supplied sketches.</p>
+<p>A useful follow-up includes the exact failing step:</p>
+<pre class="mm-code"><code class="language-text">I am running 04_tof_2 unchanged with VL53L0X by Pololu.
+SDA=GPIO6, SCL=GPIO7, left XSHUT=GPIO18, front XSHUT=GPIO19.
+Only left and front ToF sensors are powered; both use 3V3 and common GND.
+Left at 0x30 passes, but front fails when GPIO19 goes high.
+The full startup output and a checked wiring table are below.
 
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">03</span>
-                    <span class="mm-panel-name">Where agents go wrong</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<ul class="mm-list"><li><strong>Invented library calls.</strong> Check the function against the installed version and its header.</li><li><strong>Generic ESP32 pins.</strong> ESP32 is a family. Confirm each pin on your exact board, and that it is safe at boot.</li><li><strong>Hardware faults treated as software.</strong> A missing ground, reversed power, a loose jumper or a level mismatch will not be fixed by more code. If a minimal test fails, inspect the circuit.</li><li><strong>Big rewrites.</strong> They hide the cause and make rollback hard.</li></ul>
-                </div>
-            </details>
-
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">04</span>
-                    <span class="mm-panel-name">Working rules for the team</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<ul class="mm-list"><li>Ask for <strong>small, reviewable changes</strong>: name the file, what must stay unchanged, what counts as success, and say "do not commit or push".</li><li>Commit a <a href="micromouse-git.html">checkpoint</a> before a big change and read <span class="mono">git diff</span> after it.</li><li>One owner per file. Never run two agents rewriting the same file.</li><li>Leave a handoff note: owner, files, what was tested, the result and the next test.</li><li><strong>Stop and get a human</strong> if a part is hot, voltage is uncertain, the board resets when a motor starts, or a change would disable a safety limit.</li></ul>
-                </div>
-            </details>
-
-        </div>
+Read the sketch&#39;s header comments first. Check only the initialization
+sequence and wiring evidence. Do not change the pin map, addresses,
+motor control or maze logic. Suggest one observation that distinguishes
+a wiring problem from a library or initialization problem.
+</code></pre>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">05</span><span class="mm-panel-name">4. Recognise common agent failure modes</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><h3>Hallucinated library APIs</h3>
+<p>Different libraries expose different method names. An agent may suggest a function that exists in another library or an older release.</p>
+<p>Before accepting code, check:</p>
+<ul class="mm-list">
+<li>the exact dependency in <code>platformio.ini</code> or <code>library.properties</code>;</li>
+<li>the installed version;</li>
+<li>the library&#39;s examples; and</li>
+<li>the function declaration in its header file.</li>
+</ul>
+<h3>Outdated ESP32 pin references</h3>
+<p>&quot;ESP32&quot; describes a family of boards. Pin availability and boot behaviour vary between modules and revisions. Do not trust a generic pin diagram when your exact board has its own schematic.</p>
+<p>Confirm that each selected pin:</p>
+<ul class="mm-list">
+<li>is physically broken out;</li>
+<li>is not reserved by flash, PSRAM or another onboard device;</li>
+<li>is safe during boot; and</li>
+<li>supports the required input, output or bus function.</li>
+</ul>
+<h3>Treating a hardware fault as a software fault</h3>
+<p>Repeated code changes will not repair:</p>
+<ul class="mm-list">
+<li>a missing common ground;</li>
+<li>reversed power connections;</li>
+<li>a loose jumper;</li>
+<li>an unpowered sensor;</li>
+<li>a damaged component; or</li>
+<li>a logic-level mismatch.</li>
+</ul>
+<p>If a minimal test fails, stop changing application code and inspect the circuit.</p>
+<h3>Replacing a working subsystem</h3>
+<p>Large rewrites hide the cause of a fault and make rollback difficult. Ask the agent to preserve interfaces and change one behaviour at a time.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">06</span><span class="mm-panel-name">5. Ask for small, reviewable changes</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Avoid broad requests such as:</p>
+<pre class="mm-code"><code class="language-text">Rewrite the sensor code and make the robot work.
+</code></pre>
+<p>Use a constrained request instead:</p>
+<pre class="mm-code"><code class="language-text">In src/sensors.cpp, add serial logging around the right VL53L0X
+initialisation. Do not change addresses, timing constants, motor code or
+public function signatures. Show me the diff and explain each new log line.
+Do not commit or push.
+</code></pre>
+<p>Before running a change, agree on:</p>
+<ul class="mm-list">
+<li>the file or function that may change;</li>
+<li>the behaviour that must stay unchanged;</li>
+<li>the observation that will count as success; and</li>
+<li>a stopping condition if the test fails.</li>
+</ul>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">07</span><span class="mm-panel-name">6. Create a Git safety checkpoint</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Commit the last known-good state before a large agent-assisted change:</p>
+<pre class="mm-code"><code class="language-powershell">git status
+git diff
+git add src/sensors.cpp docs/pinout.md
+git commit -m &quot;checkpoint: verified single distance sensor&quot;
+</code></pre>
+<p>After the agent edits files, review before committing:</p>
+<pre class="mm-code"><code class="language-powershell">git status
+git diff
+</code></pre>
+<p>A checkpoint does not prove the new code is correct. It gives the team a clear comparison point and makes it easier to undo a bad experiment without losing known-good work.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">08</span><span class="mm-panel-name">7. Coordinate agent work across the team</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Two people should not ask separate agents to rewrite the same file at the same time.</p>
+<p>Use a simple ownership rule:</p>
+<ul class="mm-list">
+<li>one person owns a file or subsystem during a task;</li>
+<li>pull or sync before starting;</li>
+<li>announce the files being changed;</li>
+<li>use small commits with descriptive messages;</li>
+<li>share serial logs with the commit or pull request; and</li>
+<li>integrate one tested change before starting the next overlapping change.</li>
+</ul>
+<p>A useful handoff note looks like this:</p>
+<pre class="mm-code"><code class="language-text">Owner: Nick
+Files: src/sensors.cpp, docs/pinout.md
+Hardware tested: left and right VL53L0X
+Result: both addresses visible; right reading still noisy
+Serial log: logs/2026-09-10-distance-sensors.txt
+Next test: keep wiring fixed and compare timing budget only
+</code></pre>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">09</span><span class="mm-panel-name">8. Know when to stop the agent</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Pause the software work and ask a human to inspect the robot when:</p>
+<ul class="mm-list">
+<li>a component becomes hot;</li>
+<li>power or logic voltage is uncertain;</li>
+<li>the board resets when a motor starts;</li>
+<li>serial output disappears after rewiring;</li>
+<li>the minimal device example also fails; or</li>
+<li>the proposed change would disable a safety limit.</li>
+</ul>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">10</span><span class="mm-panel-name">Practical exercise</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Use one real subsystem on your Micromouse and complete this checklist:</p>
+<ul class="mm-list">
+<li><input disabled="" type="checkbox"> Record the exact board, component and library versions.</li>
+<li><input disabled="" type="checkbox"> Create or verify a wiring table.</li>
+<li><input disabled="" type="checkbox"> Save the relevant datasheet or link under <code>docs/</code>.</li>
+<li><input disabled="" type="checkbox"> Ask the agent for one logging-only change.</li>
+<li><input disabled="" type="checkbox"> Run the code and paste the real serial output.</li>
+<li><input disabled="" type="checkbox"> Ask for one diagnosis test, not a rewrite.</li>
+<li><input disabled="" type="checkbox"> Review <code>git diff</code> before committing.</li>
+<li><input disabled="" type="checkbox"> Add the result to a team handoff note.</li>
+</ul>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">11</span><span class="mm-panel-name">Key takeaway</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>AI works best on hardware when the team supplies the part it cannot observe: the real circuit, verified documentation and measured output. Keep changes small, use evidence and protect every known-good state.</p>
+</div>
+</details>
+</div>
 
         <nav class="mm-pager" aria-label="Guide pages">
             <a href="micromouse-git.html"><small>&#8592; Previous</small>C2 Git and GitHub basics</a>

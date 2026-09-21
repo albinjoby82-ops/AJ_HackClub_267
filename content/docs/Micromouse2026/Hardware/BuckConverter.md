@@ -1,85 +1,62 @@
 ---
-title: H5 - 2S Battery to 5V Buck Converter
+title: H5 - USB Logic and Motor Battery Power
 layout: default
 parent: Hardware
 nav_order: 5
 ---
 
-# H5 - 2S Battery to 5V Buck Converter
+# H5 - USB Logic and Motor Battery Power
 
-A buck converter steps the **2S battery voltage** down to a regulated **5.0 V system rail**. A 2S Li-ion pack is about 7.4 V nominal and reaches 8.4 V when fully charged.
+The debug setup powers the **ESP32-C6 from laptop USB** and **driver VM from a separate 9 V motor battery**, with a shared ground. The debug code **does not specify a standalone buck-converter configuration**: it does not define a 2S battery, a regulated 5 V system rail or a buck connection to the controller.
 
-<div class="hardware-media-grid">
-  <figure>
-    <img src="https://shop4makers.com/wp-content/uploads/2023/07/MP1584EN.jpg" alt="Small adjustable MP1584EN buck converter module">
-    <figcaption>Compact MP1584EN adjustable module</figcaption>
-  </figure>
-  <figure>
-    <img src="https://fdm3d.co.za/cdn/shop/files/LM2596Wiring.jpg?v=1748222720" alt="LM2596 adjustable buck converter with input and output terminals labelled">
-    <figcaption>Larger LM2596 adjustable module</figcaption>
-  </figure>
-</div>
+![USB powers the controller and 3V3 sensors; a separate 9V battery feeds motor driver VM, with shared ground](../../assets/images/2S-5V-buck-power-flow.svg)
 
-![Power path from a protected 2S battery through a buck converter to the ESP32-C6 and 3.3 V sensors](../../assets/images/2S-5V-buck-power-flow.svg)
+## Wire the two power paths
 
-<p class="hardware-alert">⚠ A buck converter is not a charger or a battery-protection circuit. Use a protected 2S pack or suitable BMS, the correct 2S balance charger, a fuse and a main switch.</p>
+Disconnect USB and the motor battery before changing connections.
 
-## Wiring
-
-| Buck terminal | Connection |
+| Source / connection | Destination |
 |---|---|
-| `IN+` | protected battery `P+`, through the fuse and switch |
-| `IN-` | protected battery `P-` |
-| `OUT+` | 5 V system rail and the ESP32-C6 board's documented `5V` pin |
-| `OUT-` | common `GND` for controller, sensors and motor driver |
+| Laptop USB | ESP32-C6 USB connector: controller power and programming |
+| ESP32 3V3 | IMU VCC, every ToF VIN, encoder VCC when fitted |
+| ESP32 GND | sensor/encoder grounds, driver GND and motor battery negative |
+| Separate 9 V motor battery positive | driver VM |
+| Motor battery negative | driver GND **and** ESP32 GND |
+| Driver Motor A / Motor B outputs | left / right motor power wires |
+| Driver VCC, only if present | ESP32 3V3 |
+| Driver STBY / EN / SLP, only if present | HIGH at 3V3, following the step 7 comments |
 
-The motor driver's `VM` supply should come from the planned motor power path, not through this clean 5 V logic rail. All circuits still need a common ground.
+All three grounds must be joined so the GPIO signals have a common reference. The positive supplies stay on their specified paths: motor battery to VM, USB to the controller.
 
-For the existing Micromouse guides, power the SEN0142 and GY-530 sensor boards from the ESP32-C6 `3V3` rail. Never apply 5 V to an ESP32-C6 GPIO.
+**Never connect the motor battery to a GPIO, controller 3V3, sensor power or encoder VCC.** Encoder wires are separate from motor power wires. Do not add an external buck output to the controller in this debug arrangement.
 
-## Set 5.0 V before connecting electronics
+Motor signals are **DIR1 GPIO0, PWM1 GPIO2, DIR2 GPIO3, PWM2 GPIO10**. See the [motor wiring guide](#/docs/Micromouse2026/Hardware/DRI0044.md) and [controller pin map](#/docs/Micromouse2026/Hardware/ESP32C6.md).
 
-1. Disconnect the ESP32-C6, sensors and motor driver from the converter output.
-2. Check the battery polarity, then power only the converter input.
-3. Set a multimeter to DC volts and measure across `OUT+` and `OUT-`.
-4. Turn the trim potentiometer slowly until the meter reads **5.00 V**. The direction and number of turns vary between modules.
-5. Switch off, connect the intended load, then power on and measure the rail again.
-6. Check that the voltage stays stable and the module, wires and connectors do not overheat.
+## Prove power in stages
 
-{: .warning}
-> Do not connect USB power and the external 5 V rail to the ESP32-C6 at the same time. Espressif lists USB, the 5V/GND headers and the 3V3/GND headers as mutually exclusive power options.
+1. Keep the motor battery disconnected. Plug in USB and run [01_led_red](#/docs/Micromouse2026/Debug/01_led_red.md): expect solid red and an `alive` line each second at 115200 baud.
+2. Add sensors on 3V3, GND, SDA6 and SCL7. Follow the [debug sequence](#/docs/Micromouse2026/Debug/index.md) and confirm PASS before motor tests.
+3. Disconnect power. Check battery polarity, VM, common ground, DIR/PWM and any VCC/enable pins actually present.
+4. Raise the wheels and clear your hands. With USB controller power and the motor battery, run [07_motor_1](#/docs/Micromouse2026/Debug/07_motor_1.md): green forward two seconds, red stop one second, blue reverse two seconds, red stop one second.
+5. Add Motor B for [08_motors_2](#/docs/Micromouse2026/Debug/08_motors_2.md): forward, backward, spin left and spin right, with stops between actions.
 
-## Size the module for the real load
+Motor tests start automatically. Disconnect power if wiring heats up or the controller repeatedly resets; inspect connections before retrying.
 
-Add the controller's peak current, every sensor and a safety margin. The current printed in an IC datasheet is not a guarantee that a small low-cost module can deliver that current continuously without overheating.
+## Preserve the PWM cap
 
-```text
-required 5 V current = controller peak + sensors + other logic + margin
-```
+With the 9 V battery, motor PWM is capped at **170/255**, described in the comments as about 6 V average for the N20 motors. Steps 7 and 8 run at **140**; the encoder test runs at **85**. Do not raise `SPEED_MAX`. PWM limits duty cycle; it does not create a regulated 6 V rail.
 
-Choose the MP1584EN for a compact build or the physically larger LM2596 module when easier terminals and adjustment matter. In either case, test the exact module under the robot's real load.
+**Unplug the motor from the driver before uploading or running [pin_test](#/docs/Micromouse2026/Debug/pin_test.md).** This diagnostic drives PWM fully HIGH and could apply the full 9 V across the 6 V motor.
 
-## First power-on check
+## Troubleshooting
 
-- Battery input is the right polarity and below the module's rated maximum.
-- Output is 5.00 V before the controller is attached.
-- The 5 V and 3.3 V rails do not sag when Wi-Fi, sensors and motors operate.
-- Motor noise does not reset the ESP32-C6 or corrupt sensor readings.
-- The converter and wiring remain safely cool during a full-length run.
+| Symptom | Practical check |
+|---|---|
+| No controller LED or USB port | check the USB connector and try a data-capable cable |
+| LED cycles but motor stays still | confirm battery positive at VM, joined grounds and PWM/DIR jumpers |
+| Motor hums without turning | check for a jam or battery sag under load; use [motor_sweep](#/docs/Micromouse2026/Debug/motor_sweep.md) |
+| Sensors disappear after adding wiring | disconnect the addition; check 3V3/GND and the shared bus |
+| Controller resets when motors start | inspect USB power, shared ground, loose wires, shorts and motor wiring near sensor leads |
+| Encoder count stays zero while spinning | check encoder VCC → 3V3, GND and C1 → GPIO21; see [encoder_test](#/docs/Micromouse2026/Debug/encoder_test.md) |
 
-If the controller resets when motors start, measure both the 5 V rail and battery voltage during acceleration. Improve wiring, grounding, decoupling or the power architecture instead of raising the converter output above 5 V.
-
-## Watch: adjust an LM2596 module
-
-<div class="video-frame">
-  <iframe src="https://www.youtube.com/embed/DOzRZb4fA4o" title="LM2596 buck converter tutorial: adjust the output voltage correctly" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</div>
-
-The video demonstrates the important method: measure the output while adjusting the trimmer, then verify it again under load. An MP1584EN module uses the same process, but its terminal positions and trim direction may differ.
-
-## References
-
-- [MPS MP1584 product page](https://www.monolithicpower.com/en/products/power-management/switching-converters-controllers/step-down-buck/converters/mp1584.html)
-- [TI LM2596 product page and datasheet](https://www.ti.com/product/LM2596)
-- [Espressif ESP32-C6-DevKitC-1 power-supply options](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c6/esp32-c6-devkitc-1/user_guide_v1.1.html#power-supply-options)
-- [LM2596 adjustment video on YouTube](https://www.youtube.com/watch?v=DOzRZb4fA4o)
+A standalone battery-powered controller needs a separately specified power design. The debug sketches provide no buck model, input range, output setting or standalone controller-power wiring to reproduce here.

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>H2 DFRobot DRI0044 — Dublin Micromouse Open 2026</title>
-<meta name="description" content="Ratings, wiring and first test for the DRI0044 dual motor driver.">
+<title>H2 - DRI0044 Motor Driver and Encoder — Dublin Micromouse Open 2026</title>
+<meta name="description" content="The debug sketches use one direction input and one PWM input per motor. Motor A is left; Motor B is right. Follow these signal names and your board's printed labels.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -43,55 +43,220 @@
                 H2
             </p>
             <span class="mm-eyebrow">H2 &#183; Motor driver</span>
-            <h1 class="mm-guide-title">DFRobot DRI0044</h1>
-            <p class="mm-guide-lede">
-                Drives both wheel motors. Each motor needs one direction signal and one PWM speed signal.
-            </p>
+            <h1 class="mm-guide-title">DRI0044 Motor Driver and Encoder</h1>
+            <p class="mm-guide-lede">The debug sketches use <strong>one direction input and one PWM input per motor</strong>. Motor A is left; Motor B is right. Follow these signal names and your board&#39;s printed labels.</p>
         </div>
     </header>
 
     <div class="mm-guide-body mm-wrap">
 
         <div class="mm-panels">
-
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">01</span>
-                    <span class="mm-panel-name">Ratings and the one rule</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row">Channels</th><td>2 brushed DC motors, one per wheel</td></tr><tr><th scope="row">Continuous current</th><td>1.2 A per channel</td></tr><tr><th scope="row">Logic supply <span class="mono">VCC</span></th><td>2.7&#8211;5.5 V</td></tr><tr><th scope="row">Motor supply <span class="mono">VM</span></th><td>2.5&#8211;12 V</td></tr></tbody></table></div><figure class="mm-figure"><img src="https://dfimg.dfrobot.com/nobody/wiki/482ccc756bc6e0a4a3b5057c3d58571a_0x0.png.webp" alt="DFRobot DRI0044 pinout showing logic, motor and power connections" loading="lazy"><figcaption>Official DRI0044 pinout.</figcaption></figure><div class="mm-callout is-signal"><p><strong>Keep <span class="mono">VCC</span> and <span class="mono">VM</span> separate.</strong> <span class="mono">VCC</span> is logic, <span class="mono">VM</span> is motor power. The GA12-N20 motors are rated 6&#160;V, so check <a href="micromouse-motors.html">H6</a> before connecting <span class="mono">VM</span> to a full 2S pack.</p></div>
-                </div>
-            </details>
-
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">02</span>
-                    <span class="mm-panel-name">Wiring</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">VCC</span></th><td>ESP32 <span class="mono">3V3</span></td></tr><tr><th scope="row"><span class="mono">GND</span></th><td>ESP32 ground and motor-supply ground</td></tr><tr><th scope="row"><span class="mono">DIR1</span> / <span class="mono">PWM1</span></th><td>Two ESP32 outputs: left direction / speed</td></tr><tr><th scope="row"><span class="mono">DIR2</span> / <span class="mono">PWM2</span></th><td>Two ESP32 outputs: right direction / speed</td></tr><tr><th scope="row"><span class="mono">VM</span></th><td>Motor supply</td></tr><tr><th scope="row"><span class="mono">M1+</span> <span class="mono">M1-</span> / <span class="mono">M2+</span> <span class="mono">M2-</span></th><td>Left motor / right motor</td></tr></tbody></table></div><p style="margin-top:16px">Take the four GPIO numbers from your <a href="micromouse-esp32c6.html">ESP32-C6 pin map</a>.</p>
-                </div>
-            </details>
-
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">03</span>
-                    <span class="mm-panel-name">Test before mounting</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<ol class="mm-list"><li>Wheels off the table. Check battery polarity, <span class="mono">VCC</span>, <span class="mono">VM</span> and the shared ground.</li><li>Start one motor at about 20&#8211;25% PWM.</li><li>Test forward, stop and reverse, then repeat for the second motor.</li><li>Stop if the ESP32 resets, the driver heats quickly or the current is unexpected.</li></ol><p>If a wheel spins the wrong way, swap that motor's two output wires or invert its direction in software.</p>
-                </div>
-            </details>
-
-        </div>
+<p><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">Open the debug checks and full sketches →</a></p>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">01</span><span class="mm-panel-name">Wiring overview</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><figure class="mm-figure"><img src="../content/docs/assets/images/micromouse-motor-wiring.svg" alt="ESP32-C6 motor wiring with a separate motor battery and shared ground"></figure>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">02</span><span class="mm-panel-name">Exact wiring</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Disconnect power before changing wires. Power the ESP32-C6 over USB and raise the wheels before connecting the motor battery.</p>
+<div class="mm-table-wrap"><table class="mm-table">
+<thead>
+<tr>
+<th>Driver connection</th>
+<th>Connect to</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DIR1</td>
+<td>ESP32 GPIO0</td>
+</tr>
+<tr>
+<td>PWM1</td>
+<td>ESP32 GPIO2</td>
+</tr>
+<tr>
+<td>DIR2</td>
+<td>ESP32 GPIO3</td>
+</tr>
+<tr>
+<td>PWM2</td>
+<td>ESP32 GPIO10, <strong>not GPIO5</strong></td>
+</tr>
+<tr>
+<td>VM</td>
+<td>separate 9 V motor battery positive</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>ESP32 GND <strong>and</strong> motor battery negative, all joined</td>
+</tr>
+<tr>
+<td>VCC, only if present</td>
+<td>ESP32 3V3</td>
+</tr>
+<tr>
+<td>STBY / EN / SLP, only if present</td>
+<td>HIGH at 3V3, following the step 7 comments</td>
+</tr>
+<tr>
+<td>Motor A outputs</td>
+<td>left motor&#39;s two power wires (M1 / M2)</td>
+</tr>
+<tr>
+<td>Motor B outputs</td>
+<td>right motor&#39;s two power wires</td>
+</tr>
+</tbody></table></div>
+<p>Encoder wires are separate from the motor power wires and are not needed for steps 7 and 8. Never connect the motor battery to controller, sensor or encoder power. See the <a href="micromouse-buck.html">power guide</a>.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">03</span><span class="mm-panel-name">PWM and Arduino setup</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>The motor sketches use 20 kHz, 8-bit PWM, capped at <strong>170/255</strong>. The comments describe this as about 6 V average from a <strong>9 V battery</strong> for the N20 motors. Steps 7 and 8 run at <strong>140</strong>; the encoder test runs at <strong>85</strong>. Do not raise <code>SPEED_MAX</code>. PWM still switches the battery voltage; it is not a regulated 6 V supply.</p>
+<p>Use Arduino-ESP32 <strong>3.0.0 or newer</strong>, board <strong>ESP32C6 Dev Module</strong>. No additional motor library is needed. For optional Serial output, enable USB CDC On Boot and use 115200 baud.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">04</span><span class="mm-panel-name">Test Motor A, then Motor B</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Upload <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/07_motor_1.md">07_motor_1</a> with Motor A, DIR1 and PWM1 connected. It starts automatically; keep the wheel raised.</p>
+<div class="mm-table-wrap"><table class="mm-table">
+<thead>
+<tr>
+<th>LED</th>
+<th>Duration</th>
+<th>Motor A / Serial result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Red at startup</td>
+<td>1.5 seconds, once</td>
+<td>off; clear your hands</td>
+</tr>
+<tr>
+<td>Green</td>
+<td>2 seconds</td>
+<td>forward, <code>speed=+140</code></td>
+</tr>
+<tr>
+<td>Red</td>
+<td>1 second</td>
+<td>stopped, <code>speed=+0</code></td>
+</tr>
+<tr>
+<td>Blue</td>
+<td>2 seconds</td>
+<td>backward, <code>speed=-140</code></td>
+</tr>
+<tr>
+<td>Red</td>
+<td>1 second</td>
+<td>stopped; repeat from green</td>
+</tr>
+</tbody></table></div>
+<p>If green turns the wheel the wrong way, switch off power and swap that motor&#39;s two power wires.</p>
+<p>Add Motor B and upload <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/08_motors_2.md">08_motors_2</a>, with both wheels in the air:</p>
+<div class="mm-table-wrap"><table class="mm-table">
+<thead>
+<tr>
+<th>LED</th>
+<th>Action for 2 seconds</th>
+<th>Left / right speed</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Green</td>
+<td>both forward</td>
+<td>+140 / +140</td>
+</tr>
+<tr>
+<td>Blue</td>
+<td>both backward</td>
+<td>-140 / -140</td>
+</tr>
+<tr>
+<td>Yellow</td>
+<td>spin left: left backward, right forward</td>
+<td>-140 / +140</td>
+</tr>
+<tr>
+<td>Purple</td>
+<td>spin right: left forward, right backward</td>
+<td>+140 / -140</td>
+</tr>
+</tbody></table></div>
+<p>A red, one-second stop separates every action. If left and right are exchanged, power off and swap which motor connects to A and B. If only B fails, check DIR2 and PWM2.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">05</span><span class="mm-panel-name">Motor A encoder</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Keep step 7 wiring and add these connections for <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/encoder_test.md">encoder_test</a>:</p>
+<div class="mm-table-wrap"><table class="mm-table">
+<thead>
+<tr>
+<th>Encoder pin</th>
+<th>ESP32-C6</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C1</td>
+<td>GPIO21</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>GPIO22</td>
+</tr>
+<tr>
+<td>VCC</td>
+<td><strong>3V3, never the motor battery</strong></td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+</tbody></table></div>
+<p>The motor starts automatically after its startup pause at PWM 85. Green means running, red means stopped. Serial prints <code>enc=...</code> and <code>ticks/s=...</code> once a second: counts increase and ticks/s is roughly steady while spinning. Example counts in the sketch are illustrative.</p>
+<p>Send <code>s</code> to stop, <code>g</code> to go and <code>z</code> to zero. After stopping, the count settles and ticks/s reaches zero. Zero counts while spinning suggest missing encoder power or C1. Negative ticks/s means swap C1 and C2 with power off. Counts jumping while stopped suggest noise from motor wires.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">06</span><span class="mm-panel-name">Troubleshooting tools</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>If the LED cycles but the motor stays still, check PWM and DIR jumpers, battery voltage at VM and the shared ground. Check VCC and enable wiring only if those pins exist.</p>
+<p><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/motor_sweep.md">motor_sweep</a> shows blue for two seconds at startup, then ramps forward in green and backward in red up to PWM 170. Each direction takes about six seconds including a 1.5-second hold at maximum. There is no Serial output. Starting partway through the ramp means more duty was needed; humming without turning suggests battery sag or a jam; silence suggests no power reaching the motor.</p>
+<p><strong>Unplug the motor from the driver before uploading or running <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/pin_test.md">pin_test</a>.</strong> It sets PWM fully HIGH and could apply the full 9 V to the 6 V motor. It has no Serial output. Put a DC voltmeter&#39;s black probe on GND; after the two-second blue startup, each stage lasts two seconds:</p>
+<div class="mm-table-wrap"><table class="mm-table">
+<thead>
+<tr>
+<th>LED</th>
+<th>GPIO0</th>
+<th>GPIO2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Green</td>
+<td>3.3 V</td>
+<td>3.3 V</td>
+</tr>
+<tr>
+<td>Yellow</td>
+<td>3.3 V</td>
+<td>0 V</td>
+</tr>
+<tr>
+<td>Red</td>
+<td>0 V</td>
+<td>0 V</td>
+</tr>
+</tbody></table></div>
+<p>Matching readings confirm the outputs switch; check the driver, its power and connecting wires next. A pin stuck low suggests a short or damaged pin. No blue startup suggests the new sketch did not upload.</p>
+<p>See the <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">debug index</a> for the complete sequence.</p>
+</div>
+</details>
+</div>
 
         <nav class="mm-pager" aria-label="Guide pages">
             <a href="micromouse-esp32c6.html"><small>&#8592; Previous</small>H1 ESP32-C6</a>
-            <a class="is-next" href="micromouse-sen0142.html"><small>Next &#8594;</small>H3 SEN0142 IMU</a>
+            <a class="is-next" href="micromouse-sen0142.html"><small>Next &#8594;</small>H3 MPU-6050 IMU</a>
         </nav>
 
     </div>

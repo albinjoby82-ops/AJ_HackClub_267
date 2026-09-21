@@ -46,30 +46,103 @@
             <div class="mm-search" role="search">
                 <span class="mm-search-slash" aria-hidden="true">/</span>
                 <label class="mm-visually-hidden" for="mmSearch">Search resources</label>
-                <input id="mmSearch" type="search" autocomplete="off" placeholder="Search resources — flood fill, IMU, buck converter…">
+                <input id="mmSearch" type="search" autocomplete="off" placeholder="Search resources — wiring, debug, IMU, motors…">
             </div>
             <div class="mm-cats" role="group" aria-label="Filter by category">
                 <button class="mm-cat" type="button" data-category="All" aria-pressed="true">All</button>
                 <button class="mm-cat" type="button" data-category="Strategy" aria-pressed="false">Strategy</button>
                 <button class="mm-cat" type="button" data-category="Hardware" aria-pressed="false">Hardware</button>
                 <button class="mm-cat" type="button" data-category="Software" aria-pressed="false">Software</button>
+                <button class="mm-cat" type="button" data-category="Debug" aria-pressed="false">Debug kit</button>
             </div>
-            <p class="mm-count" role="status" aria-live="polite">14 resources</p>
+            <p class="mm-count" role="status" aria-live="polite">28 resources</p>
         </div>
     </section>
 
     <div class="mm-hub-body mm-wrap">
 
-        <a class="mm-start" href="micromouse/micromouse-esp32c6.html">
+        <a class="mm-start" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">
             <span class="mm-start-label">Start here</span>
             <span>
-                <strong class="mm-start-title">New to the kit? Set up the ESP32-C6 first</strong>
-                <span class="mm-start-sub">Identify your controller and plan the pins before you connect anything else.</span>
+                <strong class="mm-start-title">Test your mouse, one part at a time</strong>
+                <span class="mm-start-sub">Eight checks with exact wiring, expected output, copyable sketches and downloads.</span>
             </span>
             <span class="mm-start-arrow" aria-hidden="true">→</span>
         </a>
 
+        <p><a class="mm-button is-outline" href="downloads/micromouse-debug-kit.zip" download>Download all sketches + IMU visualizer (ZIP) ↓</a></p>
+
         <div class="mm-grid">
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">
+                <span class="mm-res-code">START</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Setup and troubleshooting</strong><span class="mm-res-blurb">Arduino settings, libraries and all eight checks.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/01_led_red.md">
+                <span class="mm-res-code">01</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Onboard LED</strong><span class="mm-res-blurb">USB only; red LED and alive serial messages.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/02_imu.md">
+                <span class="mm-res-code">02</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">IMU on its own</strong><span class="mm-res-blurb">Wire four connections and check heading as you turn.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/03_tof_1.md">
+                <span class="mm-res-code">03</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Left distance sensor</strong><span class="mm-res-blurb">Left XSHUT GPIO18; sensor address 0x30.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/04_tof_2.md">
+                <span class="mm-res-code">04</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Add the front sensor</strong><span class="mm-res-blurb">Front XSHUT GPIO19; check L and F independently.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/05_tof_3.md">
+                <span class="mm-res-code">05</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Add the right sensor</strong><span class="mm-res-blurb">Right XSHUT GPIO20; right keeps address 0x29.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/06_tof_3_imu.md">
+                <span class="mm-res-code">06</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">All sensors together</strong><span class="mm-res-blurb">Three distances and IMU heading on the shared I²C bus.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/07_motor_1.md">
+                <span class="mm-res-code">07</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Left motor</strong><span class="mm-res-blurb">Wheels raised; forward, stop, backward, stop.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/08_motors_2.md">
+                <span class="mm-res-code">08</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Both motors</strong><span class="mm-res-blurb">Test forward, backward, spin left and spin right.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/i2c_scan.md">
+                <span class="mm-res-code">TOOL</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">I²C scanner</strong><span class="mm-res-blurb">Find sensor addresses and check idle bus levels.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/pin_test.md">
+                <span class="mm-res-code">TOOL</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Motor control pin test</strong><span class="mm-res-blurb">Unplug the motor first; measure GPIO0 and GPIO2.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/motor_sweep.md">
+                <span class="mm-res-code">TOOL</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Motor power sweep</strong><span class="mm-res-blurb">Ramp power to find where the motor starts turning.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/encoder_test.md">
+                <span class="mm-res-code">TOOL</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">Motor A encoder</strong><span class="mm-res-blurb">C1 GPIO21, C2 GPIO22; check counts and stop/go commands.</span></span>
+            </a>
+
+            <a class="mm-res" data-category="Debug" href="learn.html?scope=micromouse#/docs/Micromouse2026/Debug/imu_visualizer.md">
+                <span class="mm-res-code">LIVE</span>
+                <span><span class="mm-res-cat">Debug</span><strong class="mm-res-title">IMU visualizer</strong><span class="mm-res-blurb">Upload the matching sketch, then watch the 3D board and graphs.</span></span>
+            </a>
 
             <a class="mm-res" data-category="Strategy" href="micromouse-guide.html">
                 <span class="mm-res-code">S1</span>
@@ -130,7 +203,7 @@
                 <span>
                     <span class="mm-res-cat">Hardware</span>
                     <strong class="mm-res-title">ESP32-C6</strong>
-                    <span class="mm-res-blurb">Your controller: pinout, power, flashing, and the pins to leave alone.</span>
+                    <span class="mm-res-blurb">Event GPIO assignments, Arduino settings and the first LED check.</span>
                 </span>
             </a>
 
@@ -139,7 +212,7 @@
                 <span>
                     <span class="mm-res-cat">Hardware</span>
                     <strong class="mm-res-title">DFRobot DRI0044 motor driver</strong>
-                    <span class="mm-res-blurb">Wiring, PWM channels and current limits for the driver in your kit.</span>
+                    <span class="mm-res-blurb">DIR/PWM on GPIO0/2 and GPIO3/10, with the supplied motor tests.</span>
                 </span>
             </a>
 
@@ -147,8 +220,8 @@
                 <span class="mm-res-code">H3</span>
                 <span>
                     <span class="mm-res-cat">Hardware</span>
-                    <strong class="mm-res-title">DFRobot SEN0142 IMU</strong>
-                    <span class="mm-res-blurb">Reading heading, calibrating, and correcting drift mid-run.</span>
+                    <strong class="mm-res-title">MPU-6050 / GY-521 IMU</strong>
+                    <span class="mm-res-blurb">Four wires on GPIO6/7; leave XDA, XCL, AD0 and INT unconnected.</span>
                 </span>
             </a>
 
@@ -157,7 +230,7 @@
                 <span>
                     <span class="mm-res-cat">Hardware</span>
                     <strong class="mm-res-title">3 × VL53L0X distance sensors</strong>
-                    <span class="mm-res-blurb">Time-of-flight wall sensing, I²C addresses and mounting angles.</span>
+                    <span class="mm-res-blurb">XSHUT GPIO18/19/20; left 0x30, front 0x31, right 0x29.</span>
                 </span>
             </a>
 
@@ -165,8 +238,8 @@
                 <span class="mm-res-code">H5</span>
                 <span>
                     <span class="mm-res-cat">Hardware</span>
-                    <strong class="mm-res-title">2S battery to 5V buck converter</strong>
-                    <span class="mm-res-blurb">Clean 5V out of the pack without browning out the ESP32.</span>
+                    <strong class="mm-res-title">USB logic and motor battery power</strong>
+                    <span class="mm-res-blurb">USB controller power, 9 V motor battery, shared ground and PWM limits.</span>
                 </span>
             </a>
 
@@ -175,7 +248,7 @@
                 <span>
                     <span class="mm-res-cat">Hardware</span>
                     <strong class="mm-res-title">2 × GA12-N20 gear motors</strong>
-                    <span class="mm-res-blurb">Encoders, gear ratios, and the torque you actually have to play with.</span>
+                    <span class="mm-res-blurb">Motor A encoder C1 GPIO21, C2 GPIO22, VCC 3V3; test real counts.</span>
                 </span>
             </a>
 
@@ -201,10 +274,10 @@
 
         <div class="mm-empty" hidden>
             <p>Nothing matches that yet</p>
-            <p>Try a component name, or clear the filters to see all fourteen resources.</p>
+            <p>Try a component or sketch name, or clear the filters to see all resources.</p>
         </div>
 
-        <p class="mm-note">Resources are being prepared for the 2026 competition.</p>
+        <p class="mm-note">Event wiring and debug checks follow the comments in the supplied sketches.</p>
 
     </div>
 

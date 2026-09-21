@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>H1 ESP32-C6 — Dublin Micromouse Open 2026</title>
-<meta name="description" content="Pin budget, power rules and bring-up order for the ESP32-C6 in the Micromouse kit.">
+<title>H1 - ESP32-C6 Controller Guide — Dublin Micromouse Open 2026</title>
+<meta name="description" content="This wiring follows the top-of-file comments in `micromouse-debug-kit`. Numbers mean GPIO numbers, not positions along the board header.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -43,62 +43,210 @@
                 H1
             </p>
             <span class="mm-eyebrow">H1 &#183; Controller</span>
-            <h1 class="mm-guide-title">ESP32-C6</h1>
-            <p class="mm-guide-lede">
-                The controller reads the sensors and encoders, drives the motors and runs the navigation code. Plan its pins before you wire anything.
-            </p>
+            <h1 class="mm-guide-title">ESP32-C6 Controller Guide</h1>
+            <p class="mm-guide-lede">This wiring follows the top-of-file comments in <code>micromouse-debug-kit</code>. Numbers mean <strong>GPIO numbers</strong>, not positions along the board header.</p>
         </div>
     </header>
 
     <div class="mm-guide-body mm-wrap">
 
         <div class="mm-panels">
-
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">01</span>
-                    <span class="mm-panel-name">What the mouse needs from it</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row">Motor driver</th><td>2 PWM + 2 direction outputs</td></tr><tr><th scope="row">Wheel encoders</th><td>4 GPIO inputs (A and B for each wheel)</td></tr><tr><th scope="row">Distance sensors and IMU</th><td>1 shared I2C bus (SDA, SCL) + 3 XSHUT outputs</td></tr><tr><th scope="row">Optional</th><td>IMU interrupt input, battery-voltage ADC input</td></tr></tbody></table></div><div class="mm-callout is-signal"><p><strong>3.3 V logic only.</strong> Never feed 5&#160;V into a GPIO, and never power a motor from one. The motor driver switches the motor supply.</p></div>
-                </div>
-            </details>
-
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">02</span>
-                    <span class="mm-panel-name">Power</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<ul class="mm-list"><li>Battery feeds the buck converter (<a href="micromouse-buck.html">H5</a>) for the controller, and the motor driver takes its own motor supply.</li><li>Controller, sensors and driver must share <strong>one ground</strong>.</li><li>USB, the <span class="mono">5V</span> header and the <span class="mono">3V3</span> header are mutually exclusive power sources. Use one at a time.</li><li>Remove motor power before changing wires. A loose jumper can put battery voltage on a GPIO.</li></ul>
-                </div>
-            </details>
-
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">03</span>
-                    <span class="mm-panel-name">Pin map</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<p>Check your exact board revision, then agree one pin map and use the same names in the wiring and the firmware.</p><figure class="mm-figure"><img src="../assets/micromouse/diagrams/ESP32C6-DevKitC1-Pinout.png" alt="ESP32-C6-DevKitC-1 GPIO pinout and peripheral functions" loading="lazy"><figcaption>ESP32-C6-DevKitC-1 pinout. Match the printed board name and revision, not a look-alike.</figcaption></figure><div style="height:16px"></div><ul class="mm-list"><li>Avoid the strapping pins (GPIO4, 5, 8, 9, 15 on the DevKitC-1) unless the circuit leaves them at a safe level during reset.</li><li>GPIO12 and GPIO13 are the native USB pins, so reusing them removes USB.</li><li>Use pulse counting or interrupts for encoders, and keep encoder wires away from motor leads.</li><li>Check for on-board pull-ups before adding I2C pull-ups.</li></ul>
-                </div>
-            </details>
-
-            <details class="mm-guide-panel" open>
-                <summary>
-                    <span class="mm-panel-num">04</span>
-                    <span class="mm-panel-name">Bring-up order</span>
-                    <span class="mm-panel-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="mm-panel-body">
-<ol class="mm-list"><li><strong>No power:</strong> check for shorts between power and ground, and disconnect the motors.</li><li><strong>Flash:</strong> power over USB and print a line to the serial monitor. If upload fails, hold <span class="mono">Boot</span>, tap <span class="mono">Reset</span>, release <span class="mono">Boot</span>.</li><li><strong>One output:</strong> toggle a pin and check it with a multimeter.</li><li><strong>Sensor bus:</strong> add one I2C device at a time (<a href="micromouse-vl53l0x.html">H4</a>).</li><li><strong>Motors:</strong> wheels off the table, low PWM, one motor and direction at a time (<a href="micromouse-dri0044.html">H2</a>).</li><li><strong>Integrate</strong> only after each part passes its own test, and commit after every known-good stage.</li></ol><div class="mm-callout"><p><strong>Board resets when the motors start?</strong> Measure the 5&#160;V rail and battery voltage during acceleration. It is usually sag, grounding or noise.</p></div>
-                </div>
-            </details>
-
-        </div>
+<p><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">Open the debug checks and full sketches →</a></p>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">01</span><span class="mm-panel-name">Wiring overview</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><figure class="mm-figure"><img src="../content/docs/assets/images/micromouse-event-pin-map.svg" alt="ESP32-C6 event pin map for sensors, motors, encoder and onboard LED"></figure>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">02</span><span class="mm-panel-name">Exact pin map</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><div class="mm-table-wrap"><table class="mm-table">
+<thead>
+<tr>
+<th>Connection</th>
+<th>ESP32-C6</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IMU and all ToF SDA</td>
+<td>GPIO6</td>
+<td>shared I2C data</td>
+</tr>
+<tr>
+<td>IMU and all ToF SCL</td>
+<td>GPIO7</td>
+<td>shared I2C clock</td>
+</tr>
+<tr>
+<td>Left ToF XSHUT</td>
+<td>GPIO18</td>
+<td>address <code>0x30</code> after initialization</td>
+</tr>
+<tr>
+<td>Front ToF XSHUT</td>
+<td>GPIO19</td>
+<td>address <code>0x31</code> after initialization</td>
+</tr>
+<tr>
+<td>Right ToF XSHUT</td>
+<td>GPIO20</td>
+<td>address <code>0x29</code></td>
+</tr>
+<tr>
+<td>Motor A / left DIR1</td>
+<td>GPIO0</td>
+<td>direction</td>
+</tr>
+<tr>
+<td>Motor A / left PWM1</td>
+<td>GPIO2</td>
+<td>speed</td>
+</tr>
+<tr>
+<td>Motor B / right DIR2</td>
+<td>GPIO3</td>
+<td>direction</td>
+</tr>
+<tr>
+<td>Motor B / right PWM2</td>
+<td>GPIO10</td>
+<td>not GPIO5</td>
+</tr>
+<tr>
+<td>Motor A encoder C1</td>
+<td>GPIO21</td>
+<td>encoder test</td>
+</tr>
+<tr>
+<td>Motor A encoder C2</td>
+<td>GPIO22</td>
+<td>encoder test</td>
+</tr>
+<tr>
+<td>Onboard RGB LED</td>
+<td>GPIO8</td>
+<td>already connected; do not reuse</td>
+</tr>
+</tbody></table></div>
+<p>The kit does not assign a second motor encoder. Avoid adding wiring to GPIO4, GPIO5, GPIO8, GPIO9 and GPIO15: the kit identifies these as C6 strapping pins, with GPIO8 already used by the onboard LED.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">03</span><span class="mm-panel-name">Power and sensor wiring</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Power the controller from laptop USB. Connect a separate <strong>9 V motor battery positive to driver VM</strong>. Join battery negative, driver GND and ESP32 GND. Motor power goes through the driver.</p>
+<p>Connect IMU VCC, ToF VIN and encoder VCC to ESP32 <strong>3V3</strong>, with their grounds connected to ESP32 GND. Never connect them to the motor battery. Connect driver VCC to 3V3 <strong>only if present</strong>; tie STBY / EN / SLP HIGH to 3V3 <strong>only if the driver exposes such a pin</strong>, as described in step 7.</p>
+<p>For the MPU-6050 / GY-521, leave <strong>XDA, XCL, AD0 and INT all unconnected</strong>. Each ToF needs its own XSHUT wire. See the <a href="micromouse-buck.html">power guide</a>.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">04</span><span class="mm-panel-name">Arduino setup and first result</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><ol class="mm-list">
+<li>Install <strong>esp32 by Espressif Systems, version 3.0.0 or newer</strong> in Boards Manager. This is the Arduino-ESP32 board package version.</li>
+<li>Select <strong>ESP32C6 Dev Module</strong>, the USB port, and <strong>USB CDC On Boot: Enabled</strong>.</li>
+<li>Set Serial Monitor to <strong>115200 baud</strong>, <strong>No Line Ending</strong>.</li>
+<li>Install <strong>VL53L0X by Pololu</strong> for ToF sketches only. <code>Adafruit_VL53L0X</code> does not match this code. The IMU needs no additional library.</li>
+<li>Upload <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/01_led_red.md">01_led_red</a> with only USB connected. Open Serial Monitor and press RESET.</li>
+</ol>
+<p>Expected: solid red onboard LED, <code>STEP 1: LED should be RED</code>, then a new <code>alive</code> line every second.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">05</span><span class="mm-panel-name">Bring up the robot in order</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><p>Follow the <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">debug index</a>, disconnecting power before changing wires.</p>
+<div class="mm-table-wrap"><table class="mm-table">
+<thead>
+<tr>
+<th>Sketch</th>
+<th>Add or test</th>
+<th>Expected result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/02_imu.md">02_imu</a></td>
+<td>IMU alone</td>
+<td>PASS; heading follows a turn</td>
+</tr>
+<tr>
+<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/03_tof_1.md">03_tof_1</a></td>
+<td>left ToF</td>
+<td><code>1/1 sensors OK</code></td>
+</tr>
+<tr>
+<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/04_tof_2.md">04_tof_2</a></td>
+<td>front ToF</td>
+<td><code>2/2 sensors OK</code></td>
+</tr>
+<tr>
+<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/05_tof_3.md">05_tof_3</a></td>
+<td>right ToF</td>
+<td><code>3/3 sensors OK</code></td>
+</tr>
+<tr>
+<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/06_tof_3_imu.md">06_tof_3_imu</a></td>
+<td>combined sensors</td>
+<td>all four devices PASS</td>
+</tr>
+<tr>
+<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/07_motor_1.md">07_motor_1</a></td>
+<td>driver, battery, Motor A</td>
+<td>forward, stop, reverse, stop</td>
+</tr>
+<tr>
+<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/08_motors_2.md">08_motors_2</a></td>
+<td>Motor B</td>
+<td>forward, backward, spin left, spin right</td>
+</tr>
+</tbody></table></div>
+<p>Only connect the ToF sensors listed in the current step. An extra powered sensor with XSHUT unconnected starts at <code>0x29</code> and can disrupt the others. The IMU may stay connected during ToF steps.</p>
+<p>Raise the wheels for motor tests. Steps 7 and 8 run at PWM <strong>140</strong>, capped at <strong>170/255</strong> with the 9 V battery. Do not raise the cap.</p>
+</div>
+</details>
+<details class="mm-guide-panel" open>
+<summary><span class="mm-panel-num">06</span><span class="mm-panel-name">Troubleshooting</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
+<div class="mm-panel-body"><div class="mm-table-wrap"><table class="mm-table">
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check or next test</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>No upload port</td>
+<td>try a USB data cable and select Tools → Port; if needed hold BOOT, tap RESET, release BOOT and upload</td>
+</tr>
+<tr>
+<td>Red LED but blank Serial</td>
+<td>enable USB CDC On Boot, re-upload, use 115200 baud and press RESET with the monitor open</td>
+</tr>
+<tr>
+<td>Old LED pattern</td>
+<td>confirm the intended sketch uploaded successfully</td>
+</tr>
+<tr>
+<td>Sensor missing</td>
+<td>verify 3V3, GND, SDA6 and SCL7; run <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/i2c_scan.md">i2c_scan</a></td>
+</tr>
+<tr>
+<td>Wrong distance column changes</td>
+<td>restore left/front/right XSHUT to GPIO18/19/20</td>
+</tr>
+<tr>
+<td>Motor LED cycles but wheel stays still</td>
+<td>check PWM, DIR, shared GND, battery on VM and any enable pin present</td>
+</tr>
+<tr>
+<td>Need to verify GPIO0/GPIO2</td>
+<td><strong>unplug the motor first</strong>, then run <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/pin_test.md">pin_test</a></td>
+</tr>
+<tr>
+<td>Motor hums without moving</td>
+<td>check battery sag or a jam; use <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/motor_sweep.md">motor_sweep</a></td>
+</tr>
+</tbody></table></div>
+<p>If adding a device breaks a passing step, disconnect that addition and repeat the earlier test. Record the sketch name, startup output and actual wiring when asking for help.</p>
+</div>
+</details>
+</div>
 
         <nav class="mm-pager" aria-label="Guide pages">
             <a href="../micromouse-resources.html"><small>&#8592; Previous</small>Resource Hub</a>

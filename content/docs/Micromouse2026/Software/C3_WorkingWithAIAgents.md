@@ -49,13 +49,14 @@ A small wiring table is often more useful than a long description:
 
 | Signal | Controller pin | Device pin | Notes |
 |---|---:|---|---|
-| I2C SDA | GPIO 21 | SDA | 3.3 V logic |
-| I2C SCL | GPIO 22 | SCL | 3.3 V logic |
-| Left XSHUT | GPIO 16 | XSHUT | Active low |
-| Right XSHUT | GPIO 17 | XSHUT | Active low |
+| I2C SDA | GPIO 6 | SDA | 3.3 V logic |
+| I2C SCL | GPIO 7 | SCL | 3.3 V logic |
+| Left XSHUT | GPIO 18 | XSHUT | Address 0x30 |
+| Front XSHUT | GPIO 19 | XSHUT | Address 0x31 |
+| Right XSHUT | GPIO 20 | XSHUT | Address 0x29 |
 | Ground | GND | GND | Common ground required |
 
-The pin numbers above are examples. Replace them with your team's verified pin map.
+These are the event debug kit’s pin assignments. Give the agent the [event wiring map](#/docs/Micromouse2026/Hardware/ESP32C6.md) and the exact [debug sketch](#/docs/Micromouse2026/Debug/index.md) you are running. The comments at the top of that sketch are the wiring reference. GPIO21/22 belong to the Motor A encoder, not the sensor bus.
 
 ### Use a context-first prompt
 
@@ -118,84 +119,34 @@ right init: TIMEOUT
 
 This is much better evidence than saying "the sensor does not work."
 
-## 3. Worked example: two VL53L0X sensors
+## 3. Worked example: add one distance sensor
 
-A VL53L0X normally starts at I2C address `0x29`. If two sensors start on the same bus at the same address, the controller cannot talk to them independently.
+Use the supplied [step 3: left ToF](#/docs/Micromouse2026/Debug/03_tof_1.md), then [step 4: left + front](#/docs/Micromouse2026/Debug/04_tof_2.md). Each page includes the complete sketch and expected output.
 
-The usual solution is to control each sensor's **XSHUT** pin:
+For step 4, wire both sensors to 3V3, GND, SDA GPIO6 and SCL GPIO7. Left XSHUT is GPIO18 and front XSHUT is GPIO19. Leave the right ToF disconnected for this test. The IMU may stay connected.
 
-1. hold both sensors in shutdown;
-2. wake the left sensor only;
-3. initialise it and assign a new address, for example `0x30`;
-4. wake the right sensor;
-5. initialise it and assign another address, for example `0x31`; and
-6. verify both addresses with logs or an I2C scan.
+The supplied code uses **VL53L0X by Pololu** and this startup sequence:
 
-{: .warning}
-> XSHUT behaviour, voltage requirements and API names must be checked against your exact breakout board and library version. GPIO 16 and 17 below are examples, not universal ESP32 recommendations.
+1. Hold left and front XSHUT LOW.
+2. Wake left, initialize it at 0x29, and move it to 0x30.
+3. Wake front, initialize it at 0x29, and move it to 0x31.
+4. Confirm both PASS and that covering each sensor changes its own reading.
 
-The following pattern uses the Pololu `VL53L0X` Arduino library:
+Step 5 adds right XSHUT on GPIO20. Right wakes last and **keeps 0x29**. Do not ask an agent to change that to 0x32 when using the supplied sketches.
 
-```cpp
-#include <Wire.h>
-#include <VL53L0X.h>
-
-constexpr uint8_t LEFT_XSHUT = 16;
-constexpr uint8_t RIGHT_XSHUT = 17;
-
-VL53L0X leftSensor;
-VL53L0X rightSensor;
-
-bool initialiseDistanceSensors() {
-    pinMode(LEFT_XSHUT, OUTPUT);
-    pinMode(RIGHT_XSHUT, OUTPUT);
-
-    digitalWrite(LEFT_XSHUT, LOW);
-    digitalWrite(RIGHT_XSHUT, LOW);
-    delay(10);
-
-    digitalWrite(LEFT_XSHUT, HIGH);
-    delay(10);
-    leftSensor.setTimeout(100);
-    if (!leftSensor.init()) {
-        Serial.println("left init: FAILED");
-        return false;
-    }
-    leftSensor.setAddress(0x30);
-    Serial.println("left address: 0x30");
-
-    digitalWrite(RIGHT_XSHUT, HIGH);
-    delay(10);
-    rightSensor.setTimeout(100);
-    if (!rightSensor.init()) {
-        Serial.println("right init: FAILED");
-        return false;
-    }
-    rightSensor.setAddress(0x31);
-    Serial.println("right address: 0x31");
-
-    return true;
-}
-```
-
-Then verify the result on the real hardware:
+A useful follow-up includes the exact failing step:
 
 ```text
-left address: 0x30
-right address: 0x31
-left_mm=184 right_mm=207
-```
+I am running 04_tof_2 unchanged with VL53L0X by Pololu.
+SDA=GPIO6, SCL=GPIO7, left XSHUT=GPIO18, front XSHUT=GPIO19.
+Only left and front ToF sensors are powered; both use 3V3 and common GND.
+Left at 0x30 passes, but front fails when GPIO19 goes high.
+The full startup output and a checked wiring table are below.
 
-A good follow-up prompt is specific and evidence based:
-
-```text
-The left sensor is now visible at 0x30, but the right sensor times out
-when GPIO 17 goes high. The wiring table and serial output are below.
-
-Check only the initialisation sequence.
-Do not change motor control or maze logic.
-Tell me which observation would distinguish wiring, pin selection and
-library API problems.
+Read the sketch's header comments first. Check only the initialization
+sequence and wiring evidence. Do not change the pin map, addresses,
+motor control or maze logic. Suggest one observation that distinguishes
+a wiring problem from a library or initialization problem.
 ```
 
 ## 4. Recognise common agent failure modes
