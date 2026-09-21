@@ -29,10 +29,6 @@
 .hardware-guide .hardware-table tr:last-child td { border-bottom: 0; }
 .hardware-guide .hardware-table td:first-child { color: var(--color-ink); }
 .hardware-guide pre { padding-top: 44px; }
-.hardware-guide details { margin-block: 24px; border: 1px solid var(--color-line); border-radius: 8px; padding: 16px; min-width: 0; }
-.hardware-guide details summary { cursor: pointer; font-weight: 600; }
-.hardware-guide details pre { margin-top: 16px; }
-.hardware-guide pre { max-width: 100%; overflow-x: auto; }
 .hardware-guide li { margin-bottom: 10px; padding-left: 3px; }
 .hardware-reading .pager a { padding: 12px 0; }
 .hardware-viewer { width: min(1440px, 96vw); max-width: 96vw; max-height: 92vh; padding: 20px; border: 1px solid var(--color-line); border-radius: 14px; background: var(--color-card); color: var(--color-ink); }
@@ -46,7 +42,7 @@
 .hardware-directory strong { font-size: 21px; }
 .hardware-directory .guide-description { color: var(--color-ink-soft); font-size: 16px; }
 .hardware-directory a:hover strong { color: var(--color-mint-deep); text-decoration: underline; text-underline-offset: 4px; }
-.resource-menu :is(#hardware, #debug) { scroll-margin-top: 85px; }
+.resource-menu #hardware { scroll-margin-top: 85px; }
 .resource-menu #hardware .resource-name { text-transform: none; }
 .hardware-start { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin: 0 24px 24px 72px; padding-block: 16px; border-block: 1px solid var(--hub-line); }
 .hardware-start p { flex: 1 1 260px; margin: 0; color: var(--hub-paper-dim); font-size: 15px; }

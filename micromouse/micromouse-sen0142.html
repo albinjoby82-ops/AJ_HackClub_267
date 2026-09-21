@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>H3 - MPU-6050 / GY-521 IMU — Dublin Micromouse Open 2026</title>
-<meta name="description" content="The debug kit tests an MPU-6050 / GY-521 with four wires. Follow the supplied sketch’s wiring and check heading as you rotate the board.">
+<title>H3 DFRobot SEN0142 IMU — Dublin Micromouse Open 2026</title>
+<meta name="description" content="Wiring, orientation and calibration for the SEN0142 IMU.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -43,141 +43,51 @@
                 H3
             </p>
             <span class="mm-eyebrow">H3 &#183; Motion sensor</span>
-            <h1 class="mm-guide-title">MPU-6050 / GY-521 IMU</h1>
-            <p class="mm-guide-lede">The debug kit tests an <strong>MPU-6050 / GY-521</strong> with four wires. Follow the supplied sketch’s wiring and check heading as you rotate the board.</p>
+            <h1 class="mm-guide-title">DFRobot SEN0142 IMU</h1>
+            <p class="mm-guide-lede">
+                A 6-axis accelerometer and gyro. On the mouse its job is turn angle: the gyro tells you how far you have rotated.
+            </p>
         </div>
     </header>
 
     <div class="mm-guide-body mm-wrap">
 
         <div class="mm-panels">
-<p><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">Open the debug checks and full sketches →</a></p>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">01</span><span class="mm-panel-name">Wiring overview</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><figure class="mm-figure"><img src="../content/docs/assets/images/micromouse-imu-wiring.svg" alt="Four-wire MPU-6050 wiring, with XDA XCL AD0 and INT unconnected"></figure>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">02</span><span class="mm-panel-name">Exact wiring</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p>For <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/02_imu.md">02_imu</a>, start with the IMU alone on the I2C pins and power the controller over USB.</p>
-<div class="mm-table-wrap"><table class="mm-table">
-<thead>
-<tr>
-<th>MPU-6050 / GY-521 pin</th>
-<th>ESP32-C6 connection</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>VCC</td>
-<td>3V3</td>
-</tr>
-<tr>
-<td>GND</td>
-<td>GND</td>
-</tr>
-<tr>
-<td>SDA</td>
-<td>GPIO6</td>
-</tr>
-<tr>
-<td>SCL</td>
-<td>GPIO7</td>
-</tr>
-<tr>
-<td>XDA</td>
-<td>leave unconnected</td>
-</tr>
-<tr>
-<td>XCL</td>
-<td>leave unconnected</td>
-</tr>
-<tr>
-<td>AD0</td>
-<td>leave unconnected</td>
-</tr>
-<tr>
-<td>INT</td>
-<td>leave unconnected</td>
-</tr>
-</tbody></table></div>
-<p>Use SDA/SCL, not XDA/XCL. Leave <strong>all four unused pins unconnected</strong>. The intended address is <code>0x68</code>.</p>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">03</span><span class="mm-panel-name">Run the isolated test</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p>Use Arduino-ESP32 <strong>3.0.0 or newer</strong>, board <strong>ESP32C6 Dev Module</strong>, <strong>USB CDC On Boot: Enabled</strong>, and Serial Monitor at <strong>115200 baud</strong>. <strong>No additional IMU library is needed</strong>; the sketch uses <code>Wire</code> directly.</p>
-<p>Upload <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/02_imu.md">02_imu</a>, open Serial Monitor and press RESET. Keep the board still for the first second during calibration. Typical startup:</p>
-<pre class="mm-code"><code class="language-text">STEP 2: IMU test
-idle SDA=1 SCL=1 (both should be 1)
-Scan SDA=GPIO6 SCL=GPIO7: 0x68
-PASS: MPU at 0x68, chip ID 0x68 (genuine)
-Calibrating - keep STILL...
-</code></pre>
-<p>When still, <code>gyroZ</code> should be near zero. A quarter turn changes heading by about +90 degrees one way and -90 the other. When stopped, gyroZ returns near zero while heading remains near the angle reached. A slow creep while still is normal: heading is a relative turn estimate.</p>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">04</span><span class="mm-panel-name">Troubleshooting</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><div class="mm-table-wrap"><table class="mm-table">
-<thead>
-<tr>
-<th>Output or symptom</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>chip ID 0x70 (clone - fine)</code></td>
-<td>accepted by the sketch; continue the movement test</td>
-</tr>
-<tr>
-<td><code>SDA and SCL are SWAPPED</code></td>
-<td>power down and restore SDA → GPIO6, SCL → GPIO7</td>
-</tr>
-<tr>
-<td>MPU at <code>0x69</code> because AD0 is HIGH</td>
-<td>disconnect AD0</td>
-</tr>
-<tr>
-<td><code>idle SDA=0 SCL=0</code></td>
-<td>check missing power, loose wires, shorts to GND and pull-ups</td>
-</tr>
-<tr>
-<td><code>FAIL: no MPU found either way round.</code></td>
-<td>check VCC → 3V3, GND, SDA/SCL rather than XDA/XCL, and INT unconnected</td>
-</tr>
-<tr>
-<td>Heading changes rapidly while still</td>
-<td>reset and keep the board still during calibration</td>
-</tr>
-<tr>
-<td>Blank Serial</td>
-<td>enable USB CDC On Boot, re-upload, select 115200 baud and press RESET</td>
-</tr>
-</tbody></table></div>
-<p>The isolated sketch can find swapped SDA/SCL or address <code>0x69</code> and report what to fix. Correct the wiring before combining sensors. <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/i2c_scan.md">i2c_scan</a> should show <code>0x68</code> for the normally wired IMU.</p>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">05</span><span class="mm-panel-name">Combined sensors</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p>The IMU shares 3V3, GND, SDA6 and SCL7 with the ToF boards; XDA, XCL, AD0 and INT stay unconnected. <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/06_tof_3_imu.md">06_tof_3_imu</a> should report left <code>0x30</code>, front <code>0x31</code>, right <code>0x29</code> and IMU <code>0x68</code> all PASS. Keep the robot still for initial calibration.</p>
-<p>The combined output includes L/F/R distances, heading and gyroZ. Wave a hand before each sensor and rotate the robot. This step needs <strong>VL53L0X by Pololu</strong> for ToF only; no IMU library. If a device passed alone and now fails, disconnect the last addition and repeat the earlier test.</p>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">06</span><span class="mm-panel-name">Visualizer</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p>Follow <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/imu_visualizer.md">imu_visualizer</a> with the same wiring:</p>
-<ol class="mm-list">
-<li>Upload <code>imu_visualizer/imu_visualizer.ino</code> with USB CDC enabled.</li>
-<li>Close Arduino Serial Monitor so the browser can use the USB port.</li>
-<li>Open <code>imu_visualizer/index.html</code> in Chrome or Edge.</li>
-<li>Click <strong>Connect board</strong> and select the ESP32 COM port.</li>
-<li>Keep the board still for one second, then rotate and tilt it.</li>
-</ol>
-<p>The sketch sends 25 <code>IMU,</code> records per second: heading, turn rate, pitch and roll. Lines beginning with <code>#</code> are status messages. The page can send <code>z</code> to zero heading or <code>c</code> to recalibrate; remain still during recalibration. If connection fails, check that Serial Monitor has released the port.</p>
-<p>Return to the <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">debug index</a>.</p>
-</div>
-</details>
-</div>
+
+            <details class="mm-guide-panel" open>
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">What it gives you</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row">Sensor</th><td>MPU-6050 (3-axis accelerometer + 3-axis gyro)</td></tr><tr><th scope="row">Interface</th><td>I2C, address <span class="mono">0x68</span></td></tr><tr><th scope="row">Supply</th><td>3&#8211;5 V. Use the ESP32 <span class="mono">3V3</span> rail.</td></tr></tbody></table></div><div class="mm-callout is-signal"><p><strong>The gyro drifts and there is no compass.</strong> Use it for heading over a run, and correct it with encoders and wall sensors. See <a href="micromouse-build.html">S4 Motion and hardware</a>.</p></div>
+                </div>
+            </details>
+
+            <details class="mm-guide-panel" open>
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">Wiring</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">VIN</span> / <span class="mono">GND</span></th><td>ESP32 <span class="mono">3V3</span> / <span class="mono">GND</span></td></tr><tr><th scope="row"><span class="mono">SDA</span> / <span class="mono">SCL</span></th><td>The shared I2C bus, alongside the distance sensors</td></tr><tr><th scope="row"><span class="mono">INT</span></th><td>Optional data-ready input</td></tr><tr><th scope="row"><span class="mono">AUX_DA</span>, <span class="mono">AUX_CL</span></th><td>Leave unconnected</td></tr></tbody></table></div><figure class="mm-figure"><img src="https://dfimg.dfrobot.com/99f64da1591d41a88712e46e2feb7a6b/wikien/e14c576930ba8daea73f5c38214275a5_0x0.png.webp" alt="Official DFRobot SEN0142 Arduino I2C wiring example" loading="lazy"><figcaption>Official wiring. Signal names match; the GPIO numbers are yours.</figcaption></figure>
+                </div>
+            </details>
+
+            <details class="mm-guide-panel" open>
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Orientation and calibration</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ol class="mm-list"><li>Fix the board flat and note which edge points forward.</li><li>Run an I2C scan and look for <span class="mono">0x68</span>.</li><li>Keep the mouse completely still at power-up and average the gyro readings for a few seconds. That is your bias.</li><li>Rotate one axis at a time and confirm a left turn gives the sign your code expects.</li></ol><div class="mm-callout"><p>A rotated board or an uncorrected bias gives the wrong turn direction or a heading that walks off. Never calibrate while the bench is being nudged.</p></div>
+                </div>
+            </details>
+
+        </div>
 
         <nav class="mm-pager" aria-label="Guide pages">
             <a href="micromouse-dri0044.html"><small>&#8592; Previous</small>H2 DRI0044 motor driver</a>

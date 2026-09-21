@@ -1,2 +1,0 @@
-# Preserve supplied downloads byte-for-byte, including their original line endings.
-downloads/micromouse-debug-kit/** -text

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>H6 - N20 Motors and Motor A Encoder — Dublin Micromouse Open 2026</title>
-<meta name="description" content="The supplied tests drive the left motor through Motor A and the right motor through Motor B. The separate encoder test checks Motor A on GPIO21 and GPIO22.">
+<title>H6 2x GA12-N20 Micro Gear Motors — Dublin Micromouse Open 2026</title>
+<meta name="description" content="Wiring, encoder basics and distance calibration for the GA12-N20 motors.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -43,135 +43,54 @@
                 H6
             </p>
             <span class="mm-eyebrow">H6 &#183; Motors and encoders</span>
-            <h1 class="mm-guide-title">N20 Motors and Motor A Encoder</h1>
-            <p class="mm-guide-lede">The supplied tests drive the left motor through Motor A and the right motor through Motor B. The separate encoder test checks Motor A on GPIO21 and GPIO22.</p>
+            <h1 class="mm-guide-title">2x GA12-N20 Micro Gear Motors</h1>
+            <p class="mm-guide-lede">
+                One 6 V gearmotor per wheel, about 500 rpm no-load. The Hall encoder's A and B signals measure wheel movement and direction.
+            </p>
         </div>
     </header>
 
     <div class="mm-guide-body mm-wrap">
 
         <div class="mm-panels">
-<p><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">Open the debug checks and full sketches →</a></p>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">01</span><span class="mm-panel-name">Wiring overview</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><figure class="mm-figure"><img src="../content/docs/assets/images/micromouse-motor-wiring.svg" alt="Motor control and Motor A encoder wiring"></figure>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">02</span><span class="mm-panel-name">Motor connections</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><div class="mm-table-wrap"><table class="mm-table">
-<thead>
-<tr>
-<th>Connection</th>
-<th>Event wiring</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Left motor power wires M1/M2</td>
-<td>Driver Motor A outputs</td>
-</tr>
-<tr>
-<td>Right motor power wires</td>
-<td>Driver Motor B outputs</td>
-</tr>
-<tr>
-<td>Driver DIR1 / PWM1</td>
-<td>GPIO0 / GPIO2</td>
-</tr>
-<tr>
-<td>Driver DIR2 / PWM2</td>
-<td>GPIO3 / GPIO10</td>
-</tr>
-<tr>
-<td>Driver VM</td>
-<td>9 V motor battery positive</td>
-</tr>
-<tr>
-<td>Battery negative and driver GND</td>
-<td>ESP32 GND, all joined</td>
-</tr>
-<tr>
-<td>Driver VCC, only if present</td>
-<td>ESP32 3V3</td>
-</tr>
-</tbody></table></div>
-<p>Use USB to power the controller. Raise the wheels: <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/07_motor_1.md">step 7</a> and <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/08_motors_2.md">step 8</a> start automatically. The sketches run at PWM 140 and cap duty at <strong>170/255</strong> for the 9 V supply and 6 V N20 motors. Keep this limit; PWM is not a regulated 6 V supply. Switch off before swapping a motor’s two power wires to correct its direction.</p>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">03</span><span class="mm-panel-name">Motor A encoder wiring</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><div class="mm-table-wrap"><table class="mm-table">
-<thead>
-<tr>
-<th>Encoder pin</th>
-<th>ESP32-C6</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>C1</td>
-<td>GPIO21</td>
-</tr>
-<tr>
-<td>C2</td>
-<td>GPIO22</td>
-</tr>
-<tr>
-<td>VCC</td>
-<td>3V3, never the motor battery</td>
-</tr>
-<tr>
-<td>GND</td>
-<td>GND</td>
-</tr>
-</tbody></table></div>
-<p>Use the printed pin labels; the source does not define wire colours or physical connector order. Encoder wires are not required for steps 7 and 8. The supplied encoder sketch tests <strong>Motor A only</strong>; it does not assign Motor B encoder pins.</p>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">04</span><span class="mm-panel-name">Run the encoder test</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p>Keep the step 7 wiring and upload <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/encoder_test.md">encoder_test</a>. Raise the wheel before uploading: the motor starts automatically after its startup pause at PWM 85.</p>
-<p>Use 115200 baud and No Line Ending. Green means running; red means stopped. The sketch prints a count and ticks/s once per second. Send <strong>s</strong> to stop, <strong>g</strong> to go, or <strong>z</strong> to zero the count.</p>
-<div class="mm-table-wrap"><table class="mm-table">
-<thead>
-<tr>
-<th>Result</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Counts increase; ticks/s roughly steady while spinning</td>
-<td>Encoder is reporting movement</td>
-</tr>
-<tr>
-<td>Count settles; ticks/s becomes zero after s</td>
-<td>Motor stopped</td>
-</tr>
-<tr>
-<td>Zero while spinning</td>
-<td>Check encoder 3V3/GND and C1 connection</td>
-</tr>
-<tr>
-<td>Negative ticks/s</td>
-<td>Power off and swap C1/C2</td>
-</tr>
-<tr>
-<td>Count jumps while stopped</td>
-<td>Check noise from nearby motor wires</td>
-</tr>
-</tbody></table></div>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">05</span><span class="mm-panel-name">Other motor checks</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p>Use <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/motor_sweep.md">motor_sweep</a> if a motor needs more duty to start. Check a sagging battery or jammed wheel if it hums without turning.</p>
-<p><strong>Unplug the motor before <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/pin_test.md">pin_test</a>.</strong> It drives PWM fully HIGH and would apply the whole 9 V to the 6 V motor.</p>
-<p><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">Full debug sequence</a> · <a href="micromouse-dri0044.html">Driver wiring and LED sequences</a></p>
-</div>
-</details>
-</div>
+
+            <details class="mm-guide-panel" open>
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">Wiring</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<figure class="mm-figure"><img src="../assets/micromouse/diagrams/GA12-N20-dual-encoder-wiring.svg" alt="Two GA12-N20 motors connected to a DRI0044 motor driver, with both Hall encoders connected to an ESP32-C6" loading="lazy"><figcaption>Motor power on the driver side, encoder signals on the 3.3 V logic side.</figcaption></figure><div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">M+</span>, <span class="mono">M-</span></th><td>One DRI0044 motor output pair</td></tr><tr><th scope="row">Encoder <span class="mono">VCC</span></th><td><span class="mono">3V3</span>, only if the encoder supports it</td></tr><tr><th scope="row">Encoder <span class="mono">GND</span></th><td>Common ground</td></tr><tr><th scope="row">Encoder <span class="mono">A</span>, <span class="mono">B</span></th><td>Two ESP32 GPIO inputs per motor</td></tr></tbody></table></div><p style="margin-top:16px">Wire colours and connector order vary, so check the label or seller pinout for your exact motor.</p><div class="mm-callout is-signal"><p><strong>Two voltage traps.</strong> A full 2S battery is 8.4&#160;V, above the motor's 6&#160;V rating, so use a suitable motor supply or an approved limit. And an encoder signal above 3.6&#160;V must never reach a GPIO, so power it from 3.3&#160;V or level-shift.</p></div>
+                </div>
+            </details>
+
+            <details class="mm-guide-panel" open>
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">What A and B tell you</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ul class="mm-list"><li><strong>Pulse count</strong> is distance travelled.</li><li><strong>Pulse frequency</strong> is wheel speed.</li><li><strong>Which channel leads</strong> is direction.</li></ul><p>Do not assume a ticks-per-revolution figure. Gear ratio, encoder version and counting one, two or four edges all change it. Measure it.</p>
+                </div>
+            </details>
+
+            <details class="mm-guide-panel" open>
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Test and calibrate</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ol class="mm-list"><li>Wheels off the table, motor power off, encoder powered from the verified logic voltage.</li><li>Turn one wheel by hand and confirm both channels count.</li><li>Run that motor slowly through the <a href="micromouse-dri0044.html">DRI0044</a> and check the count direction.</li><li>Repeat for the other wheel and record the measured ticks per wheel revolution.</li></ol><pre class="mm-code"><code>distance per tick = (pi x wheel diameter) / measured ticks per revolution</code></pre><p style="margin-top:16px">If one wheel counts the wrong way, flip its sign in software. This gives you the 180&#160;mm cell distance you need in <a href="micromouse-playbook.html">S5</a>.</p>
+                </div>
+            </details>
+
+        </div>
 
         <nav class="mm-pager" aria-label="Guide pages">
-            <a href="micromouse-buck.html"><small>&#8592; Previous</small>H5 Battery and power</a>
+            <a href="micromouse-buck.html"><small>&#8592; Previous</small>H5 Buck converter</a>
             <a class="is-next" href="../micromouse-resources.html"><small>Back to &#8594;</small>Resource Hub</a>
         </nav>
 

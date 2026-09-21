@@ -7,91 +7,80 @@ nav_order: 4
 
 # H4 - 3x VL53L0X Distance Sensors
 
-The debug kit adds left, front and right sensors one at a time. They share power and I2C; each needs its own XSHUT wire.
+Use three VL53L0X Time-of-Flight sensors to measure the **left wall, front wall and right wall**. They share one I2C bus.
 
-![Three VL53L0X sensors sharing SDA6 and SCL7, with XSHUT on GPIO18 GPIO19 GPIO20](../../assets/images/VL53L0X-3-sensor-wiring.svg)
+<div class="hardware-media-grid">
+  <figure>
+    <img src="https://funduinoshop.com/media/image/a0/11/4e/GY-530-VL53-LOX-time-of-Flight-ToF-Sensor-top_600x600%402x.png" alt="Six-pin GY-530 VL53L0X Time-of-Flight distance sensor board">
+    <figcaption>Six-pin GY-530 VL53L0X board</figcaption>
+  </figure>
+  <figure>
+    <img src="../../assets/images/VL53L0X-3-sensor-wiring.svg" alt="Three VL53L0X sensors sharing I2C with separate XSHUT control lines">
+    <figcaption>Left, front and right sensor wiring</figcaption>
+  </figure>
+</div>
 
-## Exact wiring
+<p class="hardware-alert">⚠ All VL53L0X sensors start at the same I2C address. Connect every XSHUT pin to a different ESP32-C6 GPIO and assign new addresses at every boot, or the three boards will conflict.</p>
 
-Power the controller over USB. Connect every fitted ToF board as follows:
+## Wire the three sensors
 
-| Sensor pin | ESP32-C6 |
+| GY-530 pin | ESP32-C6 connection |
 |---|---|
-| VIN | 3V3 |
-| GND | GND |
-| SDA | GPIO6, shared |
-| SCL | GPIO7, shared |
-| GPIO1, if exposed | unused by these sketches; leave unconnected |
+| `VIN` | `3V3` shared by all three boards |
+| `GND` | common `GND` |
+| `SDA` | one chosen I2C SDA GPIO, shared |
+| `SCL` | one chosen I2C SCL GPIO, shared |
+| left `XSHUT` | one dedicated output GPIO |
+| front `XSHUT` | a second dedicated output GPIO |
+| right `XSHUT` | a third dedicated output GPIO |
+| `GPIO1` | leave unconnected for the first test |
 
-| Position | XSHUT | Address after initialization |
-|---|---|---|
-| Left (L) | GPIO18 | `0x30` |
-| Front (F) | GPIO19 | `0x31` |
-| Right (R) | GPIO20 | `0x29` |
+Choose the actual SDA, SCL and three XSHUT GPIO numbers from the team's approved [ESP32-C6 pin map](#/docs/Micromouse2026/Hardware/ESP32C6.md).
 
-Use boards with an accessible XSHUT pin. **Only connect the sensors listed in the current step.** An extra powered sensor with XSHUT unconnected wakes at `0x29` and can break the others. The IMU may stay connected: its `0x68` address does not clash.
+Before soldering, check that your GY-530 boards expose `XSHUT`. Some boards sold under similar names only bring out four pins and are not suitable for this wiring plan without modification.
 
-## Startup addresses
+## Assign addresses at boot
 
-All ToFs wake at `0x29`. The sketches hold the connected sensors in shutdown and enable them in order:
-
-1. Hold their XSHUT pins LOW.
-2. Enable left on GPIO18, initialize it and assign `0x30`.
-3. Enable front on GPIO19, initialize it and assign `0x31`.
-4. Enable right on GPIO20 and keep it at **`0x29`**.
-
-Initialization repeats at startup. The final mapping is **L 0x30, F 0x31, R 0x29**.
-
-## Library and test sequence
-
-Install **VL53L0X by Pololu**, not `Adafruit_VL53L0X`. Use Arduino-ESP32 **3.0.0 or newer**, board **ESP32C6 Dev Module**, **USB CDC On Boot: Enabled**, and Serial Monitor at **115200 baud**. Open the monitor and press RESET after upload to see startup results.
-
-| Sketch | Connect | Expected startup |
-|---|---|---|
-| [03_tof_1](#/docs/Micromouse2026/Debug/03_tof_1.md) | left only | L PASS; `1/1 sensors OK` |
-| [04_tof_2](#/docs/Micromouse2026/Debug/04_tof_2.md) | left and front | L/F PASS; `2/2 sensors OK` |
-| [05_tof_3](#/docs/Micromouse2026/Debug/05_tof_3.md) | left, front and right | L/F/R PASS; `3/3 sensors OK` |
-| [06_tof_3_imu](#/docs/Micromouse2026/Debug/06_tof_3_imu.md) | all three plus IMU | all ToFs and IMU at `0x68` PASS |
-
-Step 5 should begin:
+The normal 7-bit address is `0x29`. The new addresses are temporary and disappear after reset or power-off.
 
 ```text
-STEP 5: three ToF sensors
-  ToF L  XSHUT=GPIO18  addr=0x30  PASS
-  ToF F  XSHUT=GPIO19  addr=0x31  PASS
-  ToF R  XSHUT=GPIO20  addr=0x29  PASS
-3/3 sensors OK
+1. XSHUT left, front, right = LOW
+2. Enable left  -> initialise at 0x29 -> change to 0x30
+3. Enable front -> initialise at 0x29 -> change to 0x31
+4. Enable right -> initialise at 0x29 -> change to 0x32
+5. Confirm the I2C scan shows 0x30, 0x31 and 0x32
 ```
 
-Wave a hand before each sensor individually: only that column should change. `L:142 mm` is about 14 cm; moving closer reduces the value. **`---` means an out-of-range reading or a read timeout; `FAIL` means initialization failed.** Nothing in range is normal. If `---` persists with a nearby wall, check wiring and rerun the previous step.
-
-In step 6, keep the robot still for the first second for gyro calibration. Distances should follow your hand and heading should change about 90 degrees per quarter turn. The IMU needs no additional library.
-
-## Troubleshooting
-
-| Symptom | Check |
-|---|---|
-| FAIL at startup and in every reading | VIN → 3V3, GND, SDA6, SCL7 and that sensor's XSHUT |
-| Covering left changes F | XSHUT wires are swapped; restore L18/F19/R20 |
-| Adding a sensor breaks a working one | remove powered sensors not listed in the step; check independent XSHUT wires |
-| `---` with nothing in front | normal; try a nearby hand |
-| Passed alone but fails in step 6 | disconnect the last addition and repeat the earlier passing test |
-| Compile error involving the ToF API | confirm the library is VL53L0X by Pololu |
-
-## What the scanner proves
-
-[i2c_scan](#/docs/Micromouse2026/Debug/i2c_scan.md) uses SDA6/SCL7 and drives XSHUT18/19/20 HIGH together. It does **not** assign separate ToF addresses. With freshly powered sensors and the IMU connected, expect:
+Keep the direction and address mapping in one place in the firmware:
 
 ```text
-idle SDA=1 SCL=1 (both should be 1)
-Scanning...
-  found 0x29
-  found 0x68
-2 device(s)
+LEFT  = 0x30
+FRONT = 0x31
+RIGHT = 0x32
 ```
 
-The scan repeats every three seconds. All three ToFs can appear as one `0x29` response here; that does not prove each works independently. Use steps 3–5 for that. Power-cycle sensors if they retained addresses from an earlier sketch and you need to reproduce startup addresses.
+## Test it before mounting
 
-If idle lines are LOW, check loose wires, missing power, shorts to GND and pull-ups. If both idle HIGH but no devices respond, check swapped SDA/SCL. If one kind of device is missing, check its four power and I2C wires.
+1. Test one board first and confirm it reports distance in millimetres.
+2. Add the other boards and check the three addresses after every restart.
+3. Point each sensor at the same flat wall and compare the readings.
+4. Mount them so the robot body, wheels and loose wires do not enter the sensors' view.
+5. Read sensors in a fixed order and reject timeout or out-of-range values.
 
-See the [controller pin map](#/docs/Micromouse2026/Hardware/ESP32C6.md) and [debug index](#/docs/Micromouse2026/Debug/index.md).
+{: .warning}
+> Do not assume the advertised 2 m maximum is the useful maze range. Dark, angled or very close surfaces can change the reading, so test with the real maze walls and record a safe control range.
+
+## Watch: using multiple VL53L0X sensors
+
+<div class="video-frame">
+  <iframe src="https://www.youtube.com/embed/0glBk917HPg" title="Using two or more VL53L0X Time-of-Flight sensors" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+
+The video uses an Arduino, but the important hardware method is the same: shared I2C lines, separate XSHUT lines and one new address per sensor. Use your ESP32-C6 pin map rather than copying its Arduino GPIO numbers.
+
+## References
+
+- [ST VL53L0X product page](https://www.st.com/en/imaging-and-photonics-solutions/vl53l0x.html)
+- [ST VL53L0X datasheet](https://www.st.com/resource/en/datasheet/vl53l0x.pdf)
+- [ST AN4846: Using multiple VL53L0X in a single design](https://www.st.com/resource/en/application_note/dm00280486-using-multiple-vl53l0x-in-a-single-design-stmicroelectronics.pdf)
+- [Pololu VL53L0X Arduino library](https://github.com/pololu/vl53l0x-arduino)

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>H4 - 3x VL53L0X Distance Sensors — Dublin Micromouse Open 2026</title>
-<meta name="description" content="The debug kit adds left, front and right sensors one at a time. They share power and I2C; each needs its own XSHUT wire.">
+<title>H4 3x VL53L0X Distance Sensors — Dublin Micromouse Open 2026</title>
+<meta name="description" content="Wiring, unique addresses and testing for three VL53L0X wall sensors.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -44,187 +44,58 @@
             </p>
             <span class="mm-eyebrow">H4 &#183; Distance sensors</span>
             <h1 class="mm-guide-title">3x VL53L0X Distance Sensors</h1>
-            <p class="mm-guide-lede">The debug kit adds left, front and right sensors one at a time. They share power and I2C; each needs its own XSHUT wire.</p>
+            <p class="mm-guide-lede">
+                Three time-of-flight sensors read the left wall, front wall and right wall over one shared I2C bus.
+            </p>
         </div>
     </header>
 
     <div class="mm-guide-body mm-wrap">
 
         <div class="mm-panels">
-<p><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">Open the debug checks and full sketches →</a></p>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">01</span><span class="mm-panel-name">Wiring overview</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><figure class="mm-figure"><img src="../content/docs/assets/images/VL53L0X-3-sensor-wiring.svg" alt="Three VL53L0X sensors sharing SDA6 and SCL7, with XSHUT on GPIO18 GPIO19 GPIO20"></figure>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">02</span><span class="mm-panel-name">Exact wiring</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p>Power the controller over USB. Connect every fitted ToF board as follows:</p>
-<div class="mm-table-wrap"><table class="mm-table">
-<thead>
-<tr>
-<th>Sensor pin</th>
-<th>ESP32-C6</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>VIN</td>
-<td>3V3</td>
-</tr>
-<tr>
-<td>GND</td>
-<td>GND</td>
-</tr>
-<tr>
-<td>SDA</td>
-<td>GPIO6, shared</td>
-</tr>
-<tr>
-<td>SCL</td>
-<td>GPIO7, shared</td>
-</tr>
-<tr>
-<td>GPIO1, if exposed</td>
-<td>unused by these sketches; leave unconnected</td>
-</tr>
-</tbody></table></div>
-<div class="mm-table-wrap"><table class="mm-table">
-<thead>
-<tr>
-<th>Position</th>
-<th>XSHUT</th>
-<th>Address after initialization</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Left (L)</td>
-<td>GPIO18</td>
-<td><code>0x30</code></td>
-</tr>
-<tr>
-<td>Front (F)</td>
-<td>GPIO19</td>
-<td><code>0x31</code></td>
-</tr>
-<tr>
-<td>Right (R)</td>
-<td>GPIO20</td>
-<td><code>0x29</code></td>
-</tr>
-</tbody></table></div>
-<p>Use boards with an accessible XSHUT pin. <strong>Only connect the sensors listed in the current step.</strong> An extra powered sensor with XSHUT unconnected wakes at <code>0x29</code> and can break the others. The IMU may stay connected: its <code>0x68</code> address does not clash.</p>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">03</span><span class="mm-panel-name">Startup addresses</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p>All ToFs wake at <code>0x29</code>. The sketches hold the connected sensors in shutdown and enable them in order:</p>
-<ol class="mm-list">
-<li>Hold their XSHUT pins LOW.</li>
-<li>Enable left on GPIO18, initialize it and assign <code>0x30</code>.</li>
-<li>Enable front on GPIO19, initialize it and assign <code>0x31</code>.</li>
-<li>Enable right on GPIO20 and keep it at <strong><code>0x29</code></strong>.</li>
-</ol>
-<p>Initialization repeats at startup. The final mapping is <strong>L 0x30, F 0x31, R 0x29</strong>.</p>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">04</span><span class="mm-panel-name">Library and test sequence</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p>Install <strong>VL53L0X by Pololu</strong>, not <code>Adafruit_VL53L0X</code>. Use Arduino-ESP32 <strong>3.0.0 or newer</strong>, board <strong>ESP32C6 Dev Module</strong>, <strong>USB CDC On Boot: Enabled</strong>, and Serial Monitor at <strong>115200 baud</strong>. Open the monitor and press RESET after upload to see startup results.</p>
-<div class="mm-table-wrap"><table class="mm-table">
-<thead>
-<tr>
-<th>Sketch</th>
-<th>Connect</th>
-<th>Expected startup</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/03_tof_1.md">03_tof_1</a></td>
-<td>left only</td>
-<td>L PASS; <code>1/1 sensors OK</code></td>
-</tr>
-<tr>
-<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/04_tof_2.md">04_tof_2</a></td>
-<td>left and front</td>
-<td>L/F PASS; <code>2/2 sensors OK</code></td>
-</tr>
-<tr>
-<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/05_tof_3.md">05_tof_3</a></td>
-<td>left, front and right</td>
-<td>L/F/R PASS; <code>3/3 sensors OK</code></td>
-</tr>
-<tr>
-<td><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/06_tof_3_imu.md">06_tof_3_imu</a></td>
-<td>all three plus IMU</td>
-<td>all ToFs and IMU at <code>0x68</code> PASS</td>
-</tr>
-</tbody></table></div>
-<p>Step 5 should begin:</p>
-<pre class="mm-code"><code class="language-text">STEP 5: three ToF sensors
-  ToF L  XSHUT=GPIO18  addr=0x30  PASS
-  ToF F  XSHUT=GPIO19  addr=0x31  PASS
-  ToF R  XSHUT=GPIO20  addr=0x29  PASS
-3/3 sensors OK
-</code></pre>
-<p>Wave a hand before each sensor individually: only that column should change. <code>L:142 mm</code> is about 14 cm; moving closer reduces the value. <strong><code>---</code> means an out-of-range reading or a read timeout; <code>FAIL</code> means initialization failed.</strong> Nothing in range is normal. If <code>---</code> persists with a nearby wall, check wiring and rerun the previous step.</p>
-<p>In step 6, keep the robot still for the first second for gyro calibration. Distances should follow your hand and heading should change about 90 degrees per quarter turn. The IMU needs no additional library.</p>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">05</span><span class="mm-panel-name">Troubleshooting</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><div class="mm-table-wrap"><table class="mm-table">
-<thead>
-<tr>
-<th>Symptom</th>
-<th>Check</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>FAIL at startup and in every reading</td>
-<td>VIN → 3V3, GND, SDA6, SCL7 and that sensor&#39;s XSHUT</td>
-</tr>
-<tr>
-<td>Covering left changes F</td>
-<td>XSHUT wires are swapped; restore L18/F19/R20</td>
-</tr>
-<tr>
-<td>Adding a sensor breaks a working one</td>
-<td>remove powered sensors not listed in the step; check independent XSHUT wires</td>
-</tr>
-<tr>
-<td><code>---</code> with nothing in front</td>
-<td>normal; try a nearby hand</td>
-</tr>
-<tr>
-<td>Passed alone but fails in step 6</td>
-<td>disconnect the last addition and repeat the earlier passing test</td>
-</tr>
-<tr>
-<td>Compile error involving the ToF API</td>
-<td>confirm the library is VL53L0X by Pololu</td>
-</tr>
-</tbody></table></div>
-</div>
-</details>
-<details class="mm-guide-panel" open>
-<summary><span class="mm-panel-num">06</span><span class="mm-panel-name">What the scanner proves</span><span class="mm-panel-toggle" aria-hidden="true"></span></summary>
-<div class="mm-panel-body"><p><a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/i2c_scan.md">i2c_scan</a> uses SDA6/SCL7 and drives XSHUT18/19/20 HIGH together. It does <strong>not</strong> assign separate ToF addresses. With freshly powered sensors and the IMU connected, expect:</p>
-<pre class="mm-code"><code class="language-text">idle SDA=1 SCL=1 (both should be 1)
-Scanning...
-  found 0x29
-  found 0x68
-2 device(s)
-</code></pre>
-<p>The scan repeats every three seconds. All three ToFs can appear as one <code>0x29</code> response here; that does not prove each works independently. Use steps 3–5 for that. Power-cycle sensors if they retained addresses from an earlier sketch and you need to reproduce startup addresses.</p>
-<p>If idle lines are LOW, check loose wires, missing power, shorts to GND and pull-ups. If both idle HIGH but no devices respond, check swapped SDA/SCL. If one kind of device is missing, check its four power and I2C wires.</p>
-<p>See the <a href="micromouse-esp32c6.html">controller pin map</a> and <a href="../learn.html?scope=micromouse#/docs/Micromouse2026/Debug/index.md">debug index</a>.</p>
-</div>
-</details>
-</div>
+
+            <details class="mm-guide-panel" open>
+                <summary>
+                    <span class="mm-panel-num">01</span>
+                    <span class="mm-panel-name">Wiring</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<figure class="mm-figure"><img src="../assets/micromouse/diagrams/VL53L0X-3-sensor-wiring.svg" alt="Three VL53L0X sensors sharing I2C with separate XSHUT control lines" loading="lazy"><figcaption>Left, front and right sensors share SDA and SCL. Each has its own XSHUT.</figcaption></figure><div class="mm-table-wrap"><table class="mm-table"><tbody><tr><th scope="row"><span class="mono">VIN</span> / <span class="mono">GND</span></th><td>ESP32 <span class="mono">3V3</span> / common <span class="mono">GND</span></td></tr><tr><th scope="row"><span class="mono">SDA</span> / <span class="mono">SCL</span></th><td>The shared I2C bus</td></tr><tr><th scope="row"><span class="mono">XSHUT</span> &#215; 3</th><td>One dedicated output GPIO each (left, front, right)</td></tr><tr><th scope="row"><span class="mono">GPIO1</span></th><td>Leave unconnected</td></tr></tbody></table></div><div class="mm-callout"><p>Check your boards expose <span class="mono">XSHUT</span> before soldering. Some four-pin boards do not and cannot be used this way.</p></div>
+                </div>
+            </details>
+
+            <details class="mm-guide-panel" open>
+                <summary>
+                    <span class="mm-panel-num">02</span>
+                    <span class="mm-panel-name">Give each sensor its own address</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<p>All three power up at <span class="mono">0x29</span>, so they clash. New addresses are lost at reset, so assign them at every boot:</p><pre class="mm-code"><code>1. XSHUT left, front, right = LOW
+2. Enable left  -&gt; initialise at 0x29 -&gt; change to 0x30
+3. Enable front -&gt; initialise at 0x29 -&gt; change to 0x31
+4. Enable right -&gt; initialise at 0x29 -&gt; change to 0x32
+5. I2C scan should show 0x30, 0x31, 0x32</code></pre><p style="margin-top:16px">Keep <span class="mono">LEFT = 0x30</span>, <span class="mono">FRONT = 0x31</span>, <span class="mono">RIGHT = 0x32</span> in one place in the firmware.</p>
+                </div>
+            </details>
+
+            <details class="mm-guide-panel" open>
+                <summary>
+                    <span class="mm-panel-num">03</span>
+                    <span class="mm-panel-name">Test on real walls</span>
+                    <span class="mm-panel-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="mm-panel-body">
+<ol class="mm-list"><li>Test one sensor first and confirm it reports millimetres.</li><li>Add the others and re-check the three addresses after every restart.</li><li>Point all three at the same flat wall and compare readings.</li><li>Mount them so the chassis, wheels and wires are not in view.</li><li>Read in a fixed order and reject timeouts and out-of-range values.</li></ol><div class="mm-callout is-signal"><p>Do not trust the advertised 2&#160;m range. Test against the real maze walls, in the real room, and record the range where readings are reliable. Use hysteresis for wall present or absent (see <a href="micromouse-build.html">S4</a>).</p></div>
+                </div>
+            </details>
+
+        </div>
 
         <nav class="mm-pager" aria-label="Guide pages">
-            <a href="micromouse-sen0142.html"><small>&#8592; Previous</small>H3 MPU-6050 IMU</a>
-            <a class="is-next" href="micromouse-buck.html"><small>Next &#8594;</small>H5 Battery and power</a>
+            <a href="micromouse-sen0142.html"><small>&#8592; Previous</small>H3 SEN0142 IMU</a>
+            <a class="is-next" href="micromouse-buck.html"><small>Next &#8594;</small>H5 Buck converter</a>
         </nav>
 
     </div>

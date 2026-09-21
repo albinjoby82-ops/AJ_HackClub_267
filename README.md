@@ -90,28 +90,6 @@ Those pages do not load `site.css`; their chrome comes from
 The visual direction follows Hack Club's brand: bold red, clean white surfaces,
 dark readable text, playful supporting colors, and practical electronics motifs.
 
-## Event wiring and debug kit
-
-The source comments in the supplied `micromouse-debug-kit` define event wiring.
-The website includes unchanged source files, a complete ZIP and SHA-256 manifest.
-Rebuild the walkthroughs from an updated kit with:
-
-```powershell
-node tools/build_debug_kit.mjs ../micromouse-debug-kit
-python tools/build_content.py
-```
-
-Without an argument, the debug builder uses `downloads/micromouse-debug-kit/`.
-The hardware Markdown is also used by the current native HTML panel guides.
-After editing it, render those pages with the site's existing pinned Markdown
-renderer (save `https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js` locally):
-
-```powershell
-node tools/build_event_guides.mjs /path/to/marked-12.0.2.cjs
-```
-
-Both generated Markdown and HTML are checked in; deployment stays a static upload.
-
 ## Local preview
 
 Run `python tools/dev_server.py --port 8000`, then open
