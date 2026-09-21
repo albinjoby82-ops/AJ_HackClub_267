@@ -69,6 +69,24 @@ the site and wiki search, but the YouTube results require `tools/dev_server.py`.
 - `site.css` — site chrome (topbar, sidebar, rendered-markdown styles, callouts)
 - `DESIGN_SYSTEM.md` / `DESIGN_GUIDE.md` — the written spec
 
+The Dublin Micromouse Open 2026 section has its own palette — warm cream
+paper, Hack Club red as the hero colour, Bricolage Grotesque / Public Sans /
+JetBrains Mono from Google Fonts. It covers `micromouse.html`,
+`micromouse-resources.html`, `micromouse-guide.html` and everything in
+`micromouse/`:
+
+- `micromouse-2026.css` — tokens, shared topbar and footer, buttons, figures.
+  Scoped under `.mm26` on `<body>`, so it never touches the rest of the site.
+- `micromouse-2026.js` — sticky-bar measurement, the event page's scroll-spy
+  and the Resource Hub's search and category filtering. Every page renders in
+  full without it.
+- `micromouse/micromouse-guide.css` — guide-page components (panels, callouts,
+  spec tables, code blocks, reference cards). Loaded after
+  `micromouse-2026.css` and scoped under `.mm-guide`.
+
+Those pages do not load `site.css`; their chrome comes from
+`micromouse-2026.css` instead.
+
 The visual direction follows Hack Club's brand: bold red, clean white surfaces,
 dark readable text, playful supporting colors, and practical electronics motifs.
 

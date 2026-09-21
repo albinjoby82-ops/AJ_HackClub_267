@@ -4,407 +4,219 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resource Hub — Dublin Micromouse Open 2026</title>
-<meta name="description" content="Strategy, hardware and software resources for the Dublin Micromouse Open 2026.">
+<meta name="description" content="Search the strategy, hardware and software guides for the Dublin Micromouse Open 2026 — flood fill, the ESP32-C6 kit, sensors, power and the race playbook.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="design-tokens.css">
-<link rel="stylesheet" href="site.css?nav=2">
-<style>
-    .resource-hub {
-        --hub-ink: #080F12;
-        --hub-panel: #0C161A;
-        --hub-paper: #EDF2F0;
-        --hub-paper-dim: rgba(237, 242, 240, 0.72);
-        --hub-orange: #F4511E;
-        --hub-mint: #7FD4BC;
-        --hub-line: rgba(127, 212, 188, 0.2);
-        min-height: calc(100vh - 57px);
-        padding: clamp(52px, 8vw, 96px) 24px;
-        color: var(--hub-paper);
-        background:
-            linear-gradient(115deg, rgba(244, 81, 30, 0.07) 0 9%, transparent 9% 45%, rgba(244, 81, 30, 0.05) 45% 52%, transparent 52%),
-            linear-gradient(var(--hub-line) 1px, transparent 1px),
-            linear-gradient(90deg, var(--hub-line) 1px, transparent 1px),
-            var(--hub-ink);
-        background-size: auto, 72px 72px, 72px 72px, auto;
-    }
-
-    .resource-shell {
-        width: min(960px, 100%);
-        margin: 0 auto;
-    }
-
-    .resource-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 34px;
-        color: var(--hub-mint);
-        font: 700 11px/1 var(--font-mono);
-        letter-spacing: 0.12em;
-        text-decoration: none;
-        text-transform: uppercase;
-    }
-
-    .resource-back:hover { color: var(--hub-paper); }
-
-    .resource-kicker {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        max-width: 820px;
-        margin: 0 0 20px;
-        color: var(--hub-paper);
-        font-family: var(--font-sans);
-        font-size: clamp(24px, 3.2vw, 38px);
-        font-weight: 800;
-        line-height: 1.08;
-        letter-spacing: -0.015em;
-        text-transform: uppercase;
-    }
-
-    .resource-kicker::before {
-        content: "→ ";
-        color: var(--hub-orange);
-        flex: 0 0 auto;
-        font: 700 18px/1 var(--font-mono);
-    }
-
-    .resource-title {
-        margin: 0;
-        color: var(--hub-paper);
-        font-size: clamp(44px, 7vw, 74px);
-        font-weight: 800;
-        line-height: 0.95;
-        letter-spacing: -0.02em;
-        text-transform: uppercase;
-    }
-
-    .resource-title span {
-        color: transparent;
-        -webkit-text-stroke: 2px var(--hub-orange);
-    }
-
-    .resource-intro {
-        max-width: 620px;
-        margin: 26px 0 0;
-        color: var(--hub-paper-dim);
-        font-size: 18px;
-        line-height: 1.6;
-    }
-
-    .resource-menu {
-        display: grid;
-        gap: 14px;
-        margin-top: clamp(42px, 7vw, 72px);
-    }
-
-    .resource-menu details {
-        border: 1px solid var(--hub-line);
-        border-left: 3px solid var(--hub-orange);
-        border-radius: 3px;
-        background: var(--hub-panel);
-    }
-
-    .resource-menu summary {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        gap: 18px;
-        padding: 24px;
-        color: var(--hub-paper);
-        cursor: pointer;
-        list-style: none;
-    }
-
-    .resource-menu summary::-webkit-details-marker { display: none; }
-
-    .resource-number {
-        color: var(--hub-mint);
-        font: 700 11px/1 var(--font-mono);
-        letter-spacing: 0.12em;
-    }
-
-    .resource-name {
-        font-size: clamp(22px, 4vw, 34px);
-        font-weight: 700;
-        line-height: 1;
-        text-transform: none;
-    }
-
-    .resource-toggle {
-        color: var(--hub-orange);
-        font: 700 22px/1 var(--font-mono);
-    }
-
-    .resource-toggle::before { content: "+"; }
-    details[open] .resource-toggle::before { content: "−"; }
-
-    .resource-menu details > p {
-        margin: 0;
-        padding: 0 24px 24px 72px;
-        color: var(--hub-paper-dim);
-        font-size: 15px;
-        line-height: 1.6;
-    }
-
-    .resource-links {
-        display: grid;
-        gap: 12px;
-        padding: 0 24px 24px 72px;
-    }
-
-    .resource-link {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto;
-        align-items: center;
-        gap: 18px;
-        padding: 18px 20px;
-        border: 1px solid var(--hub-line);
-        border-radius: 3px;
-        background: rgba(255, 255, 255, 0.025);
-        color: var(--hub-paper);
-        text-decoration: none;
-        transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
-    }
-
-    .resource-link:hover {
-        border-color: var(--hub-orange);
-        background: rgba(232, 87, 45, 0.07);
-        transform: translateX(3px);
-    }
-
-    .resource-link-code {
-        color: var(--hub-mint);
-        font: 700 12px/1 var(--font-mono);
-        letter-spacing: 0.12em;
-    }
-
-    .resource-link-copy {
-        display: grid;
-        gap: 5px;
-    }
-
-    .resource-link-copy strong {
-        font-size: 17px;
-        line-height: 1.25;
-    }
-
-    .resource-link-copy span {
-        color: var(--hub-paper-dim);
-        font-size: 14px;
-        line-height: 1.5;
-    }
-
-    .resource-link-arrow {
-        color: var(--hub-orange);
-        font: 700 20px/1 var(--font-mono);
-    }
-
-    .resource-link:focus-visible {
-        outline: 3px solid rgba(127, 212, 188, 0.42);
-        outline-offset: 3px;
-    }
-
-    .resource-menu summary:focus-visible,
-    .resource-back:focus-visible {
-        outline: 3px solid rgba(127, 212, 188, 0.42);
-        outline-offset: 3px;
-    }
-
-    .resource-note {
-        margin: 28px 0 0;
-        color: rgba(237, 242, 240, 0.5);
-        font: 700 10px/1.5 var(--font-mono);
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-    }
-
-    @media (max-width: 560px) {
-        .resource-hub { padding-inline: 14px; }
-        .resource-menu summary { gap: 12px; padding: 20px 16px; }
-        .resource-menu details > p { padding: 0 16px 20px 52px; }
-        .resource-links { padding: 0 16px 20px 16px; }
-        .resource-link {
-            grid-template-columns: auto minmax(0, 1fr);
-        }
-        .resource-link-arrow { display: none; }
-    }
-</style>
-<link rel="stylesheet" href="hardware-guides.css?v=1">
+<link rel="stylesheet" href="micromouse-2026.css?v=1">
 </head>
-<body>
+<body class="mm26">
 
-<div class="topbar">
-    <div class="topbar-inner">
-        <a class="wordmark" href="index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
-        <nav class="topbar-nav" aria-label="Main navigation">
-            <a href="index.html?nav=2">Home</a>
-            <a href="resources.html?nav=2">Resource Hub</a>
-            <a href="micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+<header class="mm-topbar">
+    <div class="mm-topbar-inner mm-wrap">
+        <a class="mm-wordmark" href="index.html">
+            <span class="mm-wordmark-badge" aria-hidden="true">HC</span>
+            <span class="mm-wordmark-text">Build Hub</span>
+        </a>
+        <nav class="mm-nav" aria-label="Main navigation">
+            <a href="index.html">Home</a>
             <a href="learn.html?scope=workshops">Workshops</a>
             <a href="learn.html?scope=wiki">Wiki</a>
             <a href="videos.html">Search</a>
+            <a class="mm-nav-section" href="micromouse.html">Micromouse 2026</a>
+            <a class="mm-nav-section" href="micromouse-resources.html" aria-current="page">Resource Hub</a>
         </nav>
     </div>
-</div>
+</header>
 
-<main class="resource-hub">
-    <div class="resource-shell">
-        <a class="resource-back" href="micromouse.html?nav=2">← Back to Micromouse 2026</a>
+<main>
 
-        <header class="resource-header">
-            <h1 class="resource-kicker">Dublin Micromouse Open 2026</h1>
-            <p class="resource-title">Resource <span>Hub.</span></p>
-            <p class="resource-intro">Everything your team needs to prepare, build and compete. Choose a resource area to get started.</p>
-        </header>
+    <section class="mm-hub-head" aria-labelledby="hubTitle">
+        <div class="mm-hub-head-inner mm-wrap">
+            <a class="mm-back" href="micromouse.html">← Back to Micromouse 2026</a>
+            <span class="mm-eyebrow">Dublin Micromouse Open 2026</span>
+            <h1 class="mm-hub-title" id="hubTitle">Resource <span>Hub</span></h1>
+            <p class="mm-hub-lede">Everything your team needs to prepare, build and compete — search it, or jump straight to the part you're stuck on.</p>
+        </div>
+    </section>
 
-        <div class="resource-menu" aria-label="Resource categories">
-            <details>
-                <summary>
-                    <span class="resource-number">01</span>
-                    <span class="resource-name">Strategies</span>
-                    <span class="resource-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="resource-links">
-                    <a class="resource-link" href="micromouse-guide.html">
-                        <span class="resource-link-code">S1</span>
-                        <span class="resource-link-copy">
-                            <strong>Rules and the maze</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+    <section class="mm-filters" data-mm-hub aria-label="Filter resources">
+        <div class="mm-filters-inner mm-wrap">
+            <div class="mm-search" role="search">
+                <span class="mm-search-slash" aria-hidden="true">/</span>
+                <label class="mm-visually-hidden" for="mmSearch">Search resources</label>
+                <input id="mmSearch" type="search" autocomplete="off" placeholder="Search resources — flood fill, IMU, buck converter…">
+            </div>
+            <div class="mm-cats" role="group" aria-label="Filter by category">
+                <button class="mm-cat" type="button" data-category="All" aria-pressed="true">All</button>
+                <button class="mm-cat" type="button" data-category="Strategy" aria-pressed="false">Strategy</button>
+                <button class="mm-cat" type="button" data-category="Hardware" aria-pressed="false">Hardware</button>
+                <button class="mm-cat" type="button" data-category="Software" aria-pressed="false">Software</button>
+            </div>
+            <p class="mm-count" role="status" aria-live="polite">14 resources</p>
+        </div>
+    </section>
 
-                    <a class="resource-link" href="micromouse/micromouse-strategy.html">
-                        <span class="resource-link-code">S2</span>
-                        <span class="resource-link-copy">
-                            <strong>Race strategy</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+    <div class="mm-hub-body mm-wrap">
 
-                    <a class="resource-link" href="micromouse/micromouse-algorithms.html">
-                        <span class="resource-link-code">S3</span>
-                        <span class="resource-link-copy">
-                            <strong>Flood fill and routing</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+        <a class="mm-start" href="micromouse/micromouse-esp32c6.html">
+            <span class="mm-start-label">Start here</span>
+            <span>
+                <strong class="mm-start-title">New to the kit? Set up the ESP32-C6 first</strong>
+                <span class="mm-start-sub">Identify your controller and plan the pins before you connect anything else.</span>
+            </span>
+            <span class="mm-start-arrow" aria-hidden="true">→</span>
+        </a>
 
-                    <a class="resource-link" href="micromouse/micromouse-build.html">
-                        <span class="resource-link-code">S4</span>
-                        <span class="resource-link-copy">
-                            <strong>Motion and hardware</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+        <div class="mm-grid">
 
-                    <a class="resource-link" href="micromouse/micromouse-playbook.html">
-                        <span class="resource-link-code">S5</span>
-                        <span class="resource-link-copy">
-                            <strong>Playbook and failures</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+            <a class="mm-res" data-category="Strategy" href="micromouse-guide.html">
+                <span class="mm-res-code">S1</span>
+                <span>
+                    <span class="mm-res-cat">Strategy</span>
+                    <strong class="mm-res-title">Rules and the maze</strong>
+                    <span class="mm-res-blurb">The 16 × 16 standard, run timing, and what counts as a legal run.</span>
+                </span>
+            </a>
 
-                    <a class="resource-link" href="micromouse/micromouse-reading.html">
-                        <span class="resource-link-code">S6</span>
-                        <span class="resource-link-copy">
-                            <strong>Reading and video</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
-                </div>
-            </details>
+            <a class="mm-res" data-category="Strategy" href="micromouse/micromouse-strategy.html">
+                <span class="mm-res-code">S2</span>
+                <span>
+                    <span class="mm-res-cat">Strategy</span>
+                    <strong class="mm-res-title">Race strategy</strong>
+                    <span class="mm-res-blurb">How to spend six hours: search run, speed run, and when to stop tuning.</span>
+                </span>
+            </a>
 
-            <details id="hardware" open>
-                <summary>
-                    <span class="resource-number">02</span>
-                    <span class="resource-name">Hardware</span>
-                    <span class="resource-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="hardware-start">
-                    <p>New to the kit? Identify your controller and plan the pins before connecting components.</p>
-                    <a href="micromouse/micromouse-esp32c6.html">Start building →</a>
-                </div>
-                <div class="resource-links">
-                    <a class="resource-link" href="micromouse/micromouse-esp32c6.html">
-                        <span class="resource-link-code">H1</span>
-                        <span class="resource-link-copy">
-                            <strong>ESP32-C6</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+            <a class="mm-res" data-category="Strategy" href="micromouse/micromouse-algorithms.html">
+                <span class="mm-res-code">S3</span>
+                <span>
+                    <span class="mm-res-cat">Strategy</span>
+                    <strong class="mm-res-title">Flood fill and routing</strong>
+                    <span class="mm-res-blurb">The algorithm that finds the centre — and how to make it take diagonals.</span>
+                </span>
+            </a>
 
-                    <a class="resource-link" href="micromouse/micromouse-dri0044.html">
-                        <span class="resource-link-code">H2</span>
-                        <span class="resource-link-copy">
-                            <strong>DFRobot DRI0044</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+            <a class="mm-res" data-category="Strategy" href="micromouse/micromouse-build.html">
+                <span class="mm-res-code">S4</span>
+                <span>
+                    <span class="mm-res-cat">Strategy</span>
+                    <strong class="mm-res-title">Motion and hardware</strong>
+                    <span class="mm-res-blurb">Wheel geometry, turning, and keeping the mouse straight down a corridor.</span>
+                </span>
+            </a>
 
-                    <a class="resource-link" href="micromouse/micromouse-sen0142.html">
-                        <span class="resource-link-code">H3</span>
-                        <span class="resource-link-copy">
-                            <strong>DFRobot SEN0142</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+            <a class="mm-res" data-category="Strategy" href="micromouse/micromouse-playbook.html">
+                <span class="mm-res-code">S5</span>
+                <span>
+                    <span class="mm-res-cat">Strategy</span>
+                    <strong class="mm-res-title">Playbook and failures</strong>
+                    <span class="mm-res-blurb">An hour-by-hour plan for the six-hour build, and the failure modes to design against.</span>
+                </span>
+            </a>
 
-                    <a class="resource-link" href="micromouse/micromouse-vl53l0x.html">
-                        <span class="resource-link-code">H4</span>
-                        <span class="resource-link-copy">
-                            <strong>3x VL53L0X Distance Sensors</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+            <a class="mm-res" data-category="Strategy" href="micromouse/micromouse-reading.html">
+                <span class="mm-res-code">S6</span>
+                <span>
+                    <span class="mm-res-cat">Strategy</span>
+                    <strong class="mm-res-title">Reading and video</strong>
+                    <span class="mm-res-blurb">Builds, talks and papers worth an hour before you turn up.</span>
+                </span>
+            </a>
 
-                    <a class="resource-link" href="micromouse/micromouse-buck.html">
-                        <span class="resource-link-code">H5</span>
-                        <span class="resource-link-copy">
-                            <strong>2S Battery to 5V Buck Converter</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+            <a class="mm-res" data-category="Hardware" href="micromouse/micromouse-esp32c6.html">
+                <span class="mm-res-code">H1</span>
+                <span>
+                    <span class="mm-res-cat">Hardware</span>
+                    <strong class="mm-res-title">ESP32-C6</strong>
+                    <span class="mm-res-blurb">Your controller: pinout, power, flashing, and the pins to leave alone.</span>
+                </span>
+            </a>
 
-                    <a class="resource-link" href="micromouse/micromouse-motors.html">
-                        <span class="resource-link-code">H6</span>
-                        <span class="resource-link-copy">
-                            <strong>2x GA12-N20 Micro Gear Motors</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
-                </div>
-            </details>
+            <a class="mm-res" data-category="Hardware" href="micromouse/micromouse-dri0044.html">
+                <span class="mm-res-code">H2</span>
+                <span>
+                    <span class="mm-res-cat">Hardware</span>
+                    <strong class="mm-res-title">DFRobot DRI0044 motor driver</strong>
+                    <span class="mm-res-blurb">Wiring, PWM channels and current limits for the driver in your kit.</span>
+                </span>
+            </a>
 
-            <details id="software" open>
-                <summary>
-                    <span class="resource-number">03</span>
-                    <span class="resource-name">Software</span>
-                    <span class="resource-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="resource-links">
-                    <a class="resource-link" href="micromouse/micromouse-git.html">
-                        <span class="resource-link-code">C2</span>
-                        <span class="resource-link-copy">
-                            <strong>Git and GitHub basics</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
+            <a class="mm-res" data-category="Hardware" href="micromouse/micromouse-sen0142.html">
+                <span class="mm-res-code">H3</span>
+                <span>
+                    <span class="mm-res-cat">Hardware</span>
+                    <strong class="mm-res-title">DFRobot SEN0142 IMU</strong>
+                    <span class="mm-res-blurb">Reading heading, calibrating, and correcting drift mid-run.</span>
+                </span>
+            </a>
 
-                    <a class="resource-link" href="micromouse/micromouse-ai-agents.html">
-                        <span class="resource-link-code">C3</span>
-                        <span class="resource-link-copy">
-                            <strong>Working with AI agents on hardware</strong>
-                        </span>
-                        <span class="resource-link-arrow" aria-hidden="true">→</span>
-                    </a>
-                </div>
-            </details>
+            <a class="mm-res" data-category="Hardware" href="micromouse/micromouse-vl53l0x.html">
+                <span class="mm-res-code">H4</span>
+                <span>
+                    <span class="mm-res-cat">Hardware</span>
+                    <strong class="mm-res-title">3 × VL53L0X distance sensors</strong>
+                    <span class="mm-res-blurb">Time-of-flight wall sensing, I²C addresses and mounting angles.</span>
+                </span>
+            </a>
+
+            <a class="mm-res" data-category="Hardware" href="micromouse/micromouse-buck.html">
+                <span class="mm-res-code">H5</span>
+                <span>
+                    <span class="mm-res-cat">Hardware</span>
+                    <strong class="mm-res-title">2S battery to 5V buck converter</strong>
+                    <span class="mm-res-blurb">Clean 5V out of the pack without browning out the ESP32.</span>
+                </span>
+            </a>
+
+            <a class="mm-res" data-category="Hardware" href="micromouse/micromouse-motors.html">
+                <span class="mm-res-code">H6</span>
+                <span>
+                    <span class="mm-res-cat">Hardware</span>
+                    <strong class="mm-res-title">2 × GA12-N20 gear motors</strong>
+                    <span class="mm-res-blurb">Encoders, gear ratios, and the torque you actually have to play with.</span>
+                </span>
+            </a>
+
+            <a class="mm-res" data-category="Software" href="micromouse/micromouse-git.html">
+                <span class="mm-res-code">C2</span>
+                <span>
+                    <span class="mm-res-cat">Software</span>
+                    <strong class="mm-res-title">Git and GitHub basics</strong>
+                    <span class="mm-res-blurb">Clone, commit, branch — enough to not lose your work at hour five.</span>
+                </span>
+            </a>
+
+            <a class="mm-res" data-category="Software" href="micromouse/micromouse-ai-agents.html">
+                <span class="mm-res-code">C3</span>
+                <span>
+                    <span class="mm-res-cat">Software</span>
+                    <strong class="mm-res-title">Working with AI agents on hardware</strong>
+                    <span class="mm-res-blurb">Prompting, wiring up context, and debugging with an agent on the bench.</span>
+                </span>
+            </a>
+
         </div>
 
-        <p class="resource-note">Resources are being prepared for the 2026 competition.</p>
+        <div class="mm-empty" hidden>
+            <p>Nothing matches that yet</p>
+            <p>Try a component name, or clear the filters to see all fourteen resources.</p>
+        </div>
+
+        <p class="mm-note">Resources are being prepared for the 2026 competition.</p>
+
     </div>
+
 </main>
 
+<footer class="mm-footer">
+    <div class="mm-footer-inner mm-wrap">
+        <p>Hack Club Build Hub — a practical teaching library for hackathons, clubs and community events. All backgrounds welcome.</p>
+        <p class="mm-footer-meta"><a href="https://hackclub.com/" target="_blank" rel="noopener">Hack Club</a> · For teens, by teens</p>
+    </div>
+</footer>
+
+<script src="micromouse-2026.js?v=1"></script>
 </body>
 </html>

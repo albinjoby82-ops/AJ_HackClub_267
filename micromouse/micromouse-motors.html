@@ -5,30 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>H6 2x GA12-N20 Micro Gear Motors — Dublin Micromouse Open 2026</title>
 <meta name="description" content="Wiring, encoder basics and distance calibration for the GA12-N20 motors.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../design-tokens.css">
-<link rel="stylesheet" href="../site.css?nav=2">
-<link rel="stylesheet" href="micromouse-guide.css">
+<link rel="stylesheet" href="../micromouse-2026.css?v=1">
+<link rel="stylesheet" href="micromouse-guide.css?v=2">
 </head>
-<body>
+<body class="mm26">
 
-<div class="topbar">
-    <div class="topbar-inner">
-        <a class="wordmark" href="../index.html"><img class="brand-flag" src="https://assets.hackclub.com/flag-standalone.svg" alt="">Build Hub <span class="mono-sub">Hack Club</span></a>
-        <nav class="topbar-nav" aria-label="Main navigation">
-            <a href="../index.html?nav=2">Home</a>
-            <a href="../resources.html?nav=2">Resource Hub</a>
-            <a href="../micromouse.html?nav=2" class="event-nav is-active" aria-current="page">Micromouse 2026</a>
+<header class="mm-topbar">
+    <div class="mm-topbar-inner mm-wrap">
+        <a class="mm-wordmark" href="../index.html">
+            <span class="mm-wordmark-badge" aria-hidden="true">HC</span>
+            <span class="mm-wordmark-text">Build Hub</span>
+        </a>
+        <nav class="mm-nav" aria-label="Main navigation">
+            <a href="../index.html">Home</a>
             <a href="../learn.html?scope=workshops">Workshops</a>
             <a href="../learn.html?scope=wiki">Wiki</a>
             <a href="../videos.html">Search</a>
+            <a class="mm-nav-section" href="../micromouse.html">Micromouse 2026</a>
+            <a class="mm-nav-section is-parent" href="../micromouse-resources.html">Resource Hub</a>
         </nav>
     </div>
-</div>
+</header>
 
-<main class="mm mm-stage">
-    <div class="mm-shell">
+<main class="mm-guide">
 
-        <header class="mm-hero">
+    <header class="mm-guide-head">
+        <div class="mm-guide-head-inner mm-wrap">
             <p class="mm-crumb">
                 <a href="../micromouse-resources.html">Resource Hub</a>
                 <span>/</span>
@@ -37,15 +43,18 @@
                 H6
             </p>
             <span class="mm-eyebrow">H6 &#183; Motors and encoders</span>
-            <h1>2x GA12-N20 Micro Gear Motors</h1>
-            <p class="mm-lede">
+            <h1 class="mm-guide-title">2x GA12-N20 Micro Gear Motors</h1>
+            <p class="mm-guide-lede">
                 One 6 V gearmotor per wheel, about 500 rpm no-load. The Hall encoder's A and B signals measure wheel movement and direction.
             </p>
-        </header>
+        </div>
+    </header>
+
+    <div class="mm-guide-body mm-wrap">
 
         <div class="mm-panels">
 
-            <details class="mm-panel" open>
+            <details class="mm-guide-panel" open>
                 <summary>
                     <span class="mm-panel-num">01</span>
                     <span class="mm-panel-name">Wiring</span>
@@ -56,7 +65,7 @@
                 </div>
             </details>
 
-            <details class="mm-panel">
+            <details class="mm-guide-panel" open>
                 <summary>
                     <span class="mm-panel-num">02</span>
                     <span class="mm-panel-name">What A and B tell you</span>
@@ -67,7 +76,7 @@
                 </div>
             </details>
 
-            <details class="mm-panel">
+            <details class="mm-guide-panel" open>
                 <summary>
                     <span class="mm-panel-num">03</span>
                     <span class="mm-panel-name">Test and calibrate</span>
@@ -88,5 +97,13 @@
     </div>
 </main>
 
+<footer class="mm-footer">
+    <div class="mm-footer-inner mm-wrap">
+        <p>Hack Club Build Hub &mdash; a practical teaching library for hackathons, clubs and community events. All backgrounds welcome.</p>
+        <p class="mm-footer-meta"><a href="https://hackclub.com/" target="_blank" rel="noopener">Hack Club</a> &middot; For teens, by teens</p>
+    </div>
+</footer>
+
+<script src="../micromouse-2026.js?v=1"></script>
 </body>
 </html>
