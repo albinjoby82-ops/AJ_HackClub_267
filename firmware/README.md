@@ -25,6 +25,14 @@ pins at every boot.
 ## What's here
 
 - **`i2c_scanner/`** — a minimal, standalone reachability check. Flash it first.
+- **`motor_encoder_test/`** — bench tool to verify the motors spin the right way
+  and the encoders count the right way, and to **measure `ENC_TICKS_PER_REV`**.
+  Serial-driven, wheels off the table.
+- **`straight_test/`** — closed-loop straight driving with live CSV telemetry.
+  Each wheel runs a **speed PID** (so it actually hits the commanded speed), an
+  outer loop holds heading and centres between walls, and the front sensor stops
+  it before a wall. This is the sketch that makes navigation *reliable*; tune it
+  here before trusting the mapper.
 - **`mouse_explore/`** — the simple reactive explorer: left-hand-rule wall
   following with centred, non-crashing driving. Good for a first "does it move
   without hitting walls" test. Does **not** build a map.
@@ -70,6 +78,26 @@ Prove the brain before trusting the motors:
 ```sh
 cd sim && g++ -std=c++17 -O2 -Wall maze_sim.cpp -o maze_sim && ./maze_sim
 ```
+
+## Reliable driving is built bottom-up (do not skip a layer)
+
+Navigation that never hits a wall or gets stuck is not one clever program — it's
+four layers, each verified on the bench before the next. This is the order that
+actually works, and each bench sketch produces the numbers the next layer needs:
+
+1. **Electrics** (`motor_encoder_test`) — forward drives each wheel forward, each
+   encoder counts up, and you've measured `ENC_TICKS_PER_REV`. Nothing above
+   this can work until it does.
+2. **Wheel speed** (`straight_test`, steering off) — each wheel hits its
+   commanded speed via its own PID. Two cheap motors differ, so *without this
+   the mouse curves before any wall pushes it*. This is the layer most DIY mice
+   skip and then fight forever.
+3. **Straight + centred** (`straight_test`, steering on) — gyro holds heading and
+   the side walls trim it to the middle of the corridor.
+4. **Don't hit anything** — the front ToF cuts speed to zero before contact.
+
+Only once all four hold on the bench do `mouse_explore` / `mouse_map` become
+reliable — they sit *on top* of exactly these layers.
 
 ## Run order — do not skip step 1
 
