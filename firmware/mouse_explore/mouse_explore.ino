@@ -107,12 +107,19 @@ const int FRONT_STOP_MM     = 70;    // hard stop: never get closer than this
 const int MAX_VALID_MM      = 1200;  // reject readings beyond this (out of range)
 const int SIDE_SETPOINT_MM  = 70;    // desired distance to a single hugged wall
 
-// --- Steering gains - gentle. Tune after the mouse basically works. ---------
-const float KP_CENTER = 0.20;   // centring between two walls (per mm of error)
-const float KP_SIDE   = 0.25;   // hugging one wall at the setpoint
-const float KP_GYRO   = 2.5;    // holding heading when there are no side walls
-const float KP_ENC    = 0.15;   // keeping the two wheels' tick counts matched
-const int   CORR_MAX  = 45;     // clamp on the total steering correction
+// --- Steering gains ---------------------------------------------------------
+// Straightness FIRST. Keeping the mouse *parallel* to the corridor is what stops
+// it driving into a wall at an angle, and that job belongs to the gyro heading
+// (with rate damping) plus keeping the two wheels' tick counts matched - both
+// always active. Wall centring is only a gentle lateral trim added on top, and
+// only when a side wall is close enough to trust. See steeringCorrection().
+const float KP_HEAD   = 3.0;    // heading hold: PWM per degree of yaw error
+const float KD_HEAD   = 0.4;    // heading damping: PWM per (deg/s) of yaw rate
+const float KP_ENC    = 0.5;    // wheel-match: PWM per tick of left-minus-right
+const float KP_CENTER = 0.25;   // centring between two walls: PWM per mm
+const float KP_SIDE   = 0.30;   // hugging a single wall: PWM per mm
+const int   WALL_TRUST_MM = 90; // only centre off a side wall this close or nearer
+const int   CORR_MAX  = 55;     // clamp on the total steering correction
 
 // --- Turn control -----------------------------------------------------------
 const float TURN_SLOW_ZONE_DEG = 25.0;  // slow down within this of the target
@@ -146,6 +153,7 @@ bool wallLeft = false, wallFront = false, wallRight = false;
 
 float gyroBiasZ = 0.0;      // gyro-Z zero offset (dps), found at boot
 float heading   = 0.0;      // integrated heading in degrees
+float lastGyroZ = 0.0;      // latest yaw rate (dps) - used to damp steering
 unsigned long lastHeadingUs = 0;
 
 int  recoveryAttempts = 0;
@@ -256,7 +264,8 @@ void updateHeading() {
   float dt = (now - lastHeadingUs) * 1e-6f;
   lastHeadingUs = now;
   if (dt <= 0 || dt > 0.2f) return;   // ignore silly gaps
-  heading += readGyroZ() * dt;
+  lastGyroZ = readGyroZ();            // remember the rate for steering damping
+  heading += lastGyroZ * dt;
 }
 
 // Sit still and average gyro-Z to find its zero offset. Mouse MUST be still.
@@ -344,25 +353,41 @@ void startSensors() {
 //  MOTION PRIMITIVES
 // ============================================================================
 
-// Compute the steering correction (positive = steer right) from whatever the
-// mouse can currently see. Preference: two walls > one wall > gyro heading.
+// Compute the steering correction (positive = steer RIGHT) for driving straight
+// down a cell. The philosophy (same as the reference mouse): keep the mouse
+// PARALLEL first, then trim its lateral position - not the other way round.
+//
+//   1) Heading hold (ALWAYS): a gyro PD term. Keeps the mouse pointing the way
+//      it started the cell, so it never quietly rotates toward a wall. The
+//      derivative is just the yaw rate, which damps the weave.
+//   2) Wheel match (ALWAYS): keep left and right ticks equal. Equal wheel
+//      travel is a straight line, and it catches slow curve the gyro misses.
+//   3) Wall centring (ONLY when a wall is close enough to trust): a gentle
+//      lateral trim. Skipped when walls are far/open so a wall that ends can't
+//      yank the steering. When one wall is present, hold the setpoint off it.
+//
+// Terms 1 and 2 provide the damping, so the wall term can stay a simple P.
 int steeringCorrection(long dL, long dR, float targetHeading) {
-  float corr = 0.0;
-  if (wallLeft && wallRight) {
-    corr = KP_CENTER * (distRight - distLeft);              // centre between walls
-  } else if (wallLeft) {
-    corr = KP_SIDE * (SIDE_SETPOINT_MM - distLeft);         // hug left wall
-  } else if (wallRight) {
-    corr = -KP_SIDE * (SIDE_SETPOINT_MM - distRight);       // hug right wall
-  } else {
-    // No walls to hug: hold the heading we started the cell on. If the mouse
-    // has yawed left (heading > target), steer right (positive) to correct.
-    corr = KP_GYRO * (heading - targetHeading);
+  // 1) Heading hold + rate damping. If yawed left (heading > target) or yawing
+  //    left now (rate > 0), steer right (positive).
+  float corr = KP_HEAD * (heading - targetHeading) + KD_HEAD * lastGyroZ;
+
+  // 2) Wheel match. If the left wheel ran ahead (dL > dR) the mouse is curving
+  //    right, so steer left (negative).
+  corr += KP_ENC * (float)(dR - dL);
+
+  // 3) Wall centring trim, only off walls we can trust this iteration.
+  bool trustL = (distLeft  < WALL_TRUST_MM);
+  bool trustR = (distRight < WALL_TRUST_MM);
+  if (trustL && trustR) {
+    corr += KP_CENTER * (distRight - distLeft);        // pull toward the middle
+  } else if (trustL) {
+    corr += KP_SIDE * (SIDE_SETPOINT_MM - distLeft);   // too close to left -> steer right
+  } else if (trustR) {
+    corr -= KP_SIDE * (SIDE_SETPOINT_MM - distRight);  // too close to right -> steer left
   }
-  // Always nudge toward matched wheel travel so a gyro/tape mismatch cannot
-  // slowly bend a straight run. If the left wheel ran ahead (dL > dR) the mouse
-  // is curving right, so steer left (negative).
-  corr += KP_ENC * (dR - dL);
+  // else: no trustworthy wall - ride the heading hold straight through the gap.
+
   if (corr >  CORR_MAX) corr =  CORR_MAX;
   if (corr < -CORR_MAX) corr = -CORR_MAX;
   return (int)corr;

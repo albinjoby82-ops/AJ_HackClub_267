@@ -63,10 +63,14 @@ Both are built for ESP32 Arduino core **3.x** (required for the C6; uses the
 - **Left-hand rule.** Each step the mouse turns left if the left is open, else
   goes straight, else turns right, else turns around — then advances one cell.
   There is always a legal move, so it keeps exploring instead of giving up.
-- **Centred, non-crashing forward drive.** While crossing a cell it steers from
-  whatever it can see: centre between two walls → hug a single wall → hold gyro
-  heading when there are no side walls, plus an encoder term to keep the wheels
-  matched. The front sensor stops it short of any wall ahead (`FRONT_STOP_MM`).
+- **Centred, non-crashing forward drive.** Straightness comes first, so the
+  mouse stays *parallel* to the corridor instead of weaving into a wall at an
+  angle. Every iteration it sums: (1) a gyro heading-hold with rate damping,
+  (2) a wheel-match term keeping left/right ticks equal, and (3) a gentle wall
+  centring trim that is applied *only* when a side wall is close enough to trust
+  (`WALL_TRUST_MM`) — so a wall that ends can't yank the steering. The front
+  sensor stops it short of any wall ahead (`FRONT_STOP_MM`). This mirrors how the
+  reference mouse drives: heading first, walls as a trim.
 - **Accurate turns.** 90°/180° turns are closed-loop on the gyro heading, slowing
   down near the target, with a timeout fallback so a bad gyro can't hang it.
 - **Recovery, not silence.** If forward progress stalls, it backs up a third of a
