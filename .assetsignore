@@ -33,6 +33,8 @@ wrangler.jsonc
 # Project source and internal documentation that are not web assets.
 tools
 tools/**
+firmware
+firmware/**
 README.md
 AGENTS.md
 DESIGN_GUIDE.md
