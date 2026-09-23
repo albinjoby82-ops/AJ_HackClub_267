@@ -22,14 +22,54 @@ All four I2C devices share one SDA/SCL bus. The three ToF sensors power up at th
 same address (`0x29`), so they are re-addressed one at a time over their XSHUT
 pins at every boot.
 
-## Two sketches
+## What's here
 
 - **`i2c_scanner/`** — a minimal, standalone reachability check. Flash it first.
-- **`mouse_explore/`** — the exploration program. Needs the **VL53L0X** library
-  by Pololu (Arduino Library Manager → search `VL53L0X`).
+- **`mouse_explore/`** — the simple reactive explorer: left-hand-rule wall
+  following with centred, non-crashing driving. Good for a first "does it move
+  without hitting walls" test. Does **not** build a map.
+- **`mouse_map/`** — the real deal: keeps a wall map and runs **flood fill** to
+  map a route to the centre on the first run. Shares its mapping brain
+  (`maze.h`) with the simulator. Uses self-correcting odometry so the map stays
+  honest. This is the one that "maps the maze."
+- **`sim/`** — a desktop simulator that compiles the same `maze.h` and proves
+  the mapping reaches the goal on 100% of solvable mazes, no hardware needed.
+  See `sim/README.md`.
 
-Both are built for ESP32 Arduino core **3.x** (required for the C6; uses the
+The sketches need the **VL53L0X** library by Pololu (Arduino Library Manager →
+search `VL53L0X`) and ESP32 Arduino core **3.x** (required for the C6; uses the
 `ledcAttach`/`ledcWrite` PWM API).
+
+## Mapping: how it actually maps the maze first time
+
+A plain wall-follower **cannot** guarantee finding the centre of a competition
+maze — the centre is effectively an island. The standard, proven answer is
+**flood fill**: number every cell by its distance to the goal (only stepping
+where there's no wall), then always move to the lowest-numbered neighbour.
+Unknown walls are assumed open, so the mouse optimistically heads for the goal,
+discovers real walls, re-floods, and repeats — which is exactly what maps it.
+
+The widely-repeated micromouse truth: the flood-fill algorithm is small and can
+be **fully tested in a simulator with no hardware**; the hard part is that
+*wall detection has no partial credit* — one wrong wall corrupts the map — and
+after ~10 cells the mouse no longer knows exactly where it is unless you fight
+odometry drift. So `mouse_map` pins all three degrees of freedom against the
+walls every cell:
+
+- **Heading** — gyro closed-loop turns, angle reset each move, so every cell
+  re-squares to the cardinal direction.
+- **Sideways** — centre between the side walls while crossing each cell.
+- **Forward** — stop a fixed distance from a wall ahead (front ToF), pinning how
+  far along the cell you are.
+
+And it only reads walls while stopped and squared up, writing each wall to both
+cells that share it so the map can't contradict itself.
+
+Prove the brain before trusting the motors:
+
+```sh
+cd sim && g++ -std=c++17 -O2 -Wall maze_sim.cpp -o maze_sim && ./maze_sim
+```
 
 ## Run order — do not skip step 1
 
