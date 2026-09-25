@@ -525,7 +525,7 @@ void setup() {
 
   // I2C + all four sensors (this halts loudly if anything fails to come up).
   Wire.begin(PIN_SDA, PIN_SCL);
-  Wire.setClock(400000);
+  Wire.setClock(100000);   // same safe speed the scanner proved works
   startSensors();
 
   Serial.printf("Ticks per cell = %ld (from wheel %.0f mm, %.0f ticks/rev)\n",

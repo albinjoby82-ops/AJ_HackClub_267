@@ -219,18 +219,38 @@ int readDistStable(int i) {
 }
 void readAll() { distL = readDist(S_LEFT); distF = readDist(S_FRONT); distR = readDist(S_RIGHT); }
 
+void dumpBus() {
+  Serial.print(F("Devices answering on I2C:"));
+  for (uint8_t a = 1; a < 127; a++) {
+    Wire.beginTransmission(a);
+    if (Wire.endTransmission() == 0) Serial.printf(" 0x%02X", a);
+  }
+  Serial.println(F("   (expect 0x30 0x31 0x32 0x68 when all are up)"));
+}
+
 void startSensors() {
   for (int i = 0; i < 3; i++) { pinMode(XSHUT[i], OUTPUT); digitalWrite(XSHUT[i], LOW); }
   delay(20);
   for (int i = 0; i < 3; i++) {
-    digitalWrite(XSHUT[i], HIGH); delay(20);
-    laser[i].setTimeout(200);
-    if (!laser[i].init()) { char m[80]; snprintf(m, sizeof(m), "VL53L0X %s init failed: check XSHUT/SDA/SCL/VIN/GND", SENSOR_NAME[i]); halt(m); }
+    bool ok = false;
+    for (int attempt = 1; attempt <= 3 && !ok; attempt++) {
+      digitalWrite(XSHUT[i], LOW);  delay(10);   // hard-reset just this sensor
+      digitalWrite(XSHUT[i], HIGH); delay(50);
+      laser[i].setTimeout(200);
+      ok = laser[i].init();
+      if (!ok) Serial.printf("VL53L0X %s init attempt %d/3 failed\n", SENSOR_NAME[i], attempt);
+    }
+    if (!ok) {
+      dumpBus();
+      char m[96]; snprintf(m, sizeof(m), "VL53L0X %s init failed: check its XSHUT (GPIO%d), SDA/SCL, VIN, GND", SENSOR_NAME[i], XSHUT[i]);
+      halt(m);
+    }
     laser[i].setAddress(SENSOR_ADDR[i]);
     if (!laser[i].setMeasurementTimingBudget(33000)) halt("VL53L0X timing budget rejected");
-    laser[i].startContinuous();
     Serial.printf("Sensor %-5s initialized OK at 0x%02X\n", SENSOR_NAME[i], SENSOR_ADDR[i]);
   }
+  // Start ranging only once all three are addressed, so none is busy while another boots.
+  for (int i = 0; i < 3; i++) laser[i].startContinuous();
   if (!mpuWrite(MPU_PWR_MGMT_1, 0x00)) halt("MPU-6050 not responding: check SDA/SCL/VIN/GND");
   delay(50);
   Serial.println(F("IMU (MPU-6050) initialized OK at 0x68"));
@@ -366,7 +386,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(PIN_L_ENC_A), isrLeft,  CHANGE);
   attachInterrupt(digitalPinToInterrupt(PIN_R_ENC_A), isrRight, CHANGE);
 
-  Wire.begin(PIN_SDA, PIN_SCL); Wire.setClock(400000);
+  Wire.begin(PIN_SDA, PIN_SCL); Wire.setClock(100000);   // same safe speed the scanner proved works
   startSensors();
 
   maze.begin(MAZE_W, MAZE_H);

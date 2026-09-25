@@ -17,8 +17,8 @@ All 3V3 pins are one net, all GND pins are one net. Encoder VCC max 3.6 V.
 | 22 | Left encoder C2 (B) | in, pull-up |
 | 11 | Right encoder C1 (A) | in, pull-up, interrupt |
 | 23 | Right encoder C2 (B) | in, pull-up |
-| 6  | I2C SDA (all 4 I2C devices) | bus, 400 kHz |
-| 7  | I2C SCL (all 4 I2C devices) | bus, 400 kHz |
+| 6  | I2C SDA (all 4 I2C devices) | bus, 100 kHz |
+| 7  | I2C SCL (all 4 I2C devices) | bus, 100 kHz |
 | 18 | VL53L0X Left XSHUT | out |
 | 19 | VL53L0X Front XSHUT | out |
 | 20 | VL53L0X Right XSHUT | out |

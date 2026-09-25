@@ -222,7 +222,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(PIN_L_ENC_A), isrLeft,  CHANGE);
   attachInterrupt(digitalPinToInterrupt(PIN_R_ENC_A), isrRight, CHANGE);
 
-  Wire.begin(PIN_SDA, PIN_SCL); Wire.setClock(400000);
+  Wire.begin(PIN_SDA, PIN_SCL); Wire.setClock(100000);   // same safe speed the scanner proved works
   startSensors();
 
   Serial.printf("Cruise = %.0f mm/s = %.0f ticks/s. Send 'g' to drive, 'x' to stop.\n",
