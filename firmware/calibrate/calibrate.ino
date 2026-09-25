@@ -74,6 +74,10 @@ float stopLeadFwd = 0.0, stopLeadRev = 0.0;                     // ticks
 float turnLeadL = 2.0, turnLeadR = 2.0;                         // degrees
 
 // ---- State -----------------------------------------------------------------
+// Defined before any function: the Arduino IDE auto-inserts function
+// prototypes above the first function, and driveStraight() returns a Run.
+struct Run { long travelled; float avgCorr; float endHeading; bool aborted; };
+
 VL53L0X front;
 volatile long countL = 0, countR = 0;
 int encSignL = +1, encSignR = +1;               // learned in the spin test
@@ -279,8 +283,6 @@ int findDeadband(bool left) {
 // ============================================================================
 //  STEP 3 primitives - identical logic to mouse_map
 // ============================================================================
-struct Run { long travelled; float avgCorr; float endHeading; bool aborted; };
-
 // dir +1 = forward, -1 = reverse. One square, heading held by gyro + encoders.
 Run driveStraight(int dir) {
   float lead = (dir > 0) ? stopLeadFwd : stopLeadRev;
