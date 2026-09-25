@@ -92,7 +92,7 @@ const int MIN_MOVE_PWM = 45;    // below this a wheel may just buzz, not move
 
 // --- Geometry - MEASURE THESE (see guide H6). Cell is 180 mm. ---------------
 const float CELL_MM             = 180.0;  // maze cell pitch
-const float WHEEL_DIAMETER_MM   = 32.0;   // <-- MEASURE your wheel
+const float WHEEL_DIAMETER_MM   = 44.0;   // measured
 const float ENC_TICKS_PER_REV   = 210.0;  // <-- MEASURE (gearbox x encoder x edges)
 // Ticks to travel one cell, computed from the above.
 const long  TICKS_PER_CELL =
