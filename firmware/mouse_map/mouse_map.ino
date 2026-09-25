@@ -61,7 +61,7 @@ const int PWM_FREQ_HZ = 20000, PWM_BITS = 8, PWM_MAX = 255;
 const int CRUISE_PWM = 90, TURN_PWM = 85, BACKUP_PWM = 80, MIN_MOVE_PWM = 45;
 
 // Geometry - MEASURE (guide H6).
-const float CELL_MM = 180.0, WHEEL_DIAMETER_MM = 44.0, ENC_TICKS_PER_REV = 210.0;
+const float CELL_MM = 180.0, WHEEL_DIAMETER_MM = 44.0, ENC_TICKS_PER_REV = 402.0;
 const long  TICKS_PER_CELL =
     (long)((CELL_MM * ENC_TICKS_PER_REV) / (PI * WHEEL_DIAMETER_MM) + 0.5);
 

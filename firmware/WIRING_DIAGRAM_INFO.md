@@ -61,5 +61,5 @@ All four: VCC → 3V3, GND → GND.
 | Constant | Value | How it was found |
 |----------|-------|------------------|
 | `WHEEL_DIAMETER_MM` | 44.0 | Measured |
-| `ENC_TICKS_PER_REV` | 210.0 (placeholder) | Measure: `motor_encoder_test`, send `o`, turn a wheel one full turn |
+| `ENC_TICKS_PER_REV` | 402.0 | Measured by hand turn: L 395, R 408, averaged |
 | `L_DIR_SIGN` / `R_DIR_SIGN` | +1 | Check: `motor_encoder_test`, send `d` |

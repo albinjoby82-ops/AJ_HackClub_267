@@ -55,7 +55,7 @@ const int PIN_R_ENC_A = 11, PIN_R_ENC_B = 23;
 const int PWM_FREQ_HZ = 20000, PWM_BITS = 8, PWM_MAX = 255, MIN_MOVE_PWM = 40;
 
 // Geometry - MEASURE (use motor_encoder_test).
-const float WHEEL_DIAMETER_MM = 44.0, ENC_TICKS_PER_REV = 210.0;
+const float WHEEL_DIAMETER_MM = 44.0, ENC_TICKS_PER_REV = 402.0;
 const float MM_PER_TICK = (PI * WHEEL_DIAMETER_MM) / ENC_TICKS_PER_REV;
 
 // Target cruise speed. Slow on purpose.
