@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 1090" width="1040" height="1090" style="display:block;width:100%;height:auto;max-width:1040px" role="img" aria-labelledby="title desc">
+<title id="title">Motor driver · two channels</title>
+<desc id="desc">ESP32-C6 GPIO0 to DIR1, GPIO2 to PWM1, GPIO3 to DIR2 and GPIO10 to PWM2. Motor A outputs go to the left motor, Motor B outputs to the right motor. Battery positive 9V to VM. Battery negative, driver GND and ESP32 GND are joined. Driver VCC connects to ESP32 3V3 only if that pin exists. PWM maximum 170/255. Motor A encoder C1 to GPIO21, C2 to GPIO22, VCC to 3V3 and GND to GND. Logical connections, not physical terminal positions.</desc>
+<!-- Logical connections only. Authority: micromouse-debug-kit sketch header comments. -->
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#18332b}
+.title{font-size:34px;font-weight:700;letter-spacing:-.5px}
+.section{font-size:24px;font-weight:700}
+.body{font-size:22px}
+.small{font-size:19px;fill:#53665f}
+.mono{font-family:Consolas,'Liberation Mono',monospace;font-size:22px;font-weight:700}
+.kicker{font-size:17px;font-weight:700;letter-spacing:2px;fill:#16734b}
+.green{font-size:22px;font-weight:700;fill:#16734b}
+.red{font-size:22px;font-weight:700;fill:#b53640}
+</style>
+<rect width="1040" height="1090" rx="24" fill="#f7faf7"/>
+<rect x="40" y="34" width="6" height="62" rx="3" fill="#16734b"/>
+<text x="62" y="49" class="kicker" >DIRECTION + PWM / MOTOR A + MOTOR B</text>
+<text x="62" y="91" class="title" >Motor driver · two channels</text>
+<text x="40" y="127" class="small" >Logical connections • GPIO numbers are not physical header positions.</text>
+<rect x="40" y="165" width="310" height="300" rx="18" fill="#fff" stroke="#cbdcd2" stroke-width="1.5"/>
+<rect x="690" y="165" width="310" height="300" rx="18" fill="#fff" stroke="#cbdcd2" stroke-width="1.5"/>
+<text x="65" y="208" class="section" >ESP32-C6</text>
+<text x="715" y="208" class="section" >Motor driver</text>
+<text x="325" y="267" class="mono" text-anchor="end">GPIO0</text>
+<text x="715" y="267" class="mono" >DIR1</text>
+<path d="M350 260 H690" fill="none" stroke="#16734b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="350" cy="260" r="5" fill="#16734b"/>
+<circle cx="690" cy="260" r="5" fill="#16734b"/>
+<text x="520" y="248" class="small" text-anchor="middle">A / left direction</text>
+<text x="325" y="322" class="mono" text-anchor="end">GPIO2</text>
+<text x="715" y="322" class="mono" >PWM1</text>
+<path d="M350 315 H690" fill="none" stroke="#16734b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="350" cy="315" r="5" fill="#16734b"/>
+<circle cx="690" cy="315" r="5" fill="#16734b"/>
+<text x="520" y="303" class="small" text-anchor="middle">A / left speed</text>
+<text x="325" y="377" class="mono" text-anchor="end">GPIO3</text>
+<text x="715" y="377" class="mono" >DIR2</text>
+<path d="M350 370 H690" fill="none" stroke="#16734b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="350" cy="370" r="5" fill="#16734b"/>
+<circle cx="690" cy="370" r="5" fill="#16734b"/>
+<text x="520" y="358" class="small" text-anchor="middle">B / right direction</text>
+<text x="325" y="432" class="mono" text-anchor="end">GPIO10</text>
+<text x="715" y="432" class="mono" >PWM2</text>
+<path d="M350 425 H690" fill="none" stroke="#16734b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="350" cy="425" r="5" fill="#16734b"/>
+<circle cx="690" cy="425" r="5" fill="#16734b"/>
+<text x="520" y="413" class="small" text-anchor="middle">B / right speed</text>
+<rect x="40" y="485" width="470" height="115" rx="18" fill="#edf7f0" stroke="#cbdcd2" stroke-width="1.5"/>
+<rect x="530" y="485" width="470" height="115" rx="18" fill="#edf7f0" stroke="#cbdcd2" stroke-width="1.5"/>
+<text x="62" y="522" class="section" >Motor A outputs → LEFT motor</text>
+<text x="62" y="565" class="small" >Connect the two motor power wires.</text>
+<text x="552" y="522" class="section" >Motor B outputs → RIGHT motor</text>
+<text x="552" y="565" class="small" >Connect the two motor power wires.</text>
+<rect x="40" y="620" width="960" height="185" rx="18" fill="#fff" stroke="#cbdcd2" stroke-width="1.5"/>
+<text x="62" y="660" class="section" >Driver power</text>
+<text x="62" y="702" class="mono" >Battery +9V → VM</text>
+<text x="460" y="702" class="body" >Battery − = driver GND = ESP32 GND</text>
+<text x="62" y="746" class="body" >ESP32 3V3 → VCC only if your driver board has a VCC pin.</text>
+<text x="62" y="782" class="small" >USB powers the ESP32-C6. Battery powers the motors through the driver.</text>
+<rect x="40" y="825" width="960" height="150" rx="18" fill="#fff" stroke="#cbdcd2" stroke-width="1.5"/>
+<text x="62" y="865" class="section" >Motor A encoder · separate from the motor power wires</text>
+<text x="62" y="910" class="mono" >C1 → GPIO21    C2 → GPIO22</text>
+<text x="62" y="949" class="mono" >VCC → ESP32 3V3    GND → ESP32 GND</text>
+<text x="40" y="1018" class="red" >PWM maximum: 170/255 • Keep this firmware speed cap.</text>
+<text x="40" y="1065" class="small" >Source: 07_motor_1 + 08_motors_2 + tools/encoder_test headers</text>
+</svg>

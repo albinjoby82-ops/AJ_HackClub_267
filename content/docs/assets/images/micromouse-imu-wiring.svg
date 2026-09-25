@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 720" width="1040" height="720" style="display:block;width:100%;height:auto;max-width:1040px" role="img" aria-labelledby="title desc">
+<title id="title">IMU · four wires, one shared bus</title>
+<desc id="desc">ESP32-C6 3V3 connects to MPU6050 GY-521 VCC; GND to GND; GPIO6 to SDA; GPIO7 to SCL. XDA, XCL, AD0 and INT are unconnected. Expected I2C address 0x68. Logical connections, not a physical board pinout.</desc>
+<!-- Logical connections only. Authority: micromouse-debug-kit sketch header comments. -->
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#18332b}
+.title{font-size:34px;font-weight:700;letter-spacing:-.5px}
+.section{font-size:24px;font-weight:700}
+.body{font-size:22px}
+.small{font-size:19px;fill:#53665f}
+.mono{font-family:Consolas,'Liberation Mono',monospace;font-size:22px;font-weight:700}
+.kicker{font-size:17px;font-weight:700;letter-spacing:2px;fill:#16734b}
+.green{font-size:22px;font-weight:700;fill:#16734b}
+.red{font-size:22px;font-weight:700;fill:#b53640}
+</style>
+<rect width="1040" height="720" rx="24" fill="#f7faf7"/>
+<rect x="40" y="34" width="6" height="62" rx="3" fill="#16734b"/>
+<text x="62" y="49" class="kicker" >MPU6050 / GY-521</text>
+<text x="62" y="91" class="title" >IMU · four wires, one shared bus</text>
+<text x="40" y="127" class="small" >Logical connections • GPIO numbers are not physical header positions.</text>
+<rect x="40" y="170" width="310" height="315" rx="18" fill="#fff" stroke="#cbdcd2" stroke-width="1.5"/>
+<rect x="690" y="170" width="310" height="315" rx="18" fill="#fff" stroke="#cbdcd2" stroke-width="1.5"/>
+<text x="65" y="213" class="section" >ESP32-C6</text>
+<text x="715" y="213" class="section" >MPU6050 / GY-521</text>
+<text x="325" y="277" class="mono" text-anchor="end">3V3</text>
+<text x="715" y="277" class="mono" >VCC</text>
+<path d="M350 270 H690" fill="none" stroke="#b53640" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="350" cy="270" r="5" fill="#b53640"/>
+<circle cx="690" cy="270" r="5" fill="#b53640"/>
+<text x="520" y="258" class="small" text-anchor="middle">3.3 V power</text>
+<text x="325" y="334" class="mono" text-anchor="end">GND</text>
+<text x="715" y="334" class="mono" >GND</text>
+<path d="M350 327 H690" fill="none" stroke="#65746e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="350" cy="327" r="5" fill="#65746e"/>
+<circle cx="690" cy="327" r="5" fill="#65746e"/>
+<text x="520" y="315" class="small" text-anchor="middle">Common ground</text>
+<text x="325" y="391" class="mono" text-anchor="end">GPIO6</text>
+<text x="715" y="391" class="mono" >SDA</text>
+<path d="M350 384 H690" fill="none" stroke="#16734b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="350" cy="384" r="5" fill="#16734b"/>
+<circle cx="690" cy="384" r="5" fill="#16734b"/>
+<text x="520" y="372" class="small" text-anchor="middle">I²C data</text>
+<text x="325" y="448" class="mono" text-anchor="end">GPIO7</text>
+<text x="715" y="448" class="mono" >SCL</text>
+<path d="M350 441 H690" fill="none" stroke="#16734b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="350" cy="441" r="5" fill="#16734b"/>
+<circle cx="690" cy="441" r="5" fill="#16734b"/>
+<text x="520" y="429" class="small" text-anchor="middle">I²C clock</text>
+<rect x="40" y="510" width="960" height="90" rx="18" fill="#fff0ef" stroke="#b53640" stroke-width="1.5"/>
+<text x="62" y="545" class="red" >LEAVE UNCONNECTED</text>
+<text x="62" y="578" class="mono" >XDA     XCL     AD0     INT</text>
+<text x="600" y="560" class="body" >No wires to these four pins.</text>
+<text x="40" y="638" class="body" >Expected address: 0x68 • Shares GPIO6 / GPIO7 with the ToF sensors.</text>
+<text x="40" y="695" class="small" >Source: 02_imu + 06_tof_3_imu headers</text>
+</svg>

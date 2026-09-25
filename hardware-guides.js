@@ -17,7 +17,8 @@
     });
 
     window.enhanceHardwareGuide = function (content, path, page) {
-        var hardware = path.indexOf(prefix) === 0;
+        var debug = path.indexOf('docs/Micromouse2026/Debug/') === 0;
+        var hardware = path.indexOf(prefix) === 0 || debug;
         document.body.classList.toggle('hardware-reading', hardware);
         if (!hardware) return;
         content.classList.add('hardware-guide');
@@ -26,8 +27,8 @@
 
         var back = document.createElement('a');
         back.className = 'hardware-back';
-        back.href = 'micromouse-resources.html#hardware';
-        back.textContent = '← All hardware guides';
+        back.href = 'micromouse-resources.html#' + (debug ? 'debug' : 'hardware');
+        back.textContent = debug ? '← All debug checks' : '← All hardware guides';
         title.before(back);
 
         var match = title.textContent.match(/^(H\d)\s*-\s*/);
