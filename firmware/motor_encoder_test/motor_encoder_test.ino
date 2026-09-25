@@ -22,7 +22,9 @@
  *    + / - : raise / lower the test PWM
  *    d : direction self-check (pulses each wheel, tells you what to fix)
  *
- *  It streams the live encoder counts a few times a second the whole time.
+ *  It streams the live encoder counts a few times a second the whole time,
+ *  plus the raw A/B pin levels. Turning a wheel slowly, BOTH its A and B must
+ *  flip between 0 and 1. If one never changes, that wire isn't reaching the pin.
  * ============================================================================
  */
 
@@ -134,6 +136,9 @@ void loop() {
   static unsigned long last = 0;
   if (millis() - last > 250) {
     last = millis();
-    Serial.printf("counts  L=%+8ld  R=%+8ld\n", countL, countR);
+    Serial.printf("counts  L=%+8ld  R=%+8ld   raw pins  LA=%d LB=%d  RA=%d RB=%d\n",
+                  countL, countR,
+                  digitalRead(PIN_L_ENC_A), digitalRead(PIN_L_ENC_B),
+                  digitalRead(PIN_R_ENC_A), digitalRead(PIN_R_ENC_B));
   }
 }
