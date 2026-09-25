@@ -41,7 +41,7 @@ const int PIN_SCL = 7;
 
 // --- XSHUT pins, one per VL53L0X. Set these to your wiring. -----------------
 //     Order here MUST match the names/addresses arrays below.
-const int   XSHUT[3]        = {   2,        3,        10   };
+const int   XSHUT[3]        = {  18, 19, 20 };
 const char *SENSOR_NAME[3]  = { "LEFT",   "FRONT",  "RIGHT" };
 const uint8_t NEW_ADDR[3]   = { 0x30,     0x31,     0x32   };
 

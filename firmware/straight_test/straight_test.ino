@@ -40,17 +40,17 @@
 //  CONFIG  (keep pins identical across all the sketches)
 // ============================================================================
 const int PIN_SDA = 6, PIN_SCL = 7;
-const int     XSHUT[3]       = {   2,       3,       10   };
+const int     XSHUT[3]       = {  18, 19, 20 };
 const char   *SENSOR_NAME[3] = { "LEFT",  "FRONT", "RIGHT" };
 const uint8_t SENSOR_ADDR[3] = { 0x30,    0x31,    0x32   };
 enum { S_LEFT = 0, S_FRONT = 1, S_RIGHT = 2 };
 
-const int PIN_L_DIR = 19, PIN_L_PWM = 18;
-const int PIN_R_DIR = 21, PIN_R_PWM = 20;
+const int PIN_L_DIR = 0, PIN_L_PWM = 2;
+const int PIN_R_DIR = 3, PIN_R_PWM = 10;
 const int L_DIR_SIGN = +1, R_DIR_SIGN = +1;
 
-const int PIN_L_ENC_A = 0, PIN_L_ENC_B = 1;
-const int PIN_R_ENC_A = 22, PIN_R_ENC_B = 23;
+const int PIN_L_ENC_A = 21, PIN_L_ENC_B = 22;
+const int PIN_R_ENC_A = 11, PIN_R_ENC_B = 23;
 
 const int PWM_FREQ_HZ = 20000, PWM_BITS = 8, PWM_MAX = 255, MIN_MOVE_PWM = 40;
 

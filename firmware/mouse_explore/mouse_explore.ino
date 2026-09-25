@@ -53,31 +53,31 @@ const int PIN_SCL = 7;
 
 // --- VL53L0X XSHUT pins + names + addresses (order must line up) ------------
 //     Avoid ESP32-C6 strapping pins (4,5,8,9,15) and USB pins (12,13).
-const int     XSHUT[3]       = {   2,       3,       10   };
+const int     XSHUT[3]       = {  18, 19, 20 };
 const char   *SENSOR_NAME[3] = { "LEFT",  "FRONT", "RIGHT" };
 const uint8_t SENSOR_ADDR[3] = { 0x30,    0x31,    0x32   };
 enum { LEFT = 0, FRONT = 1, RIGHT = 2 };   // index names
 
 // --- DRI0044 motor driver pins ---------------------------------------------
 //     Each motor: one direction pin + one PWM (speed) pin.
-const int PIN_L_DIR = 19;
-const int PIN_L_PWM = 18;
-const int PIN_R_DIR = 21;
-const int PIN_R_PWM = 20;
+const int PIN_L_DIR = 0;
+const int PIN_L_PWM = 2;
+const int PIN_R_DIR = 3;
+const int PIN_R_PWM = 10;
 
 // If a wheel drives the wrong way, flip its sign here (or swap its motor wires).
 const int L_DIR_SIGN = +1;
 const int R_DIR_SIGN = +1;
 
 // --- Wheel encoder pins (A and B per wheel) --------------------------------
-const int PIN_L_ENC_A = 0;
-const int PIN_L_ENC_B = 1;
-const int PIN_R_ENC_A = 22;
+const int PIN_L_ENC_A = 21;
+const int PIN_L_ENC_B = 22;
+const int PIN_R_ENC_A = 11;
 const int PIN_R_ENC_B = 23;
 
 // --- Status LED (a plain LED to a GPIO through a resistor). Optional. -------
 //     Set to -1 if you have no status LED; states still print on Serial.
-const int PIN_STATUS_LED = 11;
+const int PIN_STATUS_LED = -1;
 
 // --- PWM setup (ESP32 LEDC) -------------------------------------------------
 const int      PWM_FREQ_HZ = 20000;   // above hearing, easy on the driver
