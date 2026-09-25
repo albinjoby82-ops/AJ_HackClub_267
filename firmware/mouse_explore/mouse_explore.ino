@@ -67,7 +67,7 @@ const int PIN_R_PWM = 10;
 
 // If a wheel drives the wrong way, flip its sign here (or swap its motor wires).
 const int L_DIR_SIGN = +1;
-const int R_DIR_SIGN = +1;
+const int R_DIR_SIGN = -1;
 
 // --- Wheel encoder pins (A and B per wheel) --------------------------------
 const int PIN_L_ENC_A = 21;
