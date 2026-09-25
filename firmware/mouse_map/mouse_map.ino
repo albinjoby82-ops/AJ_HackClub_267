@@ -36,6 +36,7 @@
 
 #include <Wire.h>
 #include <VL53L0X.h>
+#include <Preferences.h>
 #include "maze.h"
 
 // ============================================================================
@@ -89,9 +90,17 @@ const long          STALL_TICKS = 3;
 const unsigned long STALL_MS = 700, CELL_TIMEOUT_MS = 6000;
 
 // MPU-6050.
-const uint8_t MPU_ADDR = 0x68, MPU_PWR_MGMT_1 = 0x6B, MPU_GYRO_ZOUT_H = 0x47;
-const float   GYRO_LSB_PER_DPS = 131.0;
+const uint8_t MPU_ADDR = 0x68, MPU_PWR_MGMT_1 = 0x6B, MPU_GYRO_CONFIG = 0x1B, MPU_GYRO_ZOUT_H = 0x47;
+const float   GYRO_LSB_PER_DPS = 32.8;      // +-1000 dps range, so a fast spin can't clip
 const int     GYRO_SIGN = +1, GYRO_CAL_SAMPLES = 800;
+
+// Learned by the calibrate sketch and loaded from flash at boot (see loadCal).
+// These defaults are only used if calibrate has never been run.
+int   gyroSign = GYRO_SIGN;
+int   minPwmL = MIN_MOVE_PWM, minPwmR = MIN_MOVE_PWM;
+float trimLF = 1.0, trimRF = 1.0, trimLR = 1.0, trimRR = 1.0;
+float stopLeadFwd = 0.0, stopLeadRev = 0.0;   // ticks
+float turnLeadL = 2.0, turnLeadR = 2.0;       // degrees
 
 // Maze.
 const int MAZE_W = 16, MAZE_H = 16;
@@ -106,7 +115,7 @@ Maze<16, 16> maze;
 volatile long countL = 0, countR = 0;
 
 int posX = START_X, posY = START_Y, headingDir = START_DIR;   // pose in cells
-float gyroBiasZ = 0.0, gyroAngle = 0.0, lastGyroZ = 0.0;      // per-move gyro
+float gyroBiasRaw = 0.0, gyroAngle = 0.0, lastGyroZ = 0.0;    // per-move gyro
 unsigned long lastGyroUs = 0;
 
 int  distL = MAX_VALID_MM, distF = MAX_VALID_MM, distR = MAX_VALID_MM;
@@ -155,16 +164,17 @@ void halt(const char *why) { Serial.printf("HALT: %s\n", why); ledState = LED_ER
 // ============================================================================
 //  MOTORS
 // ============================================================================
-void motorWrite(int dirPin, int pwmPin, int dirSign, int spd) {
-  int s = spd * dirSign; bool fwd = (s >= 0); int mag = abs(s);
+void motorWrite(int dirPin, int pwmPin, int dirSign, int spd, int minPwm, float trimF, float trimB) {
+  if (spd == 0) { ledcWrite(pwmPin, 0); return; }
+  int mag = (int)(abs(spd) * (spd > 0 ? trimF : trimB) + 0.5f);
   if (mag > PWM_MAX) mag = PWM_MAX;
-  if (mag != 0 && mag < MIN_MOVE_PWM) mag = MIN_MOVE_PWM;
-  digitalWrite(dirPin, fwd ? HIGH : LOW);
+  if (mag < minPwm)  mag = minPwm;
+  digitalWrite(dirPin, (spd * dirSign) > 0 ? HIGH : LOW);
   ledcWrite(pwmPin, mag);
 }
 void setMotors(int l, int r) {
-  motorWrite(PIN_L_DIR, PIN_L_PWM, L_DIR_SIGN, l);
-  motorWrite(PIN_R_DIR, PIN_R_PWM, R_DIR_SIGN, r);
+  motorWrite(PIN_L_DIR, PIN_L_PWM, L_DIR_SIGN, l, minPwmL, trimLF, trimLR);
+  motorWrite(PIN_R_DIR, PIN_R_PWM, R_DIR_SIGN, r, minPwmR, trimRF, trimRR);
 }
 void stopMotors() { ledcWrite(PIN_L_PWM, 0); ledcWrite(PIN_R_PWM, 0); }
 
@@ -175,14 +185,19 @@ bool mpuWrite(uint8_t reg, uint8_t val) {
   Wire.beginTransmission(MPU_ADDR); Wire.write(reg); Wire.write(val);
   return Wire.endTransmission() == 0;
 }
-float readGyroZ() {
+bool readGyroRaw(int16_t &raw) {
   Wire.beginTransmission(MPU_ADDR); Wire.write(MPU_GYRO_ZOUT_H);
-  if (Wire.endTransmission(false) != 0) return 0.0;
-  if (Wire.requestFrom((int)MPU_ADDR, 2) != 2) return 0.0;
-  int16_t raw = (Wire.read() << 8) | Wire.read();
-  return GYRO_SIGN * (raw / GYRO_LSB_PER_DPS) - gyroBiasZ;
+  if (Wire.endTransmission(false) != 0) return false;
+  if (Wire.requestFrom((int)MPU_ADDR, 2) != 2) return false;
+  raw = (int16_t)((Wire.read() << 8) | Wire.read());
+  return true;
 }
-void resetGyro() { gyroAngle = 0.0; lastGyroUs = micros(); }
+float readGyroZ() {
+  int16_t raw;
+  if (!readGyroRaw(raw)) return 0.0;
+  return gyroSign * (raw / GYRO_LSB_PER_DPS - gyroBiasRaw);
+}
+void resetGyro() { gyroAngle = 0.0; lastGyroZ = 0.0; lastGyroUs = micros(); }
 void updateGyro() {
   unsigned long now = micros();
   float dt = (now - lastGyroUs) * 1e-6f; lastGyroUs = now;
@@ -192,15 +207,45 @@ void updateGyro() {
 }
 void calibrateGyro() {
   Serial.println(F("Calibrating gyro - keep the mouse completely still..."));
-  double sum = 0; gyroBiasZ = 0;
+  double sum = 0; int n = 0; int16_t raw;
   for (int i = 0; i < GYRO_CAL_SAMPLES; i++) {
-    Wire.beginTransmission(MPU_ADDR); Wire.write(MPU_GYRO_ZOUT_H); Wire.endTransmission(false);
-    Wire.requestFrom((int)MPU_ADDR, 2);
-    int16_t raw = (Wire.read() << 8) | Wire.read();
-    sum += GYRO_SIGN * (raw / GYRO_LSB_PER_DPS); delay(2);
+    if (readGyroRaw(raw)) { sum += raw / GYRO_LSB_PER_DPS; n++; }
+    delay(2);
   }
-  gyroBiasZ = (float)(sum / GYRO_CAL_SAMPLES);
-  Serial.printf("Gyro bias Z = %.3f dps\n", gyroBiasZ);
+  if (n < GYRO_CAL_SAMPLES / 2) halt("IMU reads keep failing - check its SDA/SCL/VCC/GND");
+  gyroBiasRaw = (float)(sum / n);
+  Serial.printf("Gyro bias Z = %.3f dps\n", gyroBiasRaw);
+}
+
+// Wait for both wheels to stop, integrating the gyro so the coast is counted.
+void settle() {
+  long lL = countL, lR = countR;
+  unsigned long t0 = millis(), still = millis();
+  while (millis() - t0 < 1000) {
+    updateGyro(); delay(3);
+    if (countL != lL || countR != lR) { lL = countL; lR = countR; still = millis(); }
+    else if (millis() - still > 150) break;
+  }
+}
+
+void loadCal() {
+  Preferences p;
+  bool ok = p.begin("mousecal", true) && p.getBool("ok", false);
+  if (ok) {
+    gyroSign = p.getInt("gyroSign", gyroSign);
+    minPwmL = p.getInt("minL", minPwmL);        minPwmR = p.getInt("minR", minPwmR);
+    trimLF = p.getFloat("trimLF", trimLF);      trimRF = p.getFloat("trimRF", trimRF);
+    trimLR = p.getFloat("trimLR", trimLR);      trimRR = p.getFloat("trimRR", trimRR);
+    stopLeadFwd = p.getFloat("leadF", stopLeadFwd); stopLeadRev = p.getFloat("leadR", stopLeadRev);
+    turnLeadL = p.getFloat("turnL", turnLeadL); turnLeadR = p.getFloat("turnR", turnLeadR);
+  }
+  p.end();
+  if (!ok) { Serial.println(F("WARNING: no calibration saved - run the calibrate sketch first. Using defaults.")); return; }
+  Serial.println(F("Loaded calibration:"));
+  Serial.printf("  gyro sign %+d | min PWM  L %d  R %d\n", gyroSign, minPwmL, minPwmR);
+  Serial.printf("  trim fwd  L %.3f  R %.3f | trim rev  L %.3f  R %.3f\n", trimLF, trimRF, trimLR, trimRR);
+  Serial.printf("  stop lead fwd %.0f  rev %.0f ticks | turn lead L %.1f  R %.1f deg\n",
+                stopLeadFwd, stopLeadRev, turnLeadL, turnLeadR);
 }
 
 // ============================================================================
@@ -252,6 +297,7 @@ void startSensors() {
   // Start ranging only once all three are addressed, so none is busy while another boots.
   for (int i = 0; i < 3; i++) laser[i].startContinuous();
   if (!mpuWrite(MPU_PWR_MGMT_1, 0x00)) halt("MPU-6050 not responding: check SDA/SCL/VIN/GND");
+  mpuWrite(MPU_GYRO_CONFIG, 0x10);   // +-1000 dps, must match GYRO_LSB_PER_DPS
   delay(50);
   Serial.println(F("IMU (MPU-6050) initialized OK at 0x68"));
   calibrateGyro();
@@ -301,7 +347,7 @@ bool forwardOneCell() {
     long dL = labs(countL - startL), dR = labs(countR - startR), avg = (dL + dR) / 2;
 
     if (distF < FRONT_STOP_MM) { stopMotors(); return true; }   // pinned by front wall
-    if (avg >= TICKS_PER_CELL) { stopMotors(); return true; }   // full cell by odometry
+    if (avg >= TICKS_PER_CELL - (long)stopLeadFwd) { stopMotors(); return true; }   // coasts the rest
 
     int corr = steeringCorrection(dL, dR);
     setMotors(CRUISE_PWM + corr, CRUISE_PWM - corr);
@@ -322,19 +368,21 @@ bool forwardOneCell() {
 
 void turnInPlace(float degrees) {
   showLED(LED_TURNING);
+  float lead = (degrees > 0) ? turnLeadL : turnLeadR;   // learned coast after cut-off
+  int slowMin = max(minPwmL, minPwmR);
   resetGyro();
   unsigned long t0 = millis();
   while (millis() - t0 < TURN_TIMEOUT_MS) {
     updateGyro();
     float remaining = degrees - gyroAngle;
-    if (fabs(remaining) < 2.0) break;
+    if (remaining * (degrees > 0 ? 1 : -1) <= lead) break;
     int pwm = TURN_PWM;
-    if (fabs(remaining) < TURN_SLOW_ZONE_DEG)
-      pwm = MIN_MOVE_PWM + (int)((TURN_PWM - MIN_MOVE_PWM) * (fabs(remaining) / TURN_SLOW_ZONE_DEG));
-    if (remaining > 0) setMotors(-pwm, +pwm); else setMotors(+pwm, -pwm);
+    if (fabs(remaining) < TURN_SLOW_ZONE_DEG && TURN_PWM > slowMin)
+      pwm = slowMin + (int)((TURN_PWM - slowMin) * (fabs(remaining) / TURN_SLOW_ZONE_DEG));
+    if (degrees > 0) setMotors(-pwm, +pwm); else setMotors(+pwm, -pwm);
     delay(3);
   }
-  stopMotors(); delay(120);
+  stopMotors(); settle();
 }
 
 // Turn to an absolute cardinal direction by the shortest rotation.
@@ -387,6 +435,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(PIN_R_ENC_A), isrRight, CHANGE);
 
   Wire.begin(PIN_SDA, PIN_SCL); Wire.setClock(100000);   // same safe speed the scanner proved works
+  loadCal();
   startSensors();
 
   maze.begin(MAZE_W, MAZE_H);

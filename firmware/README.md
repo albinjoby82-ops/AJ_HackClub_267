@@ -33,6 +33,10 @@ pins at every boot.
   outer loop holds heading and centres between walls, and the front sensor stops
   it before a wall. This is the sketch that makes navigation *reliable*; tune it
   here before trusting the mapper.
+- **`calibrate/`** — the mouse learns its own gyro direction, motor dead-band,
+  wheel trim, stopping coast and turn overshoot by repeating forward / reverse /
+  90° turns, then saves them to flash. `mouse_map` loads them at boot. Run it
+  before `mouse_map`, and again whenever the mouse starts drifting.
 - **`mouse_explore/`** — the simple reactive explorer: left-hand-rule wall
   following with centred, non-crashing driving. Good for a first "does it move
   without hitting walls" test. Does **not** build a map.
