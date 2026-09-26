@@ -49,7 +49,7 @@ const int PIN_R_DIR = 3, PIN_R_PWM = 10;
 const int L_DIR_SIGN = +1, R_DIR_SIGN = -1;
 const int PIN_L_ENC_A = 21, PIN_L_ENC_B = 22;
 const int PIN_R_ENC_A = 11, PIN_R_ENC_B = 23;
-const int PIN_RGB_LED = 8;                      // onboard RGB LED (DevKitC-1)
+const int STATUS_RGB_PIN = 8;                      // onboard RGB LED (DevKitC-1)
 const int PIN_BOOT_BTN = 9;                     // onboard BOOT button, LOW when pressed
 
 // ---- Motion constants: MUST match mouse_map --------------------------------
@@ -141,11 +141,11 @@ void ledTask(void *) {
   while (true) {
     on = !on;
     switch (ledMode) {
-      case LED_READY:     rgbLedWrite(PIN_RGB_LED, 6, 6, 6);            break;
-      case LED_RUNNING:   rgbLedWrite(PIN_RGB_LED, 0, 0, on ? 60 : 0);  break;
-      case LED_DONE:      rgbLedWrite(PIN_RGB_LED, 0, 60, 0);           break;
-      case LED_UNSETTLED: rgbLedWrite(PIN_RGB_LED, 60, 35, 0);          break;
-      case LED_ERROR:     rgbLedWrite(PIN_RGB_LED, on ? 60 : 0, 0, 0);  break;
+      case LED_READY:     rgbLedWrite(STATUS_RGB_PIN, 6, 6, 6);            break;
+      case LED_RUNNING:   rgbLedWrite(STATUS_RGB_PIN, 0, 0, on ? 60 : 0);  break;
+      case LED_DONE:      rgbLedWrite(STATUS_RGB_PIN, 0, 60, 0);           break;
+      case LED_UNSETTLED: rgbLedWrite(STATUS_RGB_PIN, 60, 35, 0);          break;
+      case LED_ERROR:     rgbLedWrite(STATUS_RGB_PIN, on ? 60 : 0, 0, 0);  break;
     }
     vTaskDelay(pdMS_TO_TICKS(ledMode == LED_ERROR ? 150 : 300));
   }
