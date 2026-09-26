@@ -83,6 +83,9 @@ const int   CORR_MAX = 55;
 // Turns.
 const float TURN_SLOW_ZONE_DEG = 25.0;
 const unsigned long TURN_TIMEOUT_MS = 3000;
+const float TURN_STALL_DPS = 15.0;             // rotating slower than this = stalled
+const unsigned long TURN_STALL_MS = 120;
+const int   TURN_BOOST_STEP = 6, TURN_BOOST_MAX = 90;
 
 // Recovery / stall.
 const int           MAX_RECOVERY = 3;
@@ -371,7 +374,8 @@ void turnInPlace(float degrees) {
   float lead = (degrees > 0) ? turnLeadL : turnLeadR;   // learned coast after cut-off
   int slowMin = max(minPwmL, minPwmR);
   resetGyro();
-  unsigned long t0 = millis();
+  unsigned long t0 = millis(), stallSince = 0;
+  int boost = 0;
   while (millis() - t0 < TURN_TIMEOUT_MS) {
     updateGyro();
     float remaining = degrees - gyroAngle;
@@ -379,6 +383,13 @@ void turnInPlace(float degrees) {
     int pwm = TURN_PWM;
     if (fabs(remaining) < TURN_SLOW_ZONE_DEG && TURN_PWM > slowMin)
       pwm = slowMin + (int)((TURN_PWM - slowMin) * (fabs(remaining) / TURN_SLOW_ZONE_DEG));
+    // Carpet drag can stall the slow end of a turn short of the target:
+    // if it stops rotating, keep stepping the power up until it moves.
+    if (fabs(lastGyroZ) < TURN_STALL_DPS) {
+      if (!stallSince) stallSince = millis();
+      else if (millis() - stallSince > TURN_STALL_MS && boost < TURN_BOOST_MAX) { boost += TURN_BOOST_STEP; stallSince = millis(); }
+    } else stallSince = 0;
+    pwm = min(pwm + boost, PWM_MAX);
     if (degrees > 0) setMotors(-pwm, +pwm); else setMotors(+pwm, -pwm);
     delay(3);
   }
