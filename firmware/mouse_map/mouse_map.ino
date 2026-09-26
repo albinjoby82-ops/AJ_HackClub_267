@@ -1,36 +1,34 @@
 /*
  * ============================================================================
- *  MICROMOUSE - MAZE MAPPING with FLOOD FILL  (map the maze on the first run)
+ *  MICROMOUSE - MAZE MAPPING with FLOOD FILL  (slow, centred, closed-loop)
  * ============================================================================
  *
  *  Dublin Micromouse Open 2026  -  ESP32-C6 + 3x VL53L0X + MPU-6050 + DRI0044.
  *
- *  This is the "real" exploration: it keeps a map of walls, runs flood fill to
- *  decide where to go, and heads for the centre - discovering walls and
- *  re-planning as it goes - until it has mapped a route to the goal.
+ *  Keeps a map of walls, runs flood fill (maze.h) to decide where to go, and
+ *  heads for the centre, discovering walls and re-planning as it goes.
  *
- *  The MAPPING BRAIN lives in maze.h and is proven in the desktop simulator
- *  (firmware/sim), which reaches the goal on 100% of solvable mazes. So the job
- *  of THIS file is the hard part everyone warns about: moving and sensing
- *  reliably enough that the map stays correct. One wrong wall, or losing track
- *  of which cell you're in, and flood fill will confidently plan through a wall.
+ *  Motion is fully closed-loop so it behaves the same on carpet or wood:
+ *    - STRAIGHTS: each wheel runs a speed controller on its encoder (it holds
+ *      150 mm/s whatever the drag), ramping up from a crawl and back down to a
+ *      crawl at the end of every square so it stops where it means to. Heading
+ *      is held with the gyro and it centres between the side walls.
+ *    - TURNS: the gyro controls the turn RATE, slowing as it nears the target.
+ *      If carpet drag holds it back, the controller pushes harder until it
+ *      moves, so turns never stall short or fling past.
+ *    - SELF-CHECK: every run starts with a small wiggle that detects which way
+ *      the gyro and each encoder count, so nothing has to be set by hand.
+ *    - WALLS: in the start square (walls both sides) it measures what "centred"
+ *      reads on each side sensor, and centres to that.
+ *    - A turn that misses badly stops the run instead of driving into a wall,
+ *      and a wall found right in front never counts as moving a square, so the
+ *      map can't get out of step with where the mouse really is.
  *
- *  The three tricks that fight odometry drift, each pinning one degree of
- *  freedom against the walls every cell so error can't pile up:
- *    - HEADING: turns are closed-loop on the gyro, and the gyro angle is reset
- *      to zero each move, so every straight is held against "0 degrees" and
- *      every cell re-squares the mouse to the cardinal direction.
- *    - SIDEWAYS: while crossing a cell it centres between the side walls, so it
- *      re-centres in the corridor every single cell.
- *    - FORWARD: when there's a wall ahead it stops at a fixed distance from it
- *      (front ToF), pinning how far along the cell it actually is.
- *  Walls are only ever read while stopped and squared up, and every wall is
- *  written to both cells that share it, so the map cannot disagree with itself.
- *
- *  Run calibrate first (it saves what this sketch loads). Runs cable-free:
- *    1. Power it from the battery, put it in the start corner with the outer
- *       wall on its LEFT, facing the open side.
- *    2. Press BOOT and let go. Hands off while it calibrates the gyro.
+ *  Runs cable-free:
+ *    1. Power it from the battery. Put it CENTRED in the start square with the
+ *       outer wall on its LEFT, facing the open side.
+ *    2. Press BOOT and let go. Hands off: it waits 3 s, calibrates the gyro,
+ *       wiggles, then maps.
  *    3. Onboard LED:  dim white = ready, blue flashing = mapping,
  *       green = reached the centre, red = stopped (reason in the log),
  *       red flashing = hardware error.
@@ -38,7 +36,8 @@
  *    4. Plug in USB, open Serial Monitor at 115200: it prints the saved log of
  *       the last run (why it stopped + the map). Send 'p' if nothing shows.
  *  It never starts moving by itself, so plugging USB in (which can reset the
- *  board) is safe. Needs the Pololu "VL53L0X" library.
+ *  board) is safe. The calibrate sketch is no longer needed. Needs the Pololu
+ *  "VL53L0X" library. Tested in firmware/sim/robot_sim.cpp before flashing.
  * ============================================================================
  */
 
@@ -49,10 +48,9 @@
 #include "maze.h"
 
 // ============================================================================
-//  CONFIG  (identical hardware to mouse_explore - keep them in sync)
+//  PINS
 // ============================================================================
 const int PIN_SDA = 6, PIN_SCL = 7;
-
 const int     XSHUT[3]       = {  18, 19, 20 };
 const char   *SENSOR_NAME[3] = { "LEFT",  "FRONT", "RIGHT" };
 const uint8_t SENSOR_ADDR[3] = { 0x30,    0x31,    0x32   };
@@ -60,92 +58,122 @@ enum { S_LEFT = 0, S_FRONT = 1, S_RIGHT = 2 };
 
 const int PIN_L_DIR = 0, PIN_L_PWM = 2;
 const int PIN_R_DIR = 3, PIN_R_PWM = 10;
-const int L_DIR_SIGN = +1, R_DIR_SIGN = -1;
+const int L_DIR_SIGN = +1, R_DIR_SIGN = -1;     // from motor_encoder_test 'd'
 
 const int PIN_L_ENC_A = 21, PIN_L_ENC_B = 22;
 const int PIN_R_ENC_A = 23, PIN_R_ENC_B = 11;
 
-const int STATUS_RGB_PIN = 8;       // onboard RGB LED (DevKitC-1)
-const int PIN_BOOT_BTN = 9;         // onboard BOOT button, LOW when pressed
-const unsigned long START_DELAY_MS = 3000;   // time to take your hand away
+const int STATUS_RGB_PIN = 8;                   // onboard RGB LED (DevKitC-1)
+const int PIN_BOOT_BTN = 9;                     // onboard BOOT button, LOW when pressed
+const unsigned long START_DELAY_MS = 3000;      // time to take your hand away
 
-const int PWM_FREQ_HZ = 20000, PWM_BITS = 8, PWM_MAX = 255;
-const int CRUISE_PWM = 90, TURN_PWM = 85, BACKUP_PWM = 80, MIN_MOVE_PWM = 45;
-
-// Geometry - MEASURE (guide H6).
+// ============================================================================
+//  GEOMETRY
+// ============================================================================
 const float CELL_MM = 180.0, WHEEL_DIAMETER_MM = 44.0, ENC_TICKS_PER_REV = 402.0;
-const long  TICKS_PER_CELL =
-    (long)((CELL_MM * ENC_TICKS_PER_REV) / (PI * WHEEL_DIAMETER_MM) + 0.5);
+const float MM_PER_TICK = (PI * WHEEL_DIAMETER_MM) / ENC_TICKS_PER_REV;
+const int   PWM_FREQ_HZ = 20000, PWM_BITS = 8, PWM_MAX = 255;
 
-// Wall detection (mm) - TUNE on real walls. A wall is only recorded when a
-// reading is comfortably inside these, to avoid poisoning the map.
-const int FRONT_WALL_MM = 120;      // wall ahead of this cell if front < this
-const int SIDE_WALL_MM  = 100;      // side wall if that ToF < this
-const int FRONT_STOP_MM = 65;       // stop this far from a wall ahead
-const int MAX_VALID_MM  = 1200;
-const int WALL_TRUST_MM = 90;       // only centre off a side wall this close
-const int SIDE_SETPOINT_MM = 70;
+// ============================================================================
+//  STRAIGHTS - per-wheel speed control (mm/s)
+// ============================================================================
+const float CRUISE_MM_S  = 150.0;   // slow on purpose
+const float CRAWL_MM_S   = 45.0;    // speed at the very start and end of a move
+const float ACCEL_MM     = 40.0;    // ramp up over the first 40 mm
+const float DECEL_MM     = 60.0;    // ramp down over the last 60 mm
+const float STOP_TOL_MM  = 2.0;
+const float FF_DEAD_FRAC = 0.8;     // feed-forward: this much of the dead-band PWM...
+const float KF_V = 0.16;            // ...plus this many PWM per mm/s
+const float KP_V = 0.15;            // PWM per mm/s of speed error
+const float KI_V = 1.5;             // PWM per mm of accumulated speed error
+const float I_V_MAX = 90.0;
+const unsigned long STALL_MS = 1500;   // no progress for this long = stuck
 
-// Steering gains (see mouse_explore for the rationale - heading first).
-const float KP_HEAD = 3.0, KD_HEAD = 0.4, KP_ENC = 0.5;
-const float KP_CENTER = 0.25, KP_SIDE = 0.30;
-const int   CORR_MAX = 55;
+// Steering: output is a left-right SPEED difference in mm/s (+ = turn right).
+const float KH = 4.0;               // per degree of heading error
+const float KD = 0.25;              // per deg/s of turn rate (damping)
+const float KC = 2.0;               // per mm off-centre, both walls
+const float KS = 2.0;               // per mm off-centre, one wall
+const float STEER_MAX_FRAC = 0.5;   // never more than half the forward speed
 
-// Turns.
-const float TURN_SLOW_ZONE_DEG = 25.0;
-const unsigned long TURN_TIMEOUT_MS = 3000;
-const float TURN_STALL_DPS = 15.0;             // rotating slower than this = stalled
-const unsigned long TURN_STALL_MS = 120;
-const int   TURN_BOOST_STEP = 6, TURN_BOOST_MAX = 90;
-const float TURN_NUDGE_DEG = 4.0;              // landed further off than this = creep back
-const float TURN_FAIL_DEG  = 20.0;             // still this far off = stop, don't drive blind
+// ============================================================================
+//  TURNS - gyro rate control
+// ============================================================================
+const float TURN_DPS      = 120.0;  // max turn rate - slow and controlled
+const float TURN_MIN_DPS  = 30.0;   // creep rate for the last few degrees
+const float TURN_KP_ANGLE = 4.0;    // deg/s of turn rate per degree still to go
+const float TURN_DONE_DEG = 1.5;
+const float KF_T = 0.12;            // PWM per deg/s (feed-forward)
+const float KP_T = 0.10;            // PWM per deg/s of rate error
+const float KI_T = 1.2;             // PWM per degree of accumulated rate error
+const float I_T_MAX = 120.0;
+const float KP_BAL = 1.0;           // PWM per encoder tick of forward/back creep during a turn
+const float KI_BAL = 8.0;
+const float I_BAL_MAX = 60.0;
+const unsigned long TURN_TIMEOUT_MS = 5000;
+const float TURN_FAIL_DEG = 20.0;   // still this far off = stop, don't drive blind
+
+// ============================================================================
+//  WALLS (mm) - side values are learned in the start square
+// ============================================================================
+const int   MAX_VALID_MM     = 1200;
+const int   FRONT_WALL_MM    = 120;     // wall ahead of this cell if front < this
+const int   FRONT_PIN_MM     = 110;     // wall within this of the stop point = it ends the destination cell
+const int   MAX_OVERRUN_MM   = 60;      // never drive further than this past the odometry cell end
+const int   FRONT_STOP_DEF   = 25;
+const float POST_WIN_MIN = 20, POST_WIN_MAX = 170;   // where in a move the post between cells can show up
+const float POST_MAX_FIX = 50;      // ignore a post that disagrees with the count by more than this      // safety stop if it couldn't learn the centred front reading
+const int   SIDE_WALL_MARGIN = 45;      // side wall if reading < centred reading + this
+const int   SIDE_TRUST_MARGIN = 25;     // only centre off a wall this close
+const int   SIDE_DEFAULT_MM  = 60;      // used only if it can't learn in the start square
+
+// ============================================================================
+//  IMU
+// ============================================================================
+const uint8_t MPU_ADDR = 0x68, MPU_PWR_MGMT_1 = 0x6B, MPU_GYRO_CONFIG = 0x1B, MPU_GYRO_ZOUT_H = 0x47;
+const float   GYRO_LSB_PER_DPS = 32.8;      // +-1000 dps range
+const int     GYRO_CAL_SAMPLES = 800;
+
+// ============================================================================
+//  MAZE
+// ============================================================================
+const int MAZE_W = 16, MAZE_H = 16;
+const int START_X = 0, START_Y = 0, START_DIR = DIR_N;
+const int MAX_RECOVERY = 3;
 
 // forwardOneCell() results.
 const int MOVE_OK = 1, MOVE_STALLED = 0, MOVE_BLOCKED = -1;
 
-// Recovery / stall.
-const int           MAX_RECOVERY = 3;
-const long          STALL_TICKS = 3;
-const unsigned long STALL_MS = 700, CELL_TIMEOUT_MS = 6000;
-
-// MPU-6050.
-const uint8_t MPU_ADDR = 0x68, MPU_PWR_MGMT_1 = 0x6B, MPU_GYRO_CONFIG = 0x1B, MPU_GYRO_ZOUT_H = 0x47;
-const float   GYRO_LSB_PER_DPS = 32.8;      // +-1000 dps range, so a fast spin can't clip
-const int     GYRO_SIGN = +1, GYRO_CAL_SAMPLES = 800;
-
-// Learned by the calibrate sketch and loaded from flash at boot (see loadCal).
-// These defaults are only used if calibrate has never been run.
-int   gyroSign = GYRO_SIGN;
-int   minPwmL = MIN_MOVE_PWM, minPwmR = MIN_MOVE_PWM;
-float trimLF = 1.0, trimRF = 1.0, trimLR = 1.0, trimRR = 1.0;
-float stopLeadFwd = 0.0, stopLeadRev = 0.0;   // ticks
-float turnLeadL = 2.0, turnLeadR = 2.0;       // degrees
-
-// Maze.
-const int MAZE_W = 16, MAZE_H = 16;
-const int START_X = 0, START_Y = 0, START_DIR = DIR_N;
-
 // ============================================================================
 //  STATE
 // ============================================================================
-VL53L0X laser[3];
-Maze<16, 16> maze;
-
-volatile long countL = 0, countR = 0;
-
-int posX = START_X, posY = START_Y, headingDir = START_DIR;   // pose in cells
-float gyroBiasRaw = 0.0, gyroAngle = 0.0, lastGyroZ = 0.0;    // per-move gyro
-unsigned long lastGyroUs = 0;
-
-int  distL = MAX_VALID_MM, distF = MAX_VALID_MM, distR = MAX_VALID_MM;
-int  recoveryAttempts = 0;
-bool running = false;
-bool calLoaded = false;
-
 // Types used in function signatures must be defined before any function: the
 // Arduino IDE auto-inserts function prototypes above the first function.
 enum LedState { LED_BOOT, LED_EXPLORING, LED_TURNING, LED_RECOVER, LED_BLOCKED, LED_ERROR, LED_DONE };
 enum LedMode  { MODE_READY, MODE_RUNNING, MODE_GOAL, MODE_STOPPED, MODE_FAULT };
+
+VL53L0X laser[3];
+Maze<16, 16> maze;
+
+volatile long countL = 0, countR = 0;
+int   encSignL = +1, encSignR = +1, gyroSign = +1;      // detected by selfCheck()
+int   deadL = 50, deadR = 50;                           // dead-band PWM (calibrate's, if saved)
+
+int   posX = START_X, posY = START_Y, headingDir = START_DIR;
+float gyroBiasRaw = 0.0, gyroAngle = 0.0, lastGyroZ = 0.0;
+unsigned long lastGyroUs = 0;
+
+int   distL = MAX_VALID_MM, distF = MAX_VALID_MM, distR = MAX_VALID_MM;
+int   setL = SIDE_DEFAULT_MM, setR = SIDE_DEFAULT_MM;   // centred side readings
+float frontStopMm = FRONT_STOP_DEF;
+
+float lastTravelMm = 0;
+bool  startTrusted = true;          // this move starts from a known-good spot (placed, or lined up on a wall)
+float postOdo[2][2];                // [left/right][0 = wall ends, 1 = wall starts]: count at the post
+int   postN[2][2];
+int   recoveryAttempts = 0;
+bool  running = false;
+
 LedState ledState = LED_BOOT;
 volatile LedMode ledMode = MODE_READY;
 
@@ -156,16 +184,15 @@ char   logRing[LOG_CAP];
 size_t logHead = 0;
 bool   logWrapped = false;
 
-// ============================================================================
-//  ENCODER ISRs
-// ============================================================================
 void IRAM_ATTR isrLeft()  { if (digitalRead(PIN_L_ENC_A) == digitalRead(PIN_L_ENC_B)) countL++; else countL--; }
 void IRAM_ATTR isrRight() { if (digitalRead(PIN_R_ENC_A) == digitalRead(PIN_R_ENC_B)) countR++; else countR--; }
+long tL() { return encSignL * countL; }         // + = that wheel rolled forward
+long tR() { return encSignR * countR; }
 
 // ============================================================================
-//  LED / SERIAL STATE
+//  LOG / LED / STATE
 // ============================================================================
-void stopMotors();   // fwd decl used by halt()
+void stopMotors();
 
 void report(const char *fmt, ...) {
   char line[192];
@@ -238,7 +265,7 @@ void showLED(LedState s) {
       case LED_BLOCKED: n = "BLOCKED"; break;     case LED_ERROR: n = "ERROR"; break;
       case LED_DONE: n = "DONE"; break;
     }
-    report("[state] %s\n", n);
+    if (s != LED_EXPLORING && s != LED_TURNING) report("[state] %s\n", n);
   }
   switch (s) {
     case LED_BOOT:    ledMode = MODE_READY;   break;
@@ -259,24 +286,22 @@ void halt(const char *why) {
 }
 
 // ============================================================================
-//  MOTORS
+//  MOTORS  (raw PWM; the controllers above do all the compensating)
 // ============================================================================
-void motorWrite(int dirPin, int pwmPin, int dirSign, int spd, int minPwm, float trimF, float trimB) {
+void motorWrite(int dirPin, int pwmPin, int dirSign, int spd) {
   if (spd == 0) { ledcWrite(pwmPin, 0); return; }
-  int mag = (int)(abs(spd) * (spd > 0 ? trimF : trimB) + 0.5f);
-  if (mag > PWM_MAX) mag = PWM_MAX;
-  if (mag < minPwm)  mag = minPwm;
+  int mag = min(abs(spd), PWM_MAX);
   digitalWrite(dirPin, (spd * dirSign) > 0 ? HIGH : LOW);
   ledcWrite(pwmPin, mag);
 }
 void setMotors(int l, int r) {
-  motorWrite(PIN_L_DIR, PIN_L_PWM, L_DIR_SIGN, l, minPwmL, trimLF, trimLR);
-  motorWrite(PIN_R_DIR, PIN_R_PWM, R_DIR_SIGN, r, minPwmR, trimRF, trimRR);
+  motorWrite(PIN_L_DIR, PIN_L_PWM, L_DIR_SIGN, l);
+  motorWrite(PIN_R_DIR, PIN_R_PWM, R_DIR_SIGN, r);
 }
 void stopMotors() { ledcWrite(PIN_L_PWM, 0); ledcWrite(PIN_R_PWM, 0); }
 
 // ============================================================================
-//  GYRO
+//  GYRO  (+ angle = counter-clockwise = left)
 // ============================================================================
 bool mpuWrite(uint8_t reg, uint8_t val) {
   Wire.beginTransmission(MPU_ADDR); Wire.write(reg); Wire.write(val);
@@ -286,12 +311,13 @@ bool readGyroRaw(int16_t &raw) {
   Wire.beginTransmission(MPU_ADDR); Wire.write(MPU_GYRO_ZOUT_H);
   if (Wire.endTransmission(false) != 0) return false;
   if (Wire.requestFrom((int)MPU_ADDR, 2) != 2) return false;
-  raw = (int16_t)((Wire.read() << 8) | Wire.read());
+  uint8_t hi = Wire.read(), lo = Wire.read();   // separate reads: C++ may evaluate a()<<8 | a() either way round
+  raw = (int16_t)((hi << 8) | lo);
   return true;
 }
 float readGyroZ() {
   int16_t raw;
-  if (!readGyroRaw(raw)) return 0.0;
+  if (!readGyroRaw(raw)) return lastGyroZ;
   return gyroSign * (raw / GYRO_LSB_PER_DPS - gyroBiasRaw);
 }
 void resetGyro() { gyroAngle = 0.0; lastGyroZ = 0.0; lastGyroUs = micros(); }
@@ -310,7 +336,7 @@ void calibrateGyro() {
   }
   if (n < GYRO_CAL_SAMPLES / 2) halt("IMU reads keep failing - check its SDA/SCL/VCC/GND");
   gyroBiasRaw = (float)(sum / n);
-  report("Gyro bias Z = %.3f dps\n", gyroBiasRaw);
+  report("Gyro bias %.3f dps\n", gyroBiasRaw);
 }
 
 // Wait for both wheels to stop, integrating the gyro so the coast is counted.
@@ -324,27 +350,15 @@ void settle() {
   }
 }
 
-void loadCal() {
+// Dead-band from the calibrate sketch, if it was ever run. Everything else it
+// used to learn is now handled live by the controllers.
+void loadDeadband() {
   Preferences p;
-  bool ok = p.begin("mousecal", true) && p.getBool("ok", false);
-  if (ok) {
-    gyroSign = p.getInt("gyroSign", gyroSign);
-    minPwmL = p.getInt("minL", minPwmL);        minPwmR = p.getInt("minR", minPwmR);
-    trimLF = p.getFloat("trimLF", trimLF);      trimRF = p.getFloat("trimRF", trimRF);
-    trimLR = p.getFloat("trimLR", trimLR);      trimRR = p.getFloat("trimRR", trimRR);
-    stopLeadFwd = p.getFloat("leadF", stopLeadFwd); stopLeadRev = p.getFloat("leadR", stopLeadRev);
-    turnLeadL = p.getFloat("turnL", turnLeadL); turnLeadR = p.getFloat("turnR", turnLeadR);
+  if (p.begin("mousecal", true)) {
+    if (p.getBool("ok", false)) { deadL = p.getInt("minL", deadL); deadR = p.getInt("minR", deadR); }
+    p.end();
   }
-  p.end();
-  calLoaded = ok;
-}
-void reportCal() {
-  if (!calLoaded) { report("WARNING: no calibration saved - run the calibrate sketch first. Using defaults.\n"); return; }
-  report("Loaded calibration:\n");
-  report("  gyro sign %+d | min PWM  L %d  R %d\n", gyroSign, minPwmL, minPwmR);
-  report("  trim fwd  L %.3f  R %.3f | trim rev  L %.3f  R %.3f\n", trimLF, trimRF, trimLR, trimRR);
-  report("  stop lead fwd %.0f  rev %.0f ticks | turn lead L %.1f  R %.1f deg\n",
-         stopLeadFwd, stopLeadRev, turnLeadL, turnLeadR);
+  deadL = constrain(deadL, 20, 120); deadR = constrain(deadR, 20, 120);
 }
 
 // ============================================================================
@@ -355,11 +369,15 @@ int readDist(int i) {
   if (laser[i].timeoutOccurred() || r == 0 || r > MAX_VALID_MM) return MAX_VALID_MM;
   return (int)r;
 }
-// Average a few reads while stopped, for a trustworthy wall decision.
+// Median of 5 reads while stopped, for a trustworthy wall decision. A median,
+// not an average: the VL53L0X sometimes drops a reading (comes back as
+// MAX_VALID_MM), and one of those in an average hides a wall that's right there.
 int readDistStable(int i) {
-  long sum = 0; int n = 0;
-  for (int k = 0; k < 5; k++) { sum += readDist(i); n++; delay(6); }
-  return (int)(sum / n);
+  int r[5];
+  for (int k = 0; k < 5; k++) { r[k] = readDist(i); delay(6); }
+  for (int a = 1; a < 5; a++)
+    for (int b = a; b > 0 && r[b] < r[b - 1]; b--) { int tmp = r[b]; r[b] = r[b - 1]; r[b - 1] = tmp; }
+  return r[2];
 }
 void readAll() { distL = readDist(S_LEFT); distF = readDist(S_FRONT); distR = readDist(S_RIGHT); }
 
@@ -391,139 +409,187 @@ void startSensors() {
     }
     laser[i].setAddress(SENSOR_ADDR[i]);
     if (!laser[i].setMeasurementTimingBudget(33000)) halt("VL53L0X timing budget rejected");
-    report("Sensor %-5s initialized OK at 0x%02X\n", SENSOR_NAME[i], SENSOR_ADDR[i]);
+    report("Sensor %-5s OK at 0x%02X\n", SENSOR_NAME[i], SENSOR_ADDR[i]);
   }
   // Start ranging only once all three are addressed, so none is busy while another boots.
   for (int i = 0; i < 3; i++) laser[i].startContinuous();
   if (!mpuWrite(MPU_PWR_MGMT_1, 0x00)) halt("MPU-6050 not responding: check SDA/SCL/VIN/GND");
   mpuWrite(MPU_GYRO_CONFIG, 0x10);   // +-1000 dps, must match GYRO_LSB_PER_DPS
   delay(50);
-  report("IMU (MPU-6050) initialized OK at 0x68\n");
+  report("IMU OK at 0x68\n");
 }
 
 // ============================================================================
-//  MAP: record what the three sensors see into the maze (must be stopped)
+//  CONTROLLERS
 // ============================================================================
-void recordWalls() {
-  int dl = readDistStable(S_LEFT), df = readDistStable(S_FRONT), dr = readDistStable(S_RIGHT);
-  distL = dl; distF = df; distR = dr;
-  if (df < FRONT_WALL_MM) maze.setWall(posX, posY, headingDir);
-  if (dl < SIDE_WALL_MM)  maze.setWall(posX, posY, dirLeft(headingDir));
-  if (dr < SIDE_WALL_MM)  maze.setWall(posX, posY, dirRight(headingDir));
-  report("cell (%d,%d) dir %d | L%4d F%4d R%4d | walls %c%c%c\n",
-         posX, posY, headingDir, dl, df, dr,
-         (df < FRONT_WALL_MM) ? 'F' : '.',
-         (dl < SIDE_WALL_MM)  ? 'L' : '.',
-         (dr < SIDE_WALL_MM)  ? 'R' : '.');
+// One wheel: speed (mm/s, signed) -> PWM. Feed-forward gets it close, the PI
+// term makes it exact whatever the floor is doing.
+int wheelPwm(float target, float measured, float &integ, int dead, float dt) {
+  if (fabs(target) < 1.0f) { integ = 0; return 0; }
+  float err = target - measured;
+  integ = constrain(integ + KI_V * err * dt, -I_V_MAX, I_V_MAX);
+  float pwm = (target > 0 ? 1 : -1) * dead * FF_DEAD_FRAC + KF_V * target + KP_V * err + integ;
+  return (int)constrain(pwm, (float)-PWM_MAX, (float)PWM_MAX);
 }
 
-// ============================================================================
-//  MOTION PRIMITIVES
-// ============================================================================
-int steeringCorrection(long dL, long dR) {
-  float corr = KP_HEAD * gyroAngle + KD_HEAD * lastGyroZ;   // heading hold (target 0)
-  corr += KP_ENC * (float)(dR - dL);                        // wheel match
-  bool tl = (distL < WALL_TRUST_MM), tr = (distR < WALL_TRUST_MM);
-  if (tl && tr)      corr += KP_CENTER * (distR - distL);
-  else if (tl)       corr += KP_SIDE * (SIDE_SETPOINT_MM - distL);
-  else if (tr)       corr -= KP_SIDE * (SIDE_SETPOINT_MM - distR);
-  if (corr > CORR_MAX) corr = CORR_MAX;
-  if (corr < -CORR_MAX) corr = -CORR_MAX;
-  return (int)corr;
+// Left-right speed difference (mm/s, + = turn right) to hold heading and centre.
+float steering(bool useWalls) {
+  float s = KH * gyroAngle + KD * lastGyroZ;
+  if (useWalls) {
+    bool wl = distL < setL + SIDE_TRUST_MARGIN, wr = distR < setR + SIDE_TRUST_MARGIN;
+    float offL = distL - setL, offR = distR - setR;   // - = closer than centred
+    if (wl && wr)  s += KC * (offR - offL) * 0.5f;
+    else if (wl)   s -= KS * offL;
+    else if (wr)   s += KS * offR;
+  }
+  return s;
 }
 
-// Drive forward one cell. MOVE_OK = it's now in the next cell. MOVE_BLOCKED =
-// a wall was right in front before it left this cell (pose unchanged).
-// MOVE_STALLED = it got stuck and backed off to where it started.
-int forwardOneCell() {
-  long startL = countL, startR = countR;
+// Drive `mm` in a straight line (negative = reverse). Forward moves use the
+// walls to centre, the front sensor to stop, and side-wall posts to correct
+// the distance count.
+int driveStraight(float mm, bool forwardCell) {
+  int dir = (mm > 0) ? 1 : -1;
+  float goal = fabs(mm);
+  long sL = tL(), sR = tR(), pL = sL, pR = sR;
+  float iL = 0, iR = 0, best = 0, trav = 0, corr = 0;
+  bool corrected = false;
+  int side[2] = { -1, -1 }, pend[2] = { -1, -1 }, pendN[2] = { 0, 0 };
+  int fStart = -1;
   resetGyro();
-  unsigned long t0 = millis(), lastProg = t0; long best = 0;
-  showLED(LED_EXPLORING);
+  unsigned long tPrev = micros(), lastProg = millis();
 
   while (true) {
-    updateGyro(); readAll();
-    long dL = labs(countL - startL), dR = labs(countR - startR), avg = (dL + dR) / 2;
+    updateGyro();
+    if (forwardCell) readAll(); else delay(10);
+    unsigned long now = micros();
+    float dt = (now - tPrev) * 1e-6f;
+    if (dt < 0.004f) continue;
+    tPrev = now;
 
-    if (distF < FRONT_STOP_MM) {
-      stopMotors();
+    long cL = tL(), cR = tR();
+    float vL = (cL - pL) * MM_PER_TICK / dt, vR = (cR - pR) * MM_PER_TICK / dt;
+    pL = cL; pR = cR;
+    float odo = dir * ((cL - sL) + (cR - sR)) * 0.5f * MM_PER_TICK;
+
+    if (forwardCell) {
+      // POSTS: a side wall starting or ending happens at the post between this
+      // cell and the next - a fixed spot. Learn the distance count at which each
+      // kind of edge shows up (from moves that started from a known-good spot),
+      // then snap the count to it whenever the start was less certain.
+      // An edge must hold for 2 reads so a sensor drop-out can't fake one.
+      int rd[2] = { distL, distR }, sp[2] = { setL, setR };
+      for (int k = 0; k < 2; k++) {
+        int st = (rd[k] < sp[k] + SIDE_WALL_MARGIN) ? 1 : 0;
+        if (side[k] < 0) { side[k] = st; continue; }
+        if (st == side[k]) { pend[k] = -1; pendN[k] = 0; continue; }
+        if (pend[k] == st) pendN[k]++; else { pend[k] = st; pendN[k] = 1; }
+        if (pendN[k] < 2) continue;
+        side[k] = st; pend[k] = -1; pendN[k] = 0;
+        if (odo < POST_WIN_MIN || odo > POST_WIN_MAX || corrected) continue;
+        float &learned = postOdo[k][st];
+        if (startTrusted) {
+          learned = postN[k][st] ? 0.7f * learned + 0.3f * odo : odo;
+          postN[k][st]++;
+        } else if (postN[k][st] > 0 && fabs(learned - odo) < POST_MAX_FIX) {
+          corr = learned - odo;
+          corrected = true;
+        }
+      }
+      // STUCK: a wall within a cell ahead isn't getting closer although the
+      // wheels say we moved - wheels slipping against something. Don't count a
+      // cell. (Only a near wall: far away, the sensor's wide beam catches the
+      // side walls instead, and that reading travels along with the mouse.)
+      if (fStart < 0 && odo < 20 && distF < 230) fStart = distF;
+      if (fStart > 0 && odo > 80 && fStart - distF < 30 && distF < MAX_VALID_MM) {
+        stopMotors(); settle(); startTrusted = false;
+        report("  stuck: wheels turning but the wall ahead isn't getting closer\n");
+        return MOVE_STALLED;
+      }
+    }
+    trav = odo + corr;
+    lastTravelMm = trav;
+
+    if (forwardCell && distF < frontStopMm) {
+      stopMotors(); settle(); startTrusted = true;
       // Stopped by a wall before really leaving this cell: it did NOT move a
       // cell. Counting it as one is what corrupts the map after a bad turn.
-      return (avg < TICKS_PER_CELL / 3) ? MOVE_BLOCKED : MOVE_OK;
+      return (trav < CELL_MM / 3) ? MOVE_BLOCKED : MOVE_OK;
     }
-    if (avg >= TICKS_PER_CELL - (long)stopLeadFwd) { stopMotors(); return MOVE_OK; }   // coasts the rest
-
-    int corr = steeringCorrection(dL, dR);
-    setMotors(CRUISE_PWM + corr, CRUISE_PWM - corr);
-
-    if (avg > best + STALL_TICKS) { best = avg; lastProg = millis(); }
-    if (millis() - lastProg > STALL_MS || millis() - t0 > CELL_TIMEOUT_MS) {
-      // Stalled: back up roughly to where this cell started, leave pose unchanged.
-      stopMotors(); delay(100);
-      unsigned long tb = millis();
-      while (labs(countL - startL) > STALL_TICKS && millis() - tb < 1500) {
-        setMotors(-BACKUP_PWM, -BACKUP_PWM); delay(5);
-      }
-      stopMotors(); return MOVE_STALLED;
+    float left = goal - trav;
+    // A wall at the far end of the destination cell pins exactly where the cell
+    // centre is, wiping out distance drift (carpet slip): keep crawling until the
+    // front reading says "centred". Otherwise odometry decides, as it must.
+    bool pinned = forwardCell && distF < frontStopMm + FRONT_PIN_MM && left < CELL_MM / 2;
+    if (!pinned && left <= STOP_TOL_MM) {
+      stopMotors(); settle();
+      if (forwardCell) startTrusted = corrected;
+      return MOVE_OK;
     }
-    delay(5);
+    if (pinned && left < -MAX_OVERRUN_MM) { stopMotors(); settle(); startTrusted = false; return MOVE_OK; }
+
+    float v = CRUISE_MM_S;
+    v = min(v, CRAWL_MM_S + (CRUISE_MM_S - CRAWL_MM_S) * max(0.0f, left) / DECEL_MM);
+    v = min(v, CRAWL_MM_S + (CRUISE_MM_S - CRAWL_MM_S) * max(0.0f, trav) / ACCEL_MM);
+    if (forwardCell && distF < MAX_VALID_MM) v = min(v, CRAWL_MM_S + (distF - frontStopMm) * 2.0f);
+    v = max(v, CRAWL_MM_S);
+
+    float s = steering(forwardCell);
+    s = constrain(s, -STEER_MAX_FRAC * v, STEER_MAX_FRAC * v);
+    setMotors(wheelPwm(dir * v + s, vL, iL, deadL, dt), wheelPwm(dir * v - s, vR, iR, deadR, dt));
+
+    if (trav > best + 5) { best = trav; lastProg = millis(); }
+    if (millis() - lastProg > STALL_MS) { stopMotors(); settle(); startTrusted = false; return MOVE_STALLED; }
   }
 }
 
-// Creep toward the exact target at low power after the main turn coasts to a
-// stop. Continues from the same gyro angle, so it can fix under- or overshoot.
-void nudgeTo(float degrees, int slowMin) {
-  for (int tries = 0; tries < 3 && fabs(degrees - gyroAngle) > TURN_NUDGE_DEG; tries++) {
-    unsigned long t0 = millis(), stallSince = 0;
-    int boost = 0;
-    while (millis() - t0 < 800) {
-      updateGyro();
-      float rem = degrees - gyroAngle;
-      if (fabs(rem) < 1.0) break;
-      if (fabs(lastGyroZ) < TURN_STALL_DPS) {
-        if (!stallSince) stallSince = millis();
-        else if (millis() - stallSince > TURN_STALL_MS && boost < TURN_BOOST_MAX) { boost += TURN_BOOST_STEP; stallSince = millis(); }
-      } else stallSince = 0;
-      int pwm = min(slowMin + boost, PWM_MAX);
-      if (rem > 0) setMotors(-pwm, +pwm); else setMotors(+pwm, -pwm);
-      delay(3);
-    }
-    stopMotors(); settle();
+int forwardOneCell() {
+  showLED(LED_EXPLORING);
+  int r = driveStraight(CELL_MM, true);
+  if (r == MOVE_STALLED) {
+    report("  stuck after %.0f mm - backing up to the cell centre\n", lastTravelMm);
+    if (lastTravelMm > 5) driveStraight(-lastTravelMm, false);
   }
+  return r;
 }
 
-// Returns where it actually ended up, in degrees from where it started.
+// Turn in place by `degrees` (+ = left/CCW). The gyro sets the turn RATE,
+// slowing as it gets close; the integral term pushes harder if carpet holds it
+// back. The encoders keep the two wheels moving equal and opposite, so it spins
+// about its centre even though one motor needs more power than the other.
+// Returns where it actually ended up.
 float turnInPlace(float degrees) {
   showLED(LED_TURNING);
-  float lead = (degrees > 0) ? turnLeadL : turnLeadR;   // learned coast after cut-off
-  int slowMin = max(minPwmL, minPwmR);
   resetGyro();
-  unsigned long t0 = millis(), stallSince = 0;
-  int boost = 0;
+  float integ = 0, balI = 0;
+  int lastSign = 0;
+  int dead = (deadL + deadR) / 2;
+  long sL = tL(), sR = tR();
+  unsigned long t0 = millis(), tPrev = micros();
+  bool timedOut = true;
   while (millis() - t0 < TURN_TIMEOUT_MS) {
     updateGyro();
-    float remaining = degrees - gyroAngle;
-    if (remaining * (degrees > 0 ? 1 : -1) <= lead) break;
-    int pwm = TURN_PWM;
-    if (fabs(remaining) < TURN_SLOW_ZONE_DEG && TURN_PWM > slowMin)
-      pwm = slowMin + (int)((TURN_PWM - slowMin) * (fabs(remaining) / TURN_SLOW_ZONE_DEG));
-    // Carpet drag can stall the slow end of a turn short of the target:
-    // if it stops rotating, keep stepping the power up until it moves.
-    if (fabs(lastGyroZ) < TURN_STALL_DPS) {
-      if (!stallSince) stallSince = millis();
-      else if (millis() - stallSince > TURN_STALL_MS && boost < TURN_BOOST_MAX) { boost += TURN_BOOST_STEP; stallSince = millis(); }
-    } else stallSince = 0;
-    pwm = min(pwm + boost, PWM_MAX);
-    if (degrees > 0) setMotors(-pwm, +pwm); else setMotors(+pwm, -pwm);
-    delay(3);
+    float rem = degrees - gyroAngle;
+    if (fabs(rem) < TURN_DONE_DEG) { timedOut = false; break; }
+    unsigned long now = micros();
+    float dt = (now - tPrev) * 1e-6f; tPrev = now;
+    int s = (rem > 0) ? 1 : -1;
+    if (s != lastSign) { integ = 0; lastSign = s; }        // reversing: start fresh
+    float w = s * constrain(TURN_KP_ANGLE * fabs(rem), TURN_MIN_DPS, TURN_DPS);
+    float err = w - lastGyroZ;
+    integ = constrain(integ + KI_T * err * dt, -I_T_MAX, I_T_MAX);
+    float p = s * dead * FF_DEAD_FRAC + KF_T * w + KP_T * err + integ;
+    // Net forward creep (ticks): push both wheels back against it.
+    float drift = (float)((tL() - sL) + (tR() - sR));
+    balI = constrain(balI + KI_BAL * drift * dt, -I_BAL_MAX, I_BAL_MAX);
+    float c = -(KP_BAL * drift + balI);
+    setMotors((int)constrain(-p + c, (float)-PWM_MAX, (float)PWM_MAX),
+              (int)constrain(+p + c, (float)-PWM_MAX, (float)PWM_MAX));
+    delay(2);
   }
-  bool timedOut = millis() - t0 >= TURN_TIMEOUT_MS;
   unsigned long ms = millis() - t0;
   stopMotors(); settle();
-  float landed = gyroAngle;
-  nudgeTo(degrees, slowMin);
-  report("  turn %+.0f: landed %+.1f, after nudge %+.1f (%lu ms%s%s)\n",
-         degrees, landed, gyroAngle, ms, boost ? ", boosted" : "", timedOut ? ", TIMED OUT" : "");
+  report("  turn %+.0f -> %+.1f (%lu ms%s)\n", degrees, gyroAngle, ms, timedOut ? ", TIMED OUT" : "");
   return gyroAngle;
 }
 
@@ -540,6 +606,89 @@ bool turnToHeading(int target) {
   if (fabs(got - want) > TURN_FAIL_DEG) return false;
   headingDir = target;
   return true;
+}
+
+// ============================================================================
+//  START-OF-RUN CHECKS
+// ============================================================================
+// Small left wiggle: works out which way the gyro and each encoder count, so
+// none of it depends on settings. Then turns back.
+void selfCheck() {
+  report("Self-check wiggle...\n");
+  gyroSign = +1; encSignL = encSignR = +1;
+  long sL = countL, sR = countR;
+  resetGyro();
+  unsigned long t0 = millis();
+  // Ramp each wheel's power on its own until THAT wheel moves, so both take
+  // part even when one motor needs much more power to get going.
+  int pL = (deadL + deadR) / 2, pR = pL;
+  while (millis() - t0 < 3000) {
+    updateGyro();
+    bool movedL = labs(countL - sL) >= 8, movedR = labs(countR - sR) >= 8;
+    if (movedL && movedR && fabs(gyroAngle) >= 15) break;
+    if (!movedL) pL = min(pL + 1, PWM_MAX);
+    if (!movedR) pR = min(pR + 1, PWM_MAX);
+    setMotors(-pL, +pR);                                            // commanded: left turn
+    delay(8);
+  }
+  stopMotors(); settle();
+  float a = gyroAngle;
+  long dL = countL - sL, dR = countR - sR;
+  report("  gyro %+.1f deg | left enc %+ld | right enc %+ld\n", a, dL, dR);
+  if (fabs(a) < 8) halt("Self-check: the mouse didn't rotate. Check motor power and directions.");
+  if (labs(dL) < 5) halt("Self-check: LEFT encoder isn't counting. Check its wires/power.");
+  if (labs(dR) < 5) halt("Self-check: RIGHT encoder isn't counting. Check its wires/power.");
+  gyroSign = (a > 0) ? +1 : -1;               // a left turn must read positive
+  encSignL = (dL < 0) ? +1 : -1;              // left wheel went backward
+  encSignR = (dR > 0) ? +1 : -1;              // right wheel went forward
+  report("  gyro sign %+d, encoder signs L %+d R %+d\n", gyroSign, encSignL, encSignR);
+  turnInPlace(-fabs(a));                      // back to where it started
+  // One motor needs more power, so the wiggle pivots off-centre and shifts the
+  // mouse a little: drive that shift back out.
+  float shift = 0.5f * (encSignL * dL + encSignR * dR) * MM_PER_TICK;
+  if (fabs(shift) > 3) { report("  undoing %.0f mm shift\n", shift); driveStraight(-shift, false); }
+}
+
+// Placed centred between two walls in the start square: learn what "centred"
+// reads on each side sensor, so centring works whatever the sensor mounting.
+void learnSides() {
+  int dl = readDistStable(S_LEFT), dr = readDistStable(S_RIGHT);
+  if (dl < 150 && dr < 150) {
+    setL = dl; setR = dr;
+    report("Centred side readings: L %d  R %d mm\n", setL, setR);
+    if (abs(dl - dr) > 30) report("  (uneven - was it placed centred? continuing)\n");
+  } else {
+    report("WARNING: no walls both sides at the start (L %d R %d) - using %d mm\n", dl, dr, SIDE_DEFAULT_MM);
+  }
+}
+
+// The start square always has a wall on its right. Still centred, turn to face
+// it and read the front sensor: that's exactly what "centred in a cell" reads,
+// so every stop at a wall ahead lands in the middle of the cell. Then turn back.
+void learnFront() {
+  turnInPlace(-90.0);
+  int df = readDistStable(S_FRONT);
+  if (df < 150) {
+    frontStopMm = df;
+    report("Centred front reading: %d mm\n", df);
+  } else {
+    report("WARNING: no wall right of the start square (F %d) - front stop %d mm\n", df, FRONT_STOP_DEF);
+  }
+  turnInPlace(+90.0);
+}
+
+// ============================================================================
+//  MAP: record what the three sensors see into the maze (must be stopped)
+// ============================================================================
+void recordWalls() {
+  int dl = readDistStable(S_LEFT), df = readDistStable(S_FRONT), dr = readDistStable(S_RIGHT);
+  distL = dl; distF = df; distR = dr;
+  bool wf = df < FRONT_WALL_MM, wl = dl < setL + SIDE_WALL_MARGIN, wr = dr < setR + SIDE_WALL_MARGIN;
+  if (wf) maze.setWall(posX, posY, headingDir);
+  if (wl) maze.setWall(posX, posY, dirLeft(headingDir));
+  if (wr) maze.setWall(posX, posY, dirRight(headingDir));
+  report("cell (%d,%d) dir %d | L%4d F%4d R%4d | walls %c%c%c\n",
+         posX, posY, headingDir, dl, df, dr, wf ? 'F' : '.', wl ? 'L' : '.', wr ? 'R' : '.');
 }
 
 // ============================================================================
@@ -564,6 +713,44 @@ void printMap() {
 }
 
 // ============================================================================
+//  RUN CONTROL
+// ============================================================================
+bool bootPressed() {
+  if (digitalRead(PIN_BOOT_BTN) != LOW) return false;
+  delay(30);
+  if (digitalRead(PIN_BOOT_BTN) != LOW) return false;
+  while (digitalRead(PIN_BOOT_BTN) == LOW) delay(10);    // wait for release
+  return true;
+}
+
+void startRun() {
+  clearLog();
+  maze.begin(MAZE_W, MAZE_H);
+  posX = START_X; posY = START_Y; headingDir = START_DIR;
+  recoveryAttempts = 0;
+  frontStopMm = FRONT_STOP_DEF;
+  startTrusted = true;
+  memset(postN, 0, sizeof(postN));
+  showLED(LED_EXPLORING);
+  report("=== mapping run ===  dead-band L %d R %d\n", deadL, deadR);
+  Serial.println(F("HANDS OFF - starting in 3 s..."));
+  delay(START_DELAY_MS);
+  calibrateGyro();
+  learnSides();
+  selfCheck();
+  learnFront();
+  running = true;
+}
+
+void finishRun(LedState how) {
+  stopMotors();
+  running = false;
+  showLED(how);
+  saveLog();
+  Serial.println(F("\nSaved. Press BOOT or send 'r' to map again. 'p' prints the saved log."));
+}
+
+// ============================================================================
 //  ARDUINO ENTRY POINTS
 // ============================================================================
 void setup() {
@@ -585,45 +772,11 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(PIN_R_ENC_A), isrRight, CHANGE);
 
   Wire.begin(PIN_SDA, PIN_SCL); Wire.setClock(100000);   // same safe speed the scanner proved works
-  loadCal();
-  reportCal();
+  loadDeadband();
   startSensors();
 
   printSaved();
   showLED(LED_BOOT);
-}
-
-bool bootPressed() {
-  if (digitalRead(PIN_BOOT_BTN) != LOW) return false;
-  delay(30);
-  if (digitalRead(PIN_BOOT_BTN) != LOW) return false;
-  while (digitalRead(PIN_BOOT_BTN) == LOW) delay(10);    // wait for release
-  return true;
-}
-
-void startRun() {
-  clearLog();
-  maze.begin(MAZE_W, MAZE_H);
-  posX = START_X; posY = START_Y; headingDir = START_DIR;
-  recoveryAttempts = 0;
-  showLED(LED_EXPLORING);
-  report("=== mapping run ===\n");
-  reportCal();
-  report("Ticks per cell = %ld. Goal = centre 2x2. Start (%d,%d) dir %d\n",
-         TICKS_PER_CELL, posX, posY, headingDir);
-  Serial.println(F("HANDS OFF - starting in 3 s..."));
-  delay(START_DELAY_MS);
-  calibrateGyro();
-  resetGyro();
-  running = true;
-}
-
-void finishRun(LedState how) {
-  stopMotors();
-  running = false;
-  showLED(how);
-  saveLog();
-  Serial.println(F("\nSaved. Press BOOT or send 'r' to map again. 'p' prints the saved log."));
 }
 
 void loop() {
@@ -668,10 +821,9 @@ void loop() {
     return;
   }
 
-  // 4) Face that direction and drive one cell, with self-correcting odometry.
+  // 4) Face that direction and drive one cell.
   if (!turnToHeading(d)) {
     report("STOP: turn missed its target by more than %.0f deg - stopped instead of driving blind.\n", TURN_FAIL_DEG);
-    report("(Re-run calibrate on this surface; send this log.)\n");
     printMap();
     finishRun(LED_BLOCKED);
     return;

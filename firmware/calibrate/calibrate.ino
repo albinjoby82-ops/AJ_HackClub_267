@@ -196,7 +196,8 @@ bool readGyroRaw(int16_t &raw) {
   Wire.beginTransmission(MPU_ADDR); Wire.write(MPU_GYRO_ZOUT_H);
   if (Wire.endTransmission(false) != 0) return false;
   if (Wire.requestFrom((int)MPU_ADDR, 2) != 2) return false;
-  raw = (int16_t)((Wire.read() << 8) | Wire.read());
+  uint8_t hi = Wire.read(), lo = Wire.read();   // separate reads: C++ may evaluate a()<<8 | a() either way round
+  raw = (int16_t)((hi << 8) | lo);
   return true;
 }
 float readGyroZ() {

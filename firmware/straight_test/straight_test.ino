@@ -129,7 +129,8 @@ float readGyroZ() {
   Wire.beginTransmission(MPU_ADDR); Wire.write(MPU_GYRO_ZOUT_H);
   if (Wire.endTransmission(false) != 0) return 0;
   if (Wire.requestFrom((int)MPU_ADDR, 2) != 2) return 0;
-  int16_t raw = (Wire.read() << 8) | Wire.read();
+  uint8_t hi = Wire.read(), lo = Wire.read();   // separate reads: C++ may evaluate a()<<8 | a() either way round
+  int16_t raw = (int16_t)((hi << 8) | lo);
   return GYRO_SIGN * (raw / GYRO_LSB_PER_DPS) - gyroBiasZ;
 }
 void updateGyro() {
@@ -145,7 +146,8 @@ void calibrateGyro() {
   for (int i = 0; i < GYRO_CAL_SAMPLES; i++) {
     Wire.beginTransmission(MPU_ADDR); Wire.write(MPU_GYRO_ZOUT_H); Wire.endTransmission(false);
     Wire.requestFrom((int)MPU_ADDR, 2);
-    int16_t raw = (Wire.read() << 8) | Wire.read();
+    uint8_t hi = Wire.read(), lo = Wire.read();   // separate reads: C++ may evaluate a()<<8 | a() either way round
+    int16_t raw = (int16_t)((hi << 8) | lo);
     sum += GYRO_SIGN * (raw / GYRO_LSB_PER_DPS); delay(2);
   }
   gyroBiasZ = (float)(sum / GYRO_CAL_SAMPLES);
