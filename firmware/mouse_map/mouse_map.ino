@@ -97,6 +97,11 @@ const unsigned long TURN_TIMEOUT_MS = 3000;
 const float TURN_STALL_DPS = 15.0;             // rotating slower than this = stalled
 const unsigned long TURN_STALL_MS = 120;
 const int   TURN_BOOST_STEP = 6, TURN_BOOST_MAX = 90;
+const float TURN_NUDGE_DEG = 4.0;              // landed further off than this = creep back
+const float TURN_FAIL_DEG  = 20.0;             // still this far off = stop, don't drive blind
+
+// forwardOneCell() results.
+const int MOVE_OK = 1, MOVE_STALLED = 0, MOVE_BLOCKED = -1;
 
 // Recovery / stall.
 const int           MAX_RECOVERY = 3;
@@ -427,9 +432,10 @@ int steeringCorrection(long dL, long dR) {
   return (int)corr;
 }
 
-// Drive forward one cell. Returns true if it advanced a full cell (or reached a
-// wall ahead), false if it stalled and backed off to where it started.
-bool forwardOneCell() {
+// Drive forward one cell. MOVE_OK = it's now in the next cell. MOVE_BLOCKED =
+// a wall was right in front before it left this cell (pose unchanged).
+// MOVE_STALLED = it got stuck and backed off to where it started.
+int forwardOneCell() {
   long startL = countL, startR = countR;
   resetGyro();
   unsigned long t0 = millis(), lastProg = t0; long best = 0;
@@ -439,8 +445,13 @@ bool forwardOneCell() {
     updateGyro(); readAll();
     long dL = labs(countL - startL), dR = labs(countR - startR), avg = (dL + dR) / 2;
 
-    if (distF < FRONT_STOP_MM) { stopMotors(); return true; }   // pinned by front wall
-    if (avg >= TICKS_PER_CELL - (long)stopLeadFwd) { stopMotors(); return true; }   // coasts the rest
+    if (distF < FRONT_STOP_MM) {
+      stopMotors();
+      // Stopped by a wall before really leaving this cell: it did NOT move a
+      // cell. Counting it as one is what corrupts the map after a bad turn.
+      return (avg < TICKS_PER_CELL / 3) ? MOVE_BLOCKED : MOVE_OK;
+    }
+    if (avg >= TICKS_PER_CELL - (long)stopLeadFwd) { stopMotors(); return MOVE_OK; }   // coasts the rest
 
     int corr = steeringCorrection(dL, dR);
     setMotors(CRUISE_PWM + corr, CRUISE_PWM - corr);
@@ -453,13 +464,36 @@ bool forwardOneCell() {
       while (labs(countL - startL) > STALL_TICKS && millis() - tb < 1500) {
         setMotors(-BACKUP_PWM, -BACKUP_PWM); delay(5);
       }
-      stopMotors(); return false;
+      stopMotors(); return MOVE_STALLED;
     }
     delay(5);
   }
 }
 
-void turnInPlace(float degrees) {
+// Creep toward the exact target at low power after the main turn coasts to a
+// stop. Continues from the same gyro angle, so it can fix under- or overshoot.
+void nudgeTo(float degrees, int slowMin) {
+  for (int tries = 0; tries < 3 && fabs(degrees - gyroAngle) > TURN_NUDGE_DEG; tries++) {
+    unsigned long t0 = millis(), stallSince = 0;
+    int boost = 0;
+    while (millis() - t0 < 800) {
+      updateGyro();
+      float rem = degrees - gyroAngle;
+      if (fabs(rem) < 1.0) break;
+      if (fabs(lastGyroZ) < TURN_STALL_DPS) {
+        if (!stallSince) stallSince = millis();
+        else if (millis() - stallSince > TURN_STALL_MS && boost < TURN_BOOST_MAX) { boost += TURN_BOOST_STEP; stallSince = millis(); }
+      } else stallSince = 0;
+      int pwm = min(slowMin + boost, PWM_MAX);
+      if (rem > 0) setMotors(-pwm, +pwm); else setMotors(+pwm, -pwm);
+      delay(3);
+    }
+    stopMotors(); settle();
+  }
+}
+
+// Returns where it actually ended up, in degrees from where it started.
+float turnInPlace(float degrees) {
   showLED(LED_TURNING);
   float lead = (degrees > 0) ? turnLeadL : turnLeadR;   // learned coast after cut-off
   int slowMin = max(minPwmL, minPwmR);
@@ -483,16 +517,29 @@ void turnInPlace(float degrees) {
     if (degrees > 0) setMotors(-pwm, +pwm); else setMotors(+pwm, -pwm);
     delay(3);
   }
+  bool timedOut = millis() - t0 >= TURN_TIMEOUT_MS;
+  unsigned long ms = millis() - t0;
   stopMotors(); settle();
+  float landed = gyroAngle;
+  nudgeTo(degrees, slowMin);
+  report("  turn %+.0f: landed %+.1f, after nudge %+.1f (%lu ms%s%s)\n",
+         degrees, landed, gyroAngle, ms, boost ? ", boosted" : "", timedOut ? ", TIMED OUT" : "");
+  return gyroAngle;
 }
 
 // Turn to an absolute cardinal direction by the shortest rotation.
-void turnToHeading(int target) {
+// Returns false if it couldn't get within TURN_FAIL_DEG of the target.
+bool turnToHeading(int target) {
   int diff = (target - headingDir) & 3;
-  if (diff == 1)      turnInPlace(-90.0);   // target is to our right (CW)
-  else if (diff == 3) turnInPlace(+90.0);   // to our left (CCW)
-  else if (diff == 2) turnInPlace(180.0);
+  float want = 0.0;
+  if (diff == 1)      want = -90.0;   // target is to our right (CW)
+  else if (diff == 3) want = +90.0;   // to our left (CCW)
+  else if (diff == 2) want = 180.0;
+  if (want == 0.0) return true;
+  float got = turnInPlace(want);
+  if (fabs(got - want) > TURN_FAIL_DEG) return false;
   headingDir = target;
+  return true;
 }
 
 // ============================================================================
@@ -622,11 +669,21 @@ void loop() {
   }
 
   // 4) Face that direction and drive one cell, with self-correcting odometry.
-  turnToHeading(d);
-  if (forwardOneCell()) {
+  if (!turnToHeading(d)) {
+    report("STOP: turn missed its target by more than %.0f deg - stopped instead of driving blind.\n", TURN_FAIL_DEG);
+    report("(Re-run calibrate on this surface; send this log.)\n");
+    printMap();
+    finishRun(LED_BLOCKED);
+    return;
+  }
+  int moved = forwardOneCell();
+  if (moved == MOVE_OK) {
     posX += DIR_DX[headingDir];
     posY += DIR_DY[headingDir];
     recoveryAttempts = 0;
+  } else if (moved == MOVE_BLOCKED) {
+    report("  wall right ahead that the map thought was open - recording it and re-planning\n");
+    maze.setWall(posX, posY, headingDir);
   } else {
     recoveryAttempts++;
     report("Recovery attempt %d/%d (stalled crossing a cell)\n", recoveryAttempts, MAX_RECOVERY);
