@@ -16,14 +16,21 @@
  *    - how far it coasts after the motors cut, so it stops exactly 1 square on
  *    - how far it over-rotates after a turn, so it lands on exactly 90 degrees
  *
- *  How to run:
- *    1. Put it on the maze floor with ~30 cm clear in front AND behind
- *       (a straight corridor at least 2 squares long works).
- *    2. Press RESET and let go. Hands off - it calibrates the gyro first.
- *    3. It runs by itself. Watch Serial at 115200. Keep the USB cable slack:
- *       a cable tugging on the mouse skews the turns and straights.
- *    4. "LOCKED IN" = saved. Then flash mouse_map; it prints what it loaded.
- *    Send 'r' on Serial to run it again (it starts from what it learned).
+ *  Runs cable-free on battery:
+ *    1. Flash this, unplug USB, power it from the battery.
+ *    2. Put it on the maze floor with ~30 cm clear in front AND behind.
+ *    3. Press the BOOT button on the board and let go. Hands off.
+ *    4. Wait for the onboard LED:
+ *         dim white      ready - waiting for the BOOT button
+ *         blue flashing  running (the first ~5 s is the gyro calibrating)
+ *         green          LOCKED IN - saved
+ *         yellow         saved, but not fully settled - run it again
+ *         red flashing   stopped with an error
+ *    5. Plug in USB and open Serial Monitor at 115200. It prints the full log
+ *       of the last run (saved in flash) plus the learned values. If nothing
+ *       shows, send 'p'.
+ *  It never starts moving by itself, so plugging in USB (which can reset the
+ *  board) is safe. Press BOOT or send 'r' to run again from what it learned.
  *
  *  The motion constants below MUST match mouse_map - that's what it learns for.
  * ============================================================================
@@ -32,6 +39,7 @@
 #include <Wire.h>
 #include <VL53L0X.h>
 #include <Preferences.h>
+#include <stdarg.h>
 
 // ---- Pins (same as every other sketch) -------------------------------------
 const int PIN_SDA = 6, PIN_SCL = 7;
@@ -41,6 +49,8 @@ const int PIN_R_DIR = 3, PIN_R_PWM = 10;
 const int L_DIR_SIGN = +1, R_DIR_SIGN = -1;
 const int PIN_L_ENC_A = 21, PIN_L_ENC_B = 22;
 const int PIN_R_ENC_A = 11, PIN_R_ENC_B = 23;
+const int PIN_RGB_LED = 8;                      // onboard RGB LED (DevKitC-1)
+const int PIN_BOOT_BTN = 9;                     // onboard BOOT button, LOW when pressed
 
 // ---- Motion constants: MUST match mouse_map --------------------------------
 const int   PWM_FREQ_HZ = 20000, PWM_BITS = 8, PWM_MAX = 255;
@@ -65,6 +75,7 @@ const float TURN_TOL_DEG = 1.5;
 const long  DIST_TOL_TICKS = 15;                // ~5 mm
 const float TRIM_TOL_PWM = 3.0;
 const int   FRONT_ABORT_MM = 50;
+const unsigned long START_DELAY_MS = 3000;      // time to take your hand away
 
 // ---- What gets learned (and saved) -----------------------------------------
 int   gyroSign = +1;
@@ -74,9 +85,10 @@ float stopLeadFwd = 0.0, stopLeadRev = 0.0;                     // ticks
 float turnLeadL = 2.0, turnLeadR = 2.0;                         // degrees
 
 // ---- State -----------------------------------------------------------------
-// Defined before any function: the Arduino IDE auto-inserts function
-// prototypes above the first function, and driveStraight() returns a Run.
+// Types used in function signatures must be defined before any function: the
+// Arduino IDE auto-inserts function prototypes above the first function.
 struct Run { long travelled; float avgCorr; float endHeading; bool aborted; };
+enum LedMode { LED_READY, LED_RUNNING, LED_DONE, LED_UNSETTLED, LED_ERROR };
 
 VL53L0X front;
 volatile long countL = 0, countR = 0;
@@ -84,11 +96,60 @@ int encSignL = +1, encSignR = +1;               // learned in the spin test
 float gyroBiasRaw = 0, gyroAngle = 0, lastGyroZ = 0;
 unsigned long lastGyroUs = 0;
 int gyroPeakRaw = 0;
+volatile LedMode ledMode = LED_READY;
+
+// Everything printed during a run is also kept here and saved to flash, so it
+// can be read after the run with the cable plugged back in.
+char   logBuf[3900];                             // flash strings max out at 4000 bytes
+size_t logLen = 0;
+bool   logFull = false;
 
 void IRAM_ATTR isrLeft()  { if (digitalRead(PIN_L_ENC_A) == digitalRead(PIN_L_ENC_B)) countL++; else countL--; }
 void IRAM_ATTR isrRight() { if (digitalRead(PIN_R_ENC_A) == digitalRead(PIN_R_ENC_B)) countR++; else countR--; }
 long tL() { return encSignL * countL; }         // + = that wheel rolled forward
 long tR() { return encSignR * countR; }
+
+// ============================================================================
+//  LOG + LED
+// ============================================================================
+void report(const char *fmt, ...) {
+  char line[192];
+  va_list ap; va_start(ap, fmt);
+  int n = vsnprintf(line, sizeof(line), fmt, ap);
+  va_end(ap);
+  Serial.print(line);
+  if (n <= 0) return;
+  size_t k = min((size_t)n, sizeof(line) - 1);
+  const char *full = "\n...(log full - learned values are still saved)\n";
+  if (logLen + k + strlen(full) < sizeof(logBuf)) {
+    memcpy(logBuf + logLen, line, k); logLen += k; logBuf[logLen] = 0;
+  } else if (!logFull) {
+    logFull = true;
+    strcpy(logBuf + logLen, full); logLen += strlen(full);
+  }
+}
+void clearLog() { logLen = 0; logBuf[0] = 0; logFull = false; }
+void saveLog() {
+  Preferences p;
+  p.begin("mousecal", false);
+  p.putString("log", logBuf);
+  p.end();
+}
+
+void ledTask(void *) {
+  bool on = false;
+  while (true) {
+    on = !on;
+    switch (ledMode) {
+      case LED_READY:     rgbLedWrite(PIN_RGB_LED, 6, 6, 6);            break;
+      case LED_RUNNING:   rgbLedWrite(PIN_RGB_LED, 0, 0, on ? 60 : 0);  break;
+      case LED_DONE:      rgbLedWrite(PIN_RGB_LED, 0, 60, 0);           break;
+      case LED_UNSETTLED: rgbLedWrite(PIN_RGB_LED, 60, 35, 0);          break;
+      case LED_ERROR:     rgbLedWrite(PIN_RGB_LED, on ? 60 : 0, 0, 0);  break;
+    }
+    vTaskDelay(pdMS_TO_TICKS(ledMode == LED_ERROR ? 150 : 300));
+  }
+}
 
 // ============================================================================
 //  MOTORS
@@ -113,7 +174,9 @@ void stopMotors() { ledcWrite(PIN_L_PWM, 0); ledcWrite(PIN_R_PWM, 0); }
 
 void halt(const char *why) {
   stopMotors();
-  Serial.printf("\nHALT: %s\n", why);
+  report("\nHALT: %s\n", why);
+  saveLog();
+  ledMode = LED_ERROR;
   while (true) delay(1000);
 }
 
@@ -153,7 +216,7 @@ void calibrateGyro() {
   }
   if (n < GYRO_CAL_SAMPLES / 2) halt("IMU reads keep failing - check its SDA/SCL/VCC/GND");
   gyroBiasRaw = (float)(sum / n);
-  Serial.printf("Gyro bias = %.3f dps\n", gyroBiasRaw);
+  report("Gyro bias = %.3f dps\n", gyroBiasRaw);
 }
 
 // Wait until both wheels have stopped, integrating the gyro the whole time so
@@ -190,10 +253,10 @@ int readFront() {
 //  CALIBRATION STORAGE
 // ============================================================================
 void printCal() {
-  Serial.printf("  gyro sign %+d | min PWM  L %d  R %d\n", gyroSign, minPwmL, minPwmR);
-  Serial.printf("  trim fwd  L %.3f  R %.3f | trim rev  L %.3f  R %.3f\n", trimLF, trimRF, trimLR, trimRR);
-  Serial.printf("  stop lead fwd %.0f  rev %.0f ticks | turn lead L %.1f  R %.1f deg\n",
-                stopLeadFwd, stopLeadRev, turnLeadL, turnLeadR);
+  report("  gyro sign %+d | min PWM  L %d  R %d\n", gyroSign, minPwmL, minPwmR);
+  report("  trim fwd  L %.3f  R %.3f | trim rev  L %.3f  R %.3f\n", trimLF, trimRF, trimLR, trimRR);
+  report("  stop lead fwd %.0f  rev %.0f ticks | turn lead L %.1f  R %.1f deg\n",
+       stopLeadFwd, stopLeadRev, turnLeadL, turnLeadR);
 }
 bool loadCal() {
   Preferences p;
@@ -223,11 +286,31 @@ void saveCal() {
   p.end();
 }
 
+// Print the saved log of the last run, then the values currently in use.
+void printSaved() {
+  Preferences p;
+  String saved;
+  if (p.begin("mousecal", true)) { saved = p.getString("log", ""); p.end(); }
+  if (saved.length()) {
+    Serial.println(F("\n================ LAST RUN (saved in flash) ================"));
+    Serial.print(saved);
+    Serial.println(F("================ end of last run ================"));
+  } else {
+    Serial.println(F("\nNo saved run yet."));
+  }
+  Serial.println(F("Values in use now:"));
+  Serial.printf("  gyro sign %+d | min PWM  L %d  R %d\n", gyroSign, minPwmL, minPwmR);
+  Serial.printf("  trim fwd  L %.3f  R %.3f | trim rev  L %.3f  R %.3f\n", trimLF, trimRF, trimLR, trimRR);
+  Serial.printf("  stop lead fwd %.0f  rev %.0f ticks | turn lead L %.1f  R %.1f deg\n",
+                stopLeadFwd, stopLeadRev, turnLeadL, turnLeadR);
+  Serial.println(F("Press BOOT or send 'r' to run calibration. 'p' prints this again."));
+}
+
 // ============================================================================
 //  STEP 1: spin test - which way is the gyro, which way do encoders count
 // ============================================================================
 void spinTest() {
-  Serial.println(F("\n[1/3] Spin test (short left spin, then back)"));
+  report("\n[1/3] Spin test (short left spin, then back)\n");
   gyroSign = +1; encSignL = encSignR = +1; gyroPeakRaw = 0;
   long sL = countL, sR = countR;
   resetGyro();
@@ -236,20 +319,20 @@ void spinTest() {
   stopMotors(); settle();
   float ang = gyroAngle;
   long dL = countL - sL, dR = countR - sR;
-  Serial.printf("  gyro %+.1f deg | left enc %+ld | right enc %+ld | gyro peak %d/32767\n",
-                ang, dL, dR, gyroPeakRaw);
+  report("  gyro %+.1f deg | left enc %+ld | right enc %+ld | gyro peak %d/32767\n",
+       ang, dL, dR, gyroPeakRaw);
 
   if (labs(dL) < 10) halt("LEFT encoder didn't count during the spin - check its wires/power");
   if (labs(dR) < 10) halt("RIGHT encoder didn't count during the spin - check its wires/power");
   if (fabs(ang) < 10) halt("Mouse didn't rotate: both wheels turned the same way. Re-check motor directions (motor_encoder_test, 'd').");
-  if (gyroPeakRaw > 32000) Serial.println(F("  WARNING: gyro hit its limit - spin was very fast"));
+  if (gyroPeakRaw > 32000) report("  WARNING: gyro hit its limit - spin was very fast\n");
 
   gyroSign = (ang > 0) ? +1 : -1;               // left spin must read positive
   encSignL = (dL < 0) ? +1 : -1;                // left wheel went backward
   encSignR = (dR > 0) ? +1 : -1;                // right wheel went forward
-  Serial.printf("  -> gyro sign %+d%s\n", gyroSign, gyroSign < 0 ? "  (was BACKWARDS - this alone crashes mouse_map)" : "");
-  if (encSignL < 0) Serial.println(F("  -> left encoder counts backwards (handled here)"));
-  if (encSignR < 0) Serial.println(F("  -> right encoder counts backwards (handled here)"));
+  report("  -> gyro sign %+d%s\n", gyroSign, gyroSign < 0 ? "  (was BACKWARDS - this alone crashes mouse_map)" : "");
+  if (encSignL < 0) report("  -> left encoder counts backwards (handled here)\n");
+  if (encSignR < 0) report("  -> right encoder counts backwards (handled here)\n");
 
   t0 = millis();
   while (millis() - t0 < 350) { rawMotors(+TURN_PWM, -TURN_PWM); delay(3); }
@@ -331,7 +414,7 @@ float turnDeg(float degrees) {
     if (degrees > 0) setMotors(-pwm, +pwm); else setMotors(+pwm, -pwm);
     delay(3);
   }
-  if (millis() - t0 >= TURN_TIMEOUT_MS) Serial.println(F("  (turn timed out)"));
+  if (millis() - t0 >= TURN_TIMEOUT_MS) report("  (turn timed out)\n");
   stopMotors();
   settle();
   return gyroAngle;
@@ -346,16 +429,17 @@ void learnTrim(float &tLeft, float &tRight, float leftNeeds) {
   tRight = constrain(tRight / m, 0.7f, 1.3f);
 }
 
-void runCalibration() {
+// Returns true if it LOCKED IN (converged), false if saved but not settled.
+bool runCalibration() {
   spinTest();
 
-  Serial.println(F("\n[2/3] Motor dead-band"));
+  report("\n[2/3] Motor dead-band\n");
   minPwmL = findDeadband(true);
   minPwmR = findDeadband(false);
-  Serial.printf("  -> min PWM  L %d  R %d\n", minPwmL, minPwmR);
+  report("  -> min PWM  L %d  R %d\n", minPwmL, minPwmR);
 
-  Serial.printf("\n[3/3] Learning: fwd 1 square, back 1 square, L90 R90 R90 L90  (1 square = %ld ticks)\n",
-                TICKS_PER_CELL);
+  report("\n[3/3] Learning: fwd 1 square, back 1 square, L90 R90 R90 L90  (1 square = %ld ticks)\n",
+       TICKS_PER_CELL);
   int good = 0, aborts = 0;
   bool locked = false;
   for (int round = 1; round <= MAX_ROUNDS; round++) {
@@ -370,12 +454,10 @@ void runCalibration() {
     float overL = ((l1 - 90.0f) + (l2 - 90.0f)) / 2.0f;       // + = turned too far
     float overR = ((-r1 - 90.0f) + (-r2 - 90.0f)) / 2.0f;
 
-    Serial.printf("\n--- round %d ---\n", round);
-    Serial.printf("  forward : %+5.1f mm off | ends %+5.1f deg | avg steer %+5.1f%s\n",
-                  overF * MM_PER_TICK, f.endHeading, f.avgCorr, f.aborted ? "  [STOPPED EARLY]" : "");
-    Serial.printf("  reverse : %+5.1f mm off | ends %+5.1f deg | avg steer %+5.1f%s\n",
-                  overB * MM_PER_TICK, b.endHeading, b.avgCorr, b.aborted ? "  [STOPPED EARLY]" : "");
-    Serial.printf("  left 90 : %.1f, %.1f deg  | right 90 : %.1f, %.1f deg\n", l1, l2, -r1, -r2);
+    report("round %2d: fwd %+5.1fmm %+4.1fdeg steer %+5.1f%s | rev %+5.1fmm %+4.1fdeg steer %+5.1f%s\n",
+           round, overF * MM_PER_TICK, f.endHeading, f.avgCorr, f.aborted ? " STOPPED" : "",
+           overB * MM_PER_TICK, b.endHeading, b.avgCorr, b.aborted ? " STOPPED" : "");
+    report("          L90 %5.1f %5.1f | R90 %5.1f %5.1f", l1, l2, -r1, -r2);
 
     bool ok = !f.aborted && !b.aborted
            && labs(overF) <= DIST_TOL_TICKS && labs(overB) <= DIST_TOL_TICKS
@@ -384,8 +466,8 @@ void runCalibration() {
 
     if (f.aborted || b.aborted) {
       aborts++;
-      Serial.println(F("  Straight stopped early (wall in front or stuck) - skipping distance learning."));
-      if (aborts >= 3) halt("Keeps stopping early. Give it ~30 cm clear in front and behind.");
+      report("\n          straight STOPPED early (wall ahead or stuck) - distance not learned this round");
+      if (aborts >= 3) { saveCal(); halt("Keeps stopping early. Give it ~30 cm clear in front and behind."); }
     } else {
       stopLeadFwd = constrain(stopLeadFwd + LEARN_RATE * overF, 0.0f, TICKS_PER_CELL / 2.0f);
       stopLeadRev = constrain(stopLeadRev + LEARN_RATE * overB, 0.0f, TICKS_PER_CELL / 2.0f);
@@ -396,22 +478,39 @@ void runCalibration() {
     turnLeadR = constrain(turnLeadR + LEARN_RATE * overR, 0.5f, 30.0f);
 
     good = ok ? good + 1 : 0;
-    Serial.printf("  %s (%d/%d good in a row)\n", ok ? "GOOD" : "adjusting", good, GOOD_ROUNDS_TO_LOCK);
+    report(" | %s %d/%d\n", ok ? "GOOD" : "adjusting", good, GOOD_ROUNDS_TO_LOCK);
     if (good >= GOOD_ROUNDS_TO_LOCK) { locked = true; break; }
   }
 
   saveCal();
-  Serial.println(F("\n============================================"));
-  if (locked) Serial.println(F("  LOCKED IN - saved. Flash mouse_map next."));
-  else        Serial.println(F("  Saved, but NOT fully settled after 10 rounds.\n  Look at which line above stays off, and send 'r' to keep learning."));
+  report("\n============================================\n");
+  if (locked) report("  LOCKED IN - saved. Flash mouse_map next.\n");
+  else        report("  Saved, but NOT fully settled after %d rounds.\n  See which line above stays off; run again to keep learning.\n", MAX_ROUNDS);
   printCal();
-  Serial.println(F("============================================"));
+  report("============================================\n");
+  return locked;
+}
+
+void startRun() {
+  clearLog();
+  ledMode = LED_RUNNING;
+  Serial.println(F("\nStarting - HANDS OFF..."));
+  delay(START_DELAY_MS);
+  calibrateGyro();
+  delay(500);
+  bool locked = runCalibration();
+  saveLog();
+  ledMode = locked ? LED_DONE : LED_UNSETTLED;
+  Serial.println(F("\nPress BOOT or send 'r' to run again. 'p' prints the saved log."));
 }
 
 // ============================================================================
 void setup() {
   Serial.begin(115200); delay(400);
   Serial.println(F("\n=== Calibrate: learn straight / reverse / 90 turns, then lock in ==="));
+
+  xTaskCreate(ledTask, "led", 2048, nullptr, 1, nullptr);
+  pinMode(PIN_BOOT_BTN, INPUT_PULLUP);
 
   pinMode(PIN_L_DIR, OUTPUT); pinMode(PIN_R_DIR, OUTPUT);
   ledcAttach(PIN_L_PWM, PWM_FREQ_HZ, PWM_BITS);
@@ -429,22 +528,23 @@ void setup() {
   mpuWrite(MPU_GYRO_CONFIG, 0x10);               // +-1000 dps
   delay(50);
 
-  if (loadCal()) { Serial.println(F("Starting from previously saved calibration:")); printCal(); }
-
-  Serial.println(F("\nHANDS OFF - calibrating gyro in 2 s..."));
-  delay(2000);
-  calibrateGyro();
-  delay(500);
-  runCalibration();
-  Serial.println(F("\nSend 'r' to run again, or press RESET."));
+  loadCal();
+  printSaved();
+  ledMode = LED_READY;
 }
 
 void loop() {
-  if (Serial.available() && Serial.read() == 'r') {
-    Serial.println(F("\nHANDS OFF - re-running in 2 s..."));
-    delay(2000);
-    calibrateGyro();
-    runCalibration();
-    Serial.println(F("\nSend 'r' to run again, or press RESET."));
+  if (digitalRead(PIN_BOOT_BTN) == LOW) {
+    delay(30);
+    if (digitalRead(PIN_BOOT_BTN) == LOW) {
+      while (digitalRead(PIN_BOOT_BTN) == LOW) delay(10);   // wait for release
+      startRun();
+    }
   }
+  if (Serial.available()) {
+    char c = Serial.read();
+    if (c == 'r') startRun();
+    else if (c == 'p') printSaved();
+  }
+  delay(10);
 }
