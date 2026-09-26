@@ -15,8 +15,11 @@ All 3V3 pins are one net, all GND pins are one net. Encoder VCC max 3.6 V.
 | 10 | DRI0044 PWM2 (right motor speed, 20 kHz, 8-bit) | out |
 | 21 | Left encoder C1 (A) | in, pull-up, interrupt |
 | 22 | Left encoder C2 (B) | in, pull-up |
-| 11 | Right encoder C1 (A) | in, pull-up, interrupt |
-| 23 | Right encoder C2 (B) | in, pull-up |
+| 11 | Right encoder C1 (code treats it as B) | in, pull-up |
+| 23 | Right encoder C2 (code treats it as A) | in, pull-up, interrupt |
+
+The right encoder's A/B are swapped in code (`PIN_R_ENC_A = 23`) because it
+counted backwards when driven forward. The physical wiring is unchanged.
 | 6  | I2C SDA (all 4 I2C devices) | bus, 100 kHz |
 | 7  | I2C SCL (all 4 I2C devices) | bus, 100 kHz |
 | 18 | VL53L0X Left XSHUT | out |

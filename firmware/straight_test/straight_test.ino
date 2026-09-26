@@ -50,7 +50,7 @@ const int PIN_R_DIR = 3, PIN_R_PWM = 10;
 const int L_DIR_SIGN = +1, R_DIR_SIGN = -1;
 
 const int PIN_L_ENC_A = 21, PIN_L_ENC_B = 22;
-const int PIN_R_ENC_A = 11, PIN_R_ENC_B = 23;
+const int PIN_R_ENC_A = 23, PIN_R_ENC_B = 11;
 
 const int PWM_FREQ_HZ = 20000, PWM_BITS = 8, PWM_MAX = 255, MIN_MOVE_PWM = 40;
 

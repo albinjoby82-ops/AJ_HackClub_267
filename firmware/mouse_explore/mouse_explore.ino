@@ -72,8 +72,8 @@ const int R_DIR_SIGN = -1;
 // --- Wheel encoder pins (A and B per wheel) --------------------------------
 const int PIN_L_ENC_A = 21;
 const int PIN_L_ENC_B = 22;
-const int PIN_R_ENC_A = 11;
-const int PIN_R_ENC_B = 23;
+const int PIN_R_ENC_A = 23;
+const int PIN_R_ENC_B = 11;
 
 // --- Status LED (a plain LED to a GPIO through a resistor). Optional. -------
 //     Set to -1 if you have no status LED; states still print on Serial.

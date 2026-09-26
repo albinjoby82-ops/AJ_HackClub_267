@@ -48,7 +48,7 @@ const int PIN_L_DIR = 0, PIN_L_PWM = 2;
 const int PIN_R_DIR = 3, PIN_R_PWM = 10;
 const int L_DIR_SIGN = +1, R_DIR_SIGN = -1;
 const int PIN_L_ENC_A = 21, PIN_L_ENC_B = 22;
-const int PIN_R_ENC_A = 11, PIN_R_ENC_B = 23;
+const int PIN_R_ENC_A = 23, PIN_R_ENC_B = 11;
 const int STATUS_RGB_PIN = 8;                      // onboard RGB LED (DevKitC-1)
 const int PIN_BOOT_BTN = 9;                     // onboard BOOT button, LOW when pressed
 
