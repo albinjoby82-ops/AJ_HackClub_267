@@ -74,9 +74,11 @@ const int     GYRO_CAL_SAMPLES = 800;
 // ---- Learning --------------------------------------------------------------
 const int   MAX_ROUNDS = 10, GOOD_ROUNDS_TO_LOCK = 2;
 const float LEARN_RATE = 0.7;                   // fraction of each error corrected per round
-const float TURN_TOL_DEG = 1.5;
-const long  DIST_TOL_TICKS = 15;                // ~5 mm
-const float TRIM_TOL_PWM = 3.0;
+// Tolerances are what the maze needs, not perfection: mouse_map re-centres
+// between walls and lines up on the wall ahead every square.
+const float TURN_TOL_DEG = 2.5;
+const long  DIST_TOL_TICKS = 30;                // ~10 mm
+const float TRIM_TOL_PWM = 5.0;
 const int   FRONT_ABORT_MM = 50;
 const unsigned long START_DELAY_MS = 3000;      // time to take your hand away
 
