@@ -27,16 +27,25 @@
  *  Walls are only ever read while stopped and squared up, and every wall is
  *  written to both cells that share it, so the map cannot disagree with itself.
  *
- *  Run the i2c_scanner first (all 4 devices FOUND), then flash this with the
- *  wheels off the table and watch Serial at 115200. It prints the map when it
- *  reaches the goal. Set the pins and MEASURE the geometry, same as the
- *  mouse_explore sketch. Needs the Pololu "VL53L0X" library.
+ *  Run calibrate first (it saves what this sketch loads). Runs cable-free:
+ *    1. Power it from the battery, put it in the start corner with the outer
+ *       wall on its LEFT, facing the open side.
+ *    2. Press BOOT and let go. Hands off while it calibrates the gyro.
+ *    3. Onboard LED:  dim white = ready, blue flashing = mapping,
+ *       green = reached the centre, red = stopped (reason in the log),
+ *       red flashing = hardware error.
+ *       Press BOOT while it's driving to stop it and keep the map so far.
+ *    4. Plug in USB, open Serial Monitor at 115200: it prints the saved log of
+ *       the last run (why it stopped + the map). Send 'p' if nothing shows.
+ *  It never starts moving by itself, so plugging USB in (which can reset the
+ *  board) is safe. Needs the Pololu "VL53L0X" library.
  * ============================================================================
  */
 
 #include <Wire.h>
 #include <VL53L0X.h>
 #include <Preferences.h>
+#include <stdarg.h>
 #include "maze.h"
 
 // ============================================================================
@@ -56,7 +65,9 @@ const int L_DIR_SIGN = +1, R_DIR_SIGN = -1;
 const int PIN_L_ENC_A = 21, PIN_L_ENC_B = 22;
 const int PIN_R_ENC_A = 23, PIN_R_ENC_B = 11;
 
-const int PIN_STATUS_LED = -1;      // -1 if none
+const int STATUS_RGB_PIN = 8;       // onboard RGB LED (DevKitC-1)
+const int PIN_BOOT_BTN = 9;         // onboard BOOT button, LOW when pressed
+const unsigned long START_DELAY_MS = 3000;   // time to take your hand away
 
 const int PWM_FREQ_HZ = 20000, PWM_BITS = 8, PWM_MAX = 255;
 const int CRUISE_PWM = 90, TURN_PWM = 85, BACKUP_PWM = 80, MIN_MOVE_PWM = 45;
@@ -123,10 +134,22 @@ unsigned long lastGyroUs = 0;
 
 int  distL = MAX_VALID_MM, distF = MAX_VALID_MM, distR = MAX_VALID_MM;
 int  recoveryAttempts = 0;
-bool mappedDone = false, gaveUp = false;
+bool running = false;
+bool calLoaded = false;
 
+// Types used in function signatures must be defined before any function: the
+// Arduino IDE auto-inserts function prototypes above the first function.
 enum LedState { LED_BOOT, LED_EXPLORING, LED_TURNING, LED_RECOVER, LED_BLOCKED, LED_ERROR, LED_DONE };
+enum LedMode  { MODE_READY, MODE_RUNNING, MODE_GOAL, MODE_STOPPED, MODE_FAULT };
 LedState ledState = LED_BOOT;
+volatile LedMode ledMode = MODE_READY;
+
+// Mapping prints a lot, so keep only the most recent part - that's where the
+// map and the reason it stopped are. Saved to flash at the end of a run.
+const size_t LOG_CAP = 3800;                // flash strings max out at 4000 bytes
+char   logRing[LOG_CAP];
+size_t logHead = 0;
+bool   logWrapped = false;
 
 // ============================================================================
 //  ENCODER ISRs
@@ -139,6 +162,67 @@ void IRAM_ATTR isrRight() { if (digitalRead(PIN_R_ENC_A) == digitalRead(PIN_R_EN
 // ============================================================================
 void stopMotors();   // fwd decl used by halt()
 
+void report(const char *fmt, ...) {
+  char line[192];
+  va_list ap; va_start(ap, fmt);
+  int n = vsnprintf(line, sizeof(line), fmt, ap);
+  va_end(ap);
+  Serial.print(line);
+  if (n <= 0) return;
+  size_t k = min((size_t)n, sizeof(line) - 1);
+  for (size_t i = 0; i < k; i++) {
+    logRing[logHead++] = line[i];
+    if (logHead == LOG_CAP) { logHead = 0; logWrapped = true; }
+  }
+}
+void clearLog() { logHead = 0; logWrapped = false; }
+void saveLog() {
+  static char out[LOG_CAP + 64];
+  size_t n = 0;
+  if (logWrapped) {
+    const char *cut = "...(earlier lines dropped)\n";
+    n = strlen(cut); memcpy(out, cut, n);
+    size_t skip = 0;                                    // start at the next full line
+    while (skip < LOG_CAP && logRing[(logHead + skip) % LOG_CAP] != '\n') skip++;
+    for (size_t i = skip + 1; i < LOG_CAP; i++) out[n++] = logRing[(logHead + i) % LOG_CAP];
+  } else {
+    memcpy(out, logRing, logHead); n = logHead;
+  }
+  out[n] = 0;
+  Preferences p;
+  p.begin("mousemap", false);
+  p.putString("log", out);
+  p.end();
+}
+void printSaved() {
+  Preferences p;
+  String saved;
+  if (p.begin("mousemap", true)) { saved = p.getString("log", ""); p.end(); }
+  if (saved.length()) {
+    Serial.println(F("\n================ LAST RUN (saved in flash) ================"));
+    Serial.print(saved);
+    Serial.println(F("================ end of last run ================"));
+  } else {
+    Serial.println(F("\nNo saved run yet."));
+  }
+  Serial.println(F("Press BOOT or send 'r' to start mapping. 'p' prints the saved log again."));
+}
+
+void ledTask(void *) {
+  bool on = false;
+  while (true) {
+    on = !on;
+    switch (ledMode) {
+      case MODE_READY:   rgbLedWrite(STATUS_RGB_PIN, 6, 6, 6);            break;
+      case MODE_RUNNING: rgbLedWrite(STATUS_RGB_PIN, 0, 0, on ? 60 : 0);  break;
+      case MODE_GOAL:    rgbLedWrite(STATUS_RGB_PIN, 0, 60, 0);           break;
+      case MODE_STOPPED: rgbLedWrite(STATUS_RGB_PIN, 60, 0, 0);           break;
+      case MODE_FAULT:   rgbLedWrite(STATUS_RGB_PIN, on ? 60 : 0, 0, 0);  break;
+    }
+    vTaskDelay(pdMS_TO_TICKS(ledMode == MODE_FAULT ? 150 : 300));
+  }
+}
+
 void showLED(LedState s) {
   if (s != ledState) {
     ledState = s;
@@ -149,20 +233,25 @@ void showLED(LedState s) {
       case LED_BLOCKED: n = "BLOCKED"; break;     case LED_ERROR: n = "ERROR"; break;
       case LED_DONE: n = "DONE"; break;
     }
-    Serial.printf("[state] %s\n", n);
+    report("[state] %s\n", n);
   }
-  if (PIN_STATUS_LED < 0) return;
-  digitalWrite(PIN_STATUS_LED, (s == LED_EXPLORING || s == LED_TURNING || s == LED_DONE) ? HIGH : LOW);
-}
-
-void blinkForever(int on, int off) {
-  while (true) {
-    if (PIN_STATUS_LED >= 0) digitalWrite(PIN_STATUS_LED, HIGH); delay(on);
-    if (PIN_STATUS_LED >= 0) digitalWrite(PIN_STATUS_LED, LOW);  delay(off);
+  switch (s) {
+    case LED_BOOT:    ledMode = MODE_READY;   break;
+    case LED_DONE:    ledMode = MODE_GOAL;    break;
+    case LED_BLOCKED: ledMode = MODE_STOPPED; break;
+    case LED_ERROR:   ledMode = MODE_FAULT;   break;
+    default:          ledMode = MODE_RUNNING; break;
   }
 }
 
-void halt(const char *why) { Serial.printf("HALT: %s\n", why); ledState = LED_ERROR; stopMotors(); blinkForever(80, 80); }
+void halt(const char *why) {
+  stopMotors();
+  running = false;
+  report("HALT: %s\n", why);
+  showLED(LED_ERROR);
+  saveLog();
+  while (true) delay(1000);
+}
 
 // ============================================================================
 //  MOTORS
@@ -209,7 +298,6 @@ void updateGyro() {
   gyroAngle += lastGyroZ * dt;
 }
 void calibrateGyro() {
-  Serial.println(F("Calibrating gyro - keep the mouse completely still..."));
   double sum = 0; int n = 0; int16_t raw;
   for (int i = 0; i < GYRO_CAL_SAMPLES; i++) {
     if (readGyroRaw(raw)) { sum += raw / GYRO_LSB_PER_DPS; n++; }
@@ -217,7 +305,7 @@ void calibrateGyro() {
   }
   if (n < GYRO_CAL_SAMPLES / 2) halt("IMU reads keep failing - check its SDA/SCL/VCC/GND");
   gyroBiasRaw = (float)(sum / n);
-  Serial.printf("Gyro bias Z = %.3f dps\n", gyroBiasRaw);
+  report("Gyro bias Z = %.3f dps\n", gyroBiasRaw);
 }
 
 // Wait for both wheels to stop, integrating the gyro so the coast is counted.
@@ -243,12 +331,15 @@ void loadCal() {
     turnLeadL = p.getFloat("turnL", turnLeadL); turnLeadR = p.getFloat("turnR", turnLeadR);
   }
   p.end();
-  if (!ok) { Serial.println(F("WARNING: no calibration saved - run the calibrate sketch first. Using defaults.")); return; }
-  Serial.println(F("Loaded calibration:"));
-  Serial.printf("  gyro sign %+d | min PWM  L %d  R %d\n", gyroSign, minPwmL, minPwmR);
-  Serial.printf("  trim fwd  L %.3f  R %.3f | trim rev  L %.3f  R %.3f\n", trimLF, trimRF, trimLR, trimRR);
-  Serial.printf("  stop lead fwd %.0f  rev %.0f ticks | turn lead L %.1f  R %.1f deg\n",
-                stopLeadFwd, stopLeadRev, turnLeadL, turnLeadR);
+  calLoaded = ok;
+}
+void reportCal() {
+  if (!calLoaded) { report("WARNING: no calibration saved - run the calibrate sketch first. Using defaults.\n"); return; }
+  report("Loaded calibration:\n");
+  report("  gyro sign %+d | min PWM  L %d  R %d\n", gyroSign, minPwmL, minPwmR);
+  report("  trim fwd  L %.3f  R %.3f | trim rev  L %.3f  R %.3f\n", trimLF, trimRF, trimLR, trimRR);
+  report("  stop lead fwd %.0f  rev %.0f ticks | turn lead L %.1f  R %.1f deg\n",
+         stopLeadFwd, stopLeadRev, turnLeadL, turnLeadR);
 }
 
 // ============================================================================
@@ -268,12 +359,12 @@ int readDistStable(int i) {
 void readAll() { distL = readDist(S_LEFT); distF = readDist(S_FRONT); distR = readDist(S_RIGHT); }
 
 void dumpBus() {
-  Serial.print(F("Devices answering on I2C:"));
+  report("Devices answering on I2C:");
   for (uint8_t a = 1; a < 127; a++) {
     Wire.beginTransmission(a);
-    if (Wire.endTransmission() == 0) Serial.printf(" 0x%02X", a);
+    if (Wire.endTransmission() == 0) report(" 0x%02X", a);
   }
-  Serial.println(F("   (expect 0x30 0x31 0x32 0x68 when all are up)"));
+  report("   (expect 0x30 0x31 0x32 0x68 when all are up)\n");
 }
 
 void startSensors() {
@@ -286,7 +377,7 @@ void startSensors() {
       digitalWrite(XSHUT[i], HIGH); delay(50);
       laser[i].setTimeout(200);
       ok = laser[i].init();
-      if (!ok) Serial.printf("VL53L0X %s init attempt %d/3 failed\n", SENSOR_NAME[i], attempt);
+      if (!ok) report("VL53L0X %s init attempt %d/3 failed\n", SENSOR_NAME[i], attempt);
     }
     if (!ok) {
       dumpBus();
@@ -295,15 +386,14 @@ void startSensors() {
     }
     laser[i].setAddress(SENSOR_ADDR[i]);
     if (!laser[i].setMeasurementTimingBudget(33000)) halt("VL53L0X timing budget rejected");
-    Serial.printf("Sensor %-5s initialized OK at 0x%02X\n", SENSOR_NAME[i], SENSOR_ADDR[i]);
+    report("Sensor %-5s initialized OK at 0x%02X\n", SENSOR_NAME[i], SENSOR_ADDR[i]);
   }
   // Start ranging only once all three are addressed, so none is busy while another boots.
   for (int i = 0; i < 3; i++) laser[i].startContinuous();
   if (!mpuWrite(MPU_PWR_MGMT_1, 0x00)) halt("MPU-6050 not responding: check SDA/SCL/VIN/GND");
   mpuWrite(MPU_GYRO_CONFIG, 0x10);   // +-1000 dps, must match GYRO_LSB_PER_DPS
   delay(50);
-  Serial.println(F("IMU (MPU-6050) initialized OK at 0x68"));
-  calibrateGyro();
+  report("IMU (MPU-6050) initialized OK at 0x68\n");
 }
 
 // ============================================================================
@@ -315,11 +405,11 @@ void recordWalls() {
   if (df < FRONT_WALL_MM) maze.setWall(posX, posY, headingDir);
   if (dl < SIDE_WALL_MM)  maze.setWall(posX, posY, dirLeft(headingDir));
   if (dr < SIDE_WALL_MM)  maze.setWall(posX, posY, dirRight(headingDir));
-  Serial.printf("cell (%d,%d) dir %d | L%4d F%4d R%4d | walls %c%c%c\n",
-                posX, posY, headingDir, dl, df, dr,
-                (df < FRONT_WALL_MM) ? 'F' : '.',
-                (dl < SIDE_WALL_MM)  ? 'L' : '.',
-                (dr < SIDE_WALL_MM)  ? 'R' : '.');
+  report("cell (%d,%d) dir %d | L%4d F%4d R%4d | walls %c%c%c\n",
+         posX, posY, headingDir, dl, df, dr,
+         (df < FRONT_WALL_MM) ? 'F' : '.',
+         (dl < SIDE_WALL_MM)  ? 'L' : '.',
+         (dr < SIDE_WALL_MM)  ? 'R' : '.');
 }
 
 // ============================================================================
@@ -409,20 +499,21 @@ void turnToHeading(int target) {
 //  MAP PRINTOUT (matches the simulator's rendering)
 // ============================================================================
 void printMap() {
-  Serial.println(F("\n--- discovered map (M=mouse, G=goal) ---"));
+  report("\n--- discovered map (M=mouse, G=goal) ---\n");
+  char row[96];
   for (int y = maze.H - 1; y >= 0; y--) {
-    for (int x = 0; x < maze.W; x++) { Serial.print('+'); Serial.print(maze.hasWall(x, y, DIR_N) ? "---" : "   "); }
-    Serial.println('+');
-    for (int x = 0; x < maze.W; x++) {
-      Serial.print(maze.hasWall(x, y, DIR_W) ? '|' : ' ');
-      if (x == posX && y == posY) Serial.print(" M ");
-      else if (maze.isGoal(x, y))  Serial.print(" G ");
-      else                          Serial.print("   ");
-    }
-    Serial.println(maze.hasWall(maze.W - 1, 0, DIR_E) ? '|' : ' ');
+    int n = 0;
+    for (int x = 0; x < maze.W; x++) n += snprintf(row + n, sizeof(row) - n, "+%s", maze.hasWall(x, y, DIR_N) ? "---" : "   ");
+    report("%s+\n", row);
+    n = 0;
+    for (int x = 0; x < maze.W; x++)
+      n += snprintf(row + n, sizeof(row) - n, "%c%s", maze.hasWall(x, y, DIR_W) ? '|' : ' ',
+                    (x == posX && y == posY) ? " M " : maze.isGoal(x, y) ? " G " : "   ");
+    report("%s%c\n", row, maze.hasWall(maze.W - 1, y, DIR_E) ? '|' : ' ');
   }
-  for (int x = 0; x < maze.W; x++) { Serial.print('+'); Serial.print(maze.hasWall(x, 0, DIR_S) ? "---" : "   "); }
-  Serial.println('+');
+  int n = 0;
+  for (int x = 0; x < maze.W; x++) n += snprintf(row + n, sizeof(row) - n, "+%s", maze.hasWall(x, 0, DIR_S) ? "---" : "   ");
+  report("%s+\n", row);
 }
 
 // ============================================================================
@@ -432,7 +523,8 @@ void setup() {
   Serial.begin(115200); delay(400);
   Serial.println(F("\n=== Micromouse flood-fill mapping - booting ==="));
 
-  if (PIN_STATUS_LED >= 0) pinMode(PIN_STATUS_LED, OUTPUT);
+  xTaskCreate(ledTask, "led", 2048, nullptr, 1, nullptr);
+  pinMode(PIN_BOOT_BTN, INPUT_PULLUP);
   showLED(LED_BOOT);
 
   pinMode(PIN_L_DIR, OUTPUT); pinMode(PIN_R_DIR, OUTPUT);
@@ -447,31 +539,74 @@ void setup() {
 
   Wire.begin(PIN_SDA, PIN_SCL); Wire.setClock(100000);   // same safe speed the scanner proved works
   loadCal();
+  reportCal();
   startSensors();
 
+  printSaved();
+  showLED(LED_BOOT);
+}
+
+bool bootPressed() {
+  if (digitalRead(PIN_BOOT_BTN) != LOW) return false;
+  delay(30);
+  if (digitalRead(PIN_BOOT_BTN) != LOW) return false;
+  while (digitalRead(PIN_BOOT_BTN) == LOW) delay(10);    // wait for release
+  return true;
+}
+
+void startRun() {
+  clearLog();
   maze.begin(MAZE_W, MAZE_H);
   posX = START_X; posY = START_Y; headingDir = START_DIR;
-
-  Serial.printf("Ticks per cell = %ld. Goal = centre 2x2. Start (%d,%d) dir %d\n",
-                TICKS_PER_CELL, posX, posY, headingDir);
-  Serial.println(F("Mapping starts in 2 s..."));
-  delay(2000);
+  recoveryAttempts = 0;
+  showLED(LED_EXPLORING);
+  report("=== mapping run ===\n");
+  reportCal();
+  report("Ticks per cell = %ld. Goal = centre 2x2. Start (%d,%d) dir %d\n",
+         TICKS_PER_CELL, posX, posY, headingDir);
+  Serial.println(F("HANDS OFF - starting in 3 s..."));
+  delay(START_DELAY_MS);
+  calibrateGyro();
   resetGyro();
+  running = true;
+}
+
+void finishRun(LedState how) {
+  stopMotors();
+  running = false;
+  showLED(how);
+  saveLog();
+  Serial.println(F("\nSaved. Press BOOT or send 'r' to map again. 'p' prints the saved log."));
 }
 
 void loop() {
-  if (mappedDone) blinkForever(1000, 200);   // solved: slow heartbeat, never returns
-  if (gaveUp)     blinkForever(400, 400);
+  if (!running) {
+    if (bootPressed()) startRun();
+    else if (Serial.available()) {
+      char c = Serial.read();
+      if (c == 'r') startRun();
+      else if (c == 'p') printSaved();
+    }
+    delay(10);
+    return;
+  }
+
+  // BOOT while driving = stop now and keep the map so far.
+  if (bootPressed()) {
+    report("STOP: BOOT pressed.\n");
+    printMap();
+    finishRun(LED_BLOCKED);
+    return;
+  }
 
   // 1) Look around from a standstill and record walls into the map.
   recordWalls();
 
   // 2) Reached the centre? Then we've mapped a route - show it and stop.
   if (maze.isGoal(posX, posY)) {
-    Serial.println(F("\n*** REACHED GOAL - maze route mapped. ***"));
+    report("\n*** REACHED GOAL - maze route mapped. ***\n");
     printMap();
-    showLED(LED_DONE);
-    mappedDone = true;
+    finishRun(LED_DONE);
     return;
   }
 
@@ -479,11 +614,10 @@ void loop() {
   maze.flood();
   int d = maze.bestDir(posX, posY, headingDir);
   if (d < 0) {
-    Serial.println(F("STOP: no route to goal from here with the walls seen so far."));
-    Serial.println(F("(Check for a mis-read wall, or that the start pose is right.)"));
+    report("STOP: no route to goal from here with the walls seen so far.\n");
+    report("(Check for a mis-read wall, or that the start pose is right.)\n");
     printMap();
-    showLED(LED_BLOCKED);
-    gaveUp = true;
+    finishRun(LED_BLOCKED);
     return;
   }
 
@@ -495,12 +629,12 @@ void loop() {
     recoveryAttempts = 0;
   } else {
     recoveryAttempts++;
-    Serial.printf("Recovery attempt %d/%d (stalled crossing a cell)\n", recoveryAttempts, MAX_RECOVERY);
+    report("Recovery attempt %d/%d (stalled crossing a cell)\n", recoveryAttempts, MAX_RECOVERY);
     showLED(LED_RECOVER);
     if (recoveryAttempts >= MAX_RECOVERY) {
-      Serial.println(F("STOP: gave up after 3 recovery attempts. Reposition and RESET."));
-      showLED(LED_BLOCKED);
-      gaveUp = true;
+      report("STOP: gave up after 3 recovery attempts.\n");
+      printMap();
+      finishRun(LED_BLOCKED);
     }
   }
 }
